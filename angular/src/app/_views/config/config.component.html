@@ -1,0 +1,82 @@
+<!-- title -->
+<div class="title_area">
+  <div class="title">설정</div>
+</div>
+<!-- end title -->
+
+<!-- search-->
+<div class="search_view" style="padding-left: 67px;">
+  <form name="form1" method="post" action="" novalidate [formGroup]="KibanaInputForm" (ngSubmit)="saveInfo()">
+    <table border="0" cellspacing="0" cellpadding="0" style="width: 100%;" class="search_list">
+      <tr>
+        <!-- <th>Url</th>
+        <td class="left" style="width: 100%">
+          <input type="url" name="textfield" style="width: 100%" [(ngModel)]="inputUrl" formControlName="url" required>
+        </td> -->
+        <th width="65" style="width: 189px;">ElasticSearch & Kibana Host</th>
+        <td class="left" style="width: 32%">
+          <input type="text" name="textfield" [(ngModel)]="kibanaInfo.host" formControlName="ekhost" required>
+        </td>
+        <th width="80" style="width: 119px;">ElasticSearch Port</th>
+        <td>
+          <input type="text" name="textfield" style="width: 80px;" [(ngModel)]="kibanaInfo.eport" formControlName="eport"
+            required>
+        </td>
+      </tr>
+      <tr>
+        <th>Kibana Port</th>
+        <td class="left">
+          <input type="text" name="textfield" style="width: 80px;" [(ngModel)]="kibanaInfo.kport" formControlName="kport"
+            required>
+        </td>
+        <!-- <th style="background: white">
+        </th> -->
+      </tr>
+    </table>
+    <span style="position: relative; left: 22%;">
+      <button type="submit" class="btn" mat-raised-button [ngClass]="{'btn-primary' : KibanaInputForm.valid, 'disabled' : !KibanaInputForm.valid || btnDisabled}"
+        [disabled]="!KibanaInputForm.valid || btnDisabled">저장</button>
+      <button type="button" class="btn btn-basics" mat-raised-button [ngClass]="{'disabled' : btnDisabled}" [disabled]="btnDisabled"
+        (click)="addDashboard()">Dashboard 생성</button>
+      <button type="button" class="btn btn-basics" mat-raised-button [ngClass]="{'disabled' : btnDisabled}" [disabled]="btnDisabled"
+        (click)="addVisualization()">Visualization 생성</button>
+    </span>
+  </form>
+  <span style="font-size: 14px; padding-left: 45%; font-weight: 600;" *ngIf="adding">
+    생성중...
+  </span>
+</div>
+
+<span *ngIf="listIsExist; else empty">
+  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_tl">
+    <tr>
+      <th width="33%">ElasticSearch & Kibana Host</th>
+      <th>ElasticSearch Port</th>
+      <th>Kibana Port</th>
+    </tr>
+    <tr *ngFor="let data of kibanaList">
+      <td>{{data.host}}</td>
+      <td>{{data.eport}}</td>
+      <td>{{data.kport}}</td>
+    </tr>
+  </table>
+</span>
+<!-- end search -->
+<!-- 품질측정 -->
+<!-- <span *ngIf="listIsExist; else empty">
+
+  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_tl">
+    <tr>
+      <th>URL</th>
+    </tr>
+    <tr *ngFor="let data of kibanaList">
+      <td class="cont">{{data.url}}</td>
+    </tr>
+  </table>
+
+</span> -->
+<ng-template #empty>
+  <div class="div_quality">
+    <div class="qual_text">Kibana 정보를 추가해 주세요.</div>
+  </div>
+</ng-template>

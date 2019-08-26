@@ -1,0 +1,128 @@
+<!-- title -->
+<div class="title_area">
+  <div class="title">Reflector 관리</div>
+</div>
+<!-- end title -->
+
+<!-- search-->
+<div class="search_view">
+  <form name="form1" method="post" action="" novalidate [formGroup]="reflectorMgmtForm" (ngSubmit)="onSearchClick()">
+    <table border="0" cellspacing="0" cellpadding="6" class="search_list">
+      <tr>
+        <th width="80">Reflector IP</th>
+        <td class="left">
+          <input type="text" name="textfield" [(ngModel)]="searchReflectorIp" formControlName="reflectorIp">
+        </td>
+        <th width="60">Protocol</th>
+        <td colspan="2">
+          <select name="select" style="width: 184px;" [(ngModel)]="ptcSelected" [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let ptc of protocol" [value]="ptc.id">{{ptc.type}}</option>
+          </select>
+        </td>
+        <td>
+          <button type="submit" class="btn" mat-raised-button [ngClass]="{'btn-primary' : reflectorMgmtForm.valid, 'disabled' : !reflectorMgmtForm.valid}"
+            [disabled]="!reflectorMgmtForm.valid">검색</button>
+        </td>
+        <td *ngIf="isSearch">
+          <button type="button" class="btn btn-primary" mat-raised-button (click)="onAllListClick()">전체 목록 보기</button>
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+<!-- end search -->
+
+
+<span *ngIf="listIsExist">
+  <!-- table -->
+  <div class="table_header">
+    <div class="th_page">
+      <b>총
+        <span>{{count}}</span> 건</b> [{{pg}}/{{allpage}}페이지]</div>
+  </div>
+
+  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_tl">
+    <tr>
+      <th width="8%">
+        <input type="checkbox" name="checkbox" [checked]="allDeleteCheck" (change)="allDeleteCheck = $event.target.checked; clickOnAllListDelete($event)">
+      </th>
+      <th width="17%">Reflector IP</th>
+      <th width="10%">Reflector Port</th>
+      <th width="17%">Protocol</th>
+      <th width="30%">Address</th>
+      <th>비고</th>
+    </tr>
+    <tr *ngFor="let reflector of ReflectorData">
+      <td>
+        <input type="checkbox" name="checkbox" [checked]="reflector.deleteCheck" (change)="reflector.deleteCheck = $event.target.checked; clickOnOneListDelete($event.target.checked)">
+      </td>
+      <td>{{reflector.reflectorIp}}</td>
+      <td *ngIf="reflector.protocol.type != 'ICMP'; else mgmtport">{{reflector.port}}</td>
+      <ng-template #mgmtport>
+        <td></td>
+      </ng-template>
+      <td>{{reflector.protocol.type}}</td>
+      <td>{{reflector.address}}</td>
+      <td>
+        <a type="button" class="btn btn-default btn-sm" (click)="openReflectorModifyDialog(reflector)">수정</a>
+      </td>
+    </tr>
+  </table>
+  <!-- end table -->
+
+  <!-- paging -->
+  <div class="pagin_area">
+    <div class="paging">
+      <span *ngIf="pg > block && pg != 1">
+        <a (click)="pageMove(0)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_first.png" border="0" align="absmiddle" alt="back">
+        </a>
+        <a (click)="pageMove(pg - 2)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_prev.png" border="0" alt="back">
+        </a>
+      </span>
+      <span *ngFor="let index of paginationIndex">
+        <span *ngIf="pg == index; else notvalid">
+          <span (click)="pageMove(index - 1)" class="r">{{index}}</span>
+        </span>
+        <ng-template #notvalid>
+          <span style="cursor:pointer;" *ngIf="pg >= index || index <= allpage">
+            <a (click)="pageMove(index - 1)">{{index}}</a>
+          </span>
+        </ng-template>
+      </span>
+      <span *ngIf="endpage < allpage">
+        <a (click)="pageMove(pg)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_next.png" border="0" alt="next">
+        </a>
+        <a (click)="pageMove(allpage - 1)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_last.png" border="0" alt="next">
+        </a>
+      </span>
+    </div>
+  </div>
+  <!--end pageing-->
+
+  <div class="btn_area">
+    <button type="button" class="btn btn-basics" (click)="openReflectorAddDialog()">추가</button>
+    <button type="button" class="btn btn-default" (click)="onDeleteClick()">삭제</button>
+  </div>
+</span>
+
+<span *ngIf="!listIsExist && !isSearch">
+  <div class="div_quality">
+    <div class="qual_text">Reflector를 추가해 주세요.</div>
+  </div>
+  <div class="btn_area">
+    <button type="button" class="btn btn-basics" (click)="openReflectorAddDialog()">추가</button>
+    <button type="button" class="btn btn-default" (click)="onDeleteClick()">삭제</button>
+  </div>
+</span>
+
+<span *ngIf="!listIsExist && isSearch">
+  <div class="div_quality">
+    <div class="qual_text">검색 조건에 해당하는 값이 없습니다.</div>
+  </div>
+</span>
+
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="large" color="#fff" type="ball-clip-rotate"></ngx-spinner>

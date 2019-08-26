@@ -1,0 +1,59 @@
+<!-- title -->
+<div class="title_area">
+  <div class="title">Reflector 등록</div>
+</div>
+<!-- end title -->
+
+<!-- search-->
+<div class="search_view p_20">
+  <form name="form1" method="post" action="" novalidate [formGroup]="reflectorForm" (ngSubmit)="onAddclick()">
+    <table border="0" cellspacing="0" cellpadding="6" class="search_list">
+      <tr>
+        <th width="100" height="40"> Reflector IP</th>
+        <td>
+          <input type="text" name="textfield" [(ngModel)]="reflector.reflectorIp" formControlName="reflectorIp" required>
+        </td>
+      </tr>
+      <tr>
+        <th height="40">Protocol</th>
+        <td>
+          <span class="p_r25">
+            <input name="checkbox" type="checkbox" [checked]="fullTWAMP" (change)="fullTWAMP = $event.target.checked"> Full TWAMP </span>
+          <span class="p_r25">
+            <input name="checkbox" type="checkbox" [checked]="lightTWAMP" (change)="lightTWAMP = $event.target.checked"> Light TWAMP </span>
+        </td>
+      </tr>
+      <tr>
+        <th height="40">Reflector Port</th>
+        <!-- <td>
+          <input type="text" name="textfield" [(ngModel)]="reflector.port" formControlName="port" required>
+        </td> -->
+        <td *ngIf="fullTWAMP == false && lightTWAMP == true; else addport">
+          <input type="text" name="textfield" style="background: #dadada" disabled>
+        </td>
+        <ng-template #addport>
+            <td>
+                <input type="text" name="textfield" [(ngModel)]="reflector.port" formControlName="port" required>
+              </td>
+        </ng-template>
+      </tr>
+      <tr>
+        <th width="100" height="40"> Address</th>
+        <td>
+          <input type="text" name="textfield" [(ngModel)]="reflector.address" formControlName="address" required>
+        </td>
+      </tr>
+    </table>
+    <div class="btn_dialog">
+      <button *ngIf="!(fullTWAMP == false && lightTWAMP == true)" type="submit" mat-raised-button class="btn" [ngClass]="{'btn-basics' : reflectorForm.valid, 'disabled' : !reflectorForm.valid}" [disabled]="!reflectorForm.valid">등록</button>
+      <button *ngIf="fullTWAMP == false && lightTWAMP == true" type="submit" mat-raised-button class="btn" [ngClass]="{'btn-basics' : reflectorIpValidation(), 'disabled' : !reflectorIpValidation()}" [disabled]="!reflectorIpValidation()">등록</button>
+      <button type="button" class="btn btn-default" (click)="onNoClick()">취소</button>
+    </div>
+  </form>
+</div>
+<!-- end search -->
+
+<!-- <div class="btn_area">
+  <button type="button" class="btn btn-basics" (click)="onAddclick()">등록</button>
+  <button type="button" class="btn btn-default" (click)="onNoClick()">취소</button>
+</div> -->

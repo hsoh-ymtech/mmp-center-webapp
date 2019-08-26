@@ -1,0 +1,37 @@
+<div class="search_view" style="text-align: center; padding-left: 15px;">
+  <div style="display: inline-block;">
+    <table border="0" cellspacing="0" cellpadding="6" class="search_list">
+      <tr>
+        <th style="width: 100px">
+          검색 시작시간 :
+        </th>
+        <td>
+          <input type="datetime-local" [value]="startTime" (change)="startTime=$event.target.value" />
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div style="display: inline-block;">
+    <table border="0" cellspacing="0" cellpadding="6" class="search_list">
+      <tr>
+        <th style="width: 100px">
+          검색 종료시간 :
+        </th>
+        <td>
+          <input type="datetime-local" [value]="endTime" (change)="endTime=$event.target.value" />
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="btn_dialog">
+    <button type="button" class="btn btn-default" (click)="onTimeSearch()">검색</button>
+  </div>
+</div>
+
+<span *ngIf="graphShow">
+  <iframe id="multintIframe" *ngIf="iframeAllUrl" [src]="iframeAllUrl" frameborder="0" scrolling="yes" style="width: 100%; height: 92.5%"></iframe>
+</span>
+
+<div class="btn_dialog">
+  <button type="button" class="btn btn-default" (click)="onNoClick()">닫기</button>
+</div>

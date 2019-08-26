@@ -1,0 +1,265 @@
+{
+	"measurement": {
+		"properties": {
+			"down_delay": {
+				"properties": {
+					"avg": {
+						"type": "float"
+					},
+					"max": {
+						"type": "float"
+					},
+					"mean": {
+						"type": "float"
+					},
+					"min": {
+						"type": "float"
+					}
+				}
+			},
+			"down_duplicate_packets": {
+				"type": "long"
+			},
+			"down_ipdv": {
+				"properties": {
+					"ipdv": {
+						"type": "float"
+					},
+					"max": {
+						"type": "float"
+					},
+					"mean": {
+						"type": "float"
+					},
+					"min": {
+						"type": "float"
+					}
+				}
+			},
+			"down_lost_packets": {
+				"type": "long"
+			},
+			"down_outoforder_packets": {
+				"type": "long"
+			},
+			"down_pdv": {
+				"properties": {
+					"max": {
+						"type": "float"
+					},
+					"mean": {
+						"type": "float"
+					},
+					"min": {
+						"type": "float"
+					},
+					"pdv": {
+						"type": "float"
+					}
+				}
+			},
+			"dst_host": {
+				"type": "text",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"duplicate_packets": {
+				"type": "long"
+			},
+			"elapsed_time": {
+				"type": "float"
+			},
+			"end_time": {
+				"type": "date"
+			},
+			"inter_delay": {
+				"properties": {
+					"avg": {
+						"type": "float"
+					},
+					"max": {
+						"type": "float"
+					},
+					"mean": {
+						"type": "float"
+					},
+					"min": {
+						"type": "float"
+					}
+				}
+			},
+			"ipdv": {
+				"properties": {
+					"ipdv": {
+						"type": "float"
+					},
+					"max": {
+						"type": "float"
+					},
+					"mean": {
+						"type": "float"
+					},
+					"min": {
+						"type": "float"
+					}
+				}
+			},
+			"latency_delay": {
+				"type": "float"
+			},
+			"lost_packets": {
+				"type": "long"
+			},
+			"measurement_count": {
+				"type": "long"
+			},
+			"measurement_index": {
+				"type": "long"
+			},
+			"outoforder_packets": {
+				"type": "long"
+			},
+			"pdv": {
+				"properties": {
+					"max": {
+						"type": "float"
+					},
+					"mean": {
+						"type": "float"
+					},
+					"min": {
+						"type": "float"
+					},
+					"pdv": {
+						"type": "float"
+					}
+				}
+			},
+			"request_mode": {
+				"type": "text",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"rtt": {
+				"properties": {
+					"avg": {
+						"type": "float"
+					},
+					"max": {
+						"type": "float"
+					},
+					"mean": {
+						"type": "float"
+					},
+					"min": {
+						"type": "float"
+					}
+				}
+			},
+			"session_id": {
+				"type": "text",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"src_host": {
+				"type": "text",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"start_time": {
+				"type": "date"
+			},
+			"test_mode": {
+				"type": "text",
+				"fields": {
+					"keyword": {
+						"type": "keyword",
+						"ignore_above": 256
+					}
+				}
+			},
+			"timestamp": {
+				"type": "long"
+			},
+			"try_count": {
+				"type": "long"
+			},
+			"ttl": {
+				"type": "float"
+			},
+			"up_delay": {
+				"properties": {
+					"avg": {
+						"type": "float"
+					},
+					"max": {
+						"type": "float"
+					},
+					"mean": {
+						"type": "float"
+					},
+					"min": {
+						"type": "float"
+					}
+				}
+			},
+			"up_duplicate_packets": {
+				"type": "long"
+			},
+			"up_ipdv": {
+				"properties": {
+					"ipdv": {
+						"type": "float"
+					},
+					"max": {
+						"type": "float"
+					},
+					"mean": {
+						"type": "float"
+					},
+					"min": {
+						"type": "float"
+					}
+				}
+			},
+			"up_lost_packets": {
+				"type": "long"
+			},
+			"up_outoforder_packets": {
+				"type": "long"
+			},
+			"up_pdv": {
+				"properties": {
+					"max": {
+						"type": "float"
+					},
+					"mean": {
+						"type": "float"
+					},
+					"min": {
+						"type": "float"
+					},
+					"pdv": {
+						"type": "float"
+					}
+				}
+			}
+		}
+	}
+}

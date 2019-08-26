@@ -1,0 +1,14 @@
+{
+	"type" : "visualization",
+	"updated_at": "2018-09-05T08:15:47.781Z",
+	"visualization": {
+		"title": "UP Duplicate Packets-5s",
+		"visState": "{\"title\":\"UP Duplicate Packets-5s\",\"type\":\"line\",\"params\":{\"addLegend\":true,\"addTimeMarker\":false,\"addTooltip\":true,\"categoryAxes\":[{\"id\":\"CategoryAxis-1\",\"labels\":{\"filter\":true,\"rotate\":75,\"show\":true,\"truncate\":100},\"position\":\"bottom\",\"scale\":{\"type\":\"linear\"},\"show\":true,\"style\":{},\"title\":{},\"type\":\"category\"}],\"grid\":{\"categoryLines\":false,\"style\":{\"color\":\"#eee\"},\"valueAxis\":null},\"legendPosition\":\"top\",\"orderBucketsBySum\":false,\"radiusRatio\":51,\"seriesParams\":[{\"data\":{\"id\":\"2\",\"label\":\"UP Duplicate Packets\"},\"drawLinesBetweenPoints\":true,\"mode\":\"normal\",\"show\":true,\"showCircles\":true,\"type\":\"line\",\"valueAxis\":\"ValueAxis-1\"}],\"times\":[],\"type\":\"line\",\"valueAxes\":[{\"id\":\"ValueAxis-1\",\"labels\":{\"filter\":false,\"rotate\":0,\"show\":true,\"truncate\":100},\"name\":\"LeftAxis-1\",\"position\":\"left\",\"scale\":{\"mode\":\"normal\",\"type\":\"linear\"},\"show\":true,\"style\":{},\"title\":{\"text\":\"UP Duplicate Packets\"},\"type\":\"value\"}]},\"aggs\":[{\"id\":\"2\",\"enabled\":true,\"type\":\"avg\",\"schema\":\"metric\",\"params\":{\"field\":\"up_duplicate_packets\",\"customLabel\":\"UP Duplicate Packets\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"start_time\",\"interval\":\"custom\",\"customInterval\":\"5s\",\"min_doc_count\":1,\"extended_bounds\":{},\"customLabel\":\"측정 시간\"}}]}",
+		"uiStateJSON": "{\"spy\":null,\"vis\":{\"legendOpen\":true}}",
+		"description": "",
+		"version": 1,
+		"kibanaSavedObjectMeta": {
+			"searchSourceJSON": "{\"index\":\"39463e30-56a8-11e9-be92-2f083c355e12\",\"filter\":[],\"query\":{\"language\":\"lucene\",\"query\":\"\"}}"
+		}
+	}
+}

@@ -1,0 +1,39 @@
+<!-- title -->
+<div class="title_area">
+  <div class="title">대시보드</div>
+</div>
+<!-- end title -->
+
+<!-- search-->
+<div class="div_map">
+  <agm-map #gm class="agm_map" [latitude]="lat" [longitude]="lng" [zoom]="zoom" [disableDefaultUI]="false"
+  [zoomControl]="false" [styles]="mapstyle">
+
+  <agm-marker *ngFor="let m of markers; let i = index" [latitude]="m.lat"
+      [longitude]="m.lng" [label]="m.label" [iconUrl]="m?.icon" [markerDraggable]="m.draggable"
+      (mouseOver)="markerMouseOver(infoWindow, gm, m)" (mouseOut)="markerMouseout(infoWindow)">
+
+      <agm-info-window [disableAutoPan]="false" #infoWindow>
+        <div class="info_window">
+          <!-- <div>
+            <span class="info_name">장소  :  </span>
+            <span class="info_Boldvalue"> {{m.locale}}</span>
+          </div>
+          <br> -->
+          <div style="padding: 10px">
+            <span class="info_name">Reflector IP : </span>
+            <span class="info_value"> {{m.ip}}</span>
+          </div>
+          <div style="padding: 10px">
+            <span class="info_name">Address : </span>
+            <span class="info_value"> {{m.address}}</span>
+          </div>
+        </div>
+      </agm-info-window>
+
+    </agm-marker>
+
+</agm-map>
+</div>
+<!-- end search -->
+<ngx-spinner bdColor="rgba(51, 51, 51, 0.8)" size="large" color="#fff" type="ball-clip-rotate"></ngx-spinner>

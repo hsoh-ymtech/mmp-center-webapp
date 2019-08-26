@@ -1,0 +1,199 @@
+<!-- title -->
+<div class="title_area">
+  <div class="title">품질 측정</div>
+</div>
+<!-- end title -->
+
+<!-- search-->
+<div class="search_view" style="padding-left: 43px;">
+  <form name="form1" method="post" action="" novalidate [formGroup]="MeasureForm" (ngSubmit)="onMeasureClick()">
+    <table border="0" cellspacing="0" cellpadding="0" class="search_list" style="width: 100%">
+      <tr>
+        <th width="100">Sender IP</th>
+        <td class="left">
+          <!-- <input type="text" name="textfield" [(ngModel)]="measureData.senderIp" formControlName="senderIp" required> -->
+          <select name="select" style="width: 184px;" [(ngModel)]="measureData.senderIp" [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let reflector of reflectors" [value]="reflector.reflectorIp">{{reflector.reflectorIp}}</option>
+          </select>
+        </td>
+        <th width="100">Reflector IP</th>
+        <td>
+          <input type="text" name="textfield" [(ngModel)]="measureData.reflectorIp" formControlName="reflectorIp" placeholder="Reflector IP 입력" required>
+        </td>
+      </tr>
+      <tr>
+        <th>Sender Port</th>
+        <td class="left">
+          <input type="text" name="textfield" [(ngModel)]="measureData.senderPort" formControlName="senderPort" placeholder="Sender Port 입력" required>
+        </td>
+        <th>Reflector Port</th>
+        <td>
+          <input type="text" name="textfield" [(ngModel)]="measureData.reflectorPort" formControlName="reflectorPort" placeholder="Reflector Port 입력" required>
+        </td>
+      </tr>
+      <tr>
+        <th>Rate(packet/sec)</th>
+        <td class="left">
+          <input type="text" name="textfield" [(ngModel)]="measureData.sendCount" formControlName="sendCount" placeholder="숫자 입력" required>
+          <span style="color: red; font-size: 0.9em;">
+              최소:1,최대:10000
+          </span>
+        </td>
+        <th>측정시간</th>
+        <td>
+          <select name="select" style="width: 184px;" [(ngModel)]="rpcSelected" [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let rpc of rpCount" [value]="rpc.value">{{rpc.type}}</option>
+          </select>
+        </td>
+        <!-- <td colspan="2">
+          <input type="text" name="textfield" [(ngModel)]="measureData.repeatCount" formControlName="repeatCount" required>
+        </td> -->
+      </tr>
+      <tr>
+        <!-- <th>Duration</th>
+        <td class="left">
+          <input type="number" name="textfield" value="1000" [(ngModel)]="measureData.duration" formControlName="duration" required>
+        </td> -->
+        <th>측정모드</th>
+        <td>
+          <select name="select" style="width: 184px;" [(ngModel)]="ptcSelected" [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let ptc of protocol" [value]="ptc.id">{{ptc.type}}</option>
+          </select>
+        </td>
+        <th>Time out</th>
+        <td>
+          <input type="text" name="textfield" [(ngModel)]="measureData.timeout" formControlName="timeout" placeholder="숫자 입력" required>
+          <span style="color: red; font-size: 0.9em;">
+            최소:1,최대:300(s)
+          </span>
+        </td>
+      </tr>
+      <tr [hidden]="!((measureData.measureMode == 'authorized' || measureData.measureMode == 'encryption') && ptcSelected == '1')">
+        <th>ID</th>
+        <td class="left">
+          <input type="text" name="textfield" [(ngModel)]="measureData.id" formControlName="id" placeholder="4자 이상" appSomeAsyncValidator>
+        </td>
+        <th>Password</th>
+        <td>
+          <input type="text" name="textfield" [(ngModel)]="measureData.password" formControlName="password" placeholder="4자 이상" appSomeAsyncValidator>
+        </td>
+      </tr>
+      <tr *ngIf="ptcSelected == '1'">
+        <td colspan="2">
+          <mat-radio-group name="matRadioBtn" [(ngModel)]="measureData.measureMode" (change)="this.measureModeChange(measureData.measureMode)" [ngModelOptions]="{standalone: true}">
+            <mat-radio-button class="radioBtn" value="unauthorized">무인증</mat-radio-button>
+            <mat-radio-button class="radioBtn" value="authorized">인증</mat-radio-button>
+            <mat-radio-button class="radioBtn" value="encryption">암호화</mat-radio-button>
+          </mat-radio-group>
+          <!-- <mat-checkbox style="margin-right: 10px;" [(ngModel)]="isUnauthorized" [ngModelOptions]="{standalone: true}">무인증</mat-checkbox>
+          <mat-checkbox style="margin-right: 10px;" [(ngModel)]="isAuthorized" [ngModelOptions]="{standalone: true}">인증</mat-checkbox>
+          <mat-checkbox style="margin-right: 10px;" [(ngModel)]="isEncryption" [ngModelOptions]="{standalone: true}">암호화</mat-checkbox> -->
+        </td>
+      </tr>
+    </table>
+    <button type="submit" class="btn" style="position: relative; left: 43%;" mat-raised-button [ngClass]="{'btn-primary' : MeasureForm.valid, 'disabled' : !MeasureForm.valid || btnDisabled}" [disabled]="!MeasureForm.valid || btnDisabled">측정</button>
+  </form>
+  <span class="quality_progress_bar" *ngIf="btnDisabled">
+    <div class="quality_progress_bar">
+      <mat-progress-bar class="green-progress" mode="indeterminate" style="top: 11px;"></mat-progress-bar>
+    </div>
+    <div class="quality_progress_bar" style="top: 5px;margin-bottom: 10px;">
+        품질 측정 중 ...
+    </div>
+  </span>
+</div>
+<!-- end search -->
+
+<!-- 품질측정 -->
+<span *ngIf="listIsExist; else empty">
+  <!-- table -->
+  <div class="table_header">
+    <div class="th_page">
+      <b>총
+        <span>{{count}}</span> 건</b> [{{pg}}/{{allpage}}페이지]</div>
+  </div>
+
+  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_tl">
+    <tr>
+      <th width="13%">측정 시작시간</th>
+      <th width="10%">Sender IP</th>
+      <th width="10%">Reflector IP</th>
+      <th width="11%">Send Count</th>
+      <th width="11%">Repeat Count</th>
+      <th width="11%">Sender Port</th>
+      <th width="11%">Reflector Port</th>
+      <th width="8%">Protocol</th>
+      <th width="8%">측정모드</th>
+      <!-- <th width="7%">pid</th>
+      <th>비고</th> -->
+    </tr>
+    <tr *ngFor="let currentStatus of currentStatusData">
+      <td>{{currentStatus.startTime}}</td>
+      <td>{{currentStatus.senderIp}}</td>
+      <td>{{currentStatus.reflectorIp}}</td>
+      <td>{{currentStatus.sendCount}}</td>
+      <!-- <td *ngIf="currentStatus.repeatCount == -1">무한 반복</td>
+      <td *ngIf="currentStatus.repeatCount != -1">{{currentStatus.repeatCount}}</td> -->
+      <td *ngIf="currentStatus.repeatCount == 1">1초</td>
+      <td *ngIf="currentStatus.repeatCount == 10">10초</td>
+      <td *ngIf="currentStatus.repeatCount == 60">1분</td>
+      <td *ngIf="currentStatus.repeatCount == 300">5분</td>
+      <td *ngIf="currentStatus.repeatCount == 600">10분</td>
+      <td *ngIf="currentStatus.repeatCount == 3600">1시간</td>
+      <td *ngIf="currentStatus.repeatCount == 7200">2시간</td>
+      <td *ngIf="currentStatus.repeatCount != 1 && currentStatus.repeatCount != 10 && currentStatus.repeatCount != 60 && currentStatus.repeatCount != 300 && currentStatus.repeatCount != 600 && currentStatus.repeatCount != 3600 && currentStatus.repeatCount != 7200">{{currentStatus.repeatCount}}</td>
+      <td>{{currentStatus.senderPort}}</td>
+      <td *ngIf="currentStatus.protocol !== 'ICMP'">{{currentStatus.reflectorPort}}</td>
+      <td *ngIf="currentStatus.protocol === 'ICMP'"></td>
+      <td>{{currentStatus.protocol}}</td>
+      <td *ngIf="currentStatus.measureMode === 'unauthorized'">무인증</td>
+      <td *ngIf="currentStatus.measureMode === 'authorized'">인증</td>
+      <td *ngIf="currentStatus.measureMode === 'encryption'">암호화</td>
+      <td *ngIf="currentStatus.measureMode === ''">.</td>
+      <!-- <td>{{currentStatus.pid}}</td>
+      <td>
+        <a type="button" class=" btn-sm btn-primary" (click)="onStopClick(currentStatus)">중지</a>
+      </td> -->
+    </tr>
+  </table>
+
+  <!-- pageing -->
+  <div class="pagin_area">
+    <div class="paging">
+      <span *ngIf="pg > block && pg != 1">
+        <a (click)="pageMove(0)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_first.png" border="0" align="absmiddle" alt="back">
+        </a>
+        <a (click)="pageMove(pg - 2)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_prev.png" border="0" alt="back">
+        </a>
+      </span>
+      <span *ngFor="let index of paginationIndex">
+        <span *ngIf="pg == index; else notvalid">
+          <span (click)="pageMove(index - 1)" class="r">{{index}}</span>
+        </span>
+        <ng-template #notvalid>
+          <span style="cursor:pointer;" *ngIf="pg >= index || index <= allpage">
+            <a (click)="pageMove(index - 1)">{{index}}</a>
+          </span>
+        </ng-template>
+      </span>
+      <span *ngIf="endpage < allpage">
+        <a (click)="pageMove(pg)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_next.png" border="0" alt="next">
+        </a>
+        <a (click)="pageMove(allpage - 1)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_last.png" border="0" alt="next">
+        </a>
+      </span>
+    </div>
+  </div>
+  <!--end pageing-->
+
+  <!-- end table -->
+</span>
+<ng-template #empty>
+  <div class="div_quality">
+    <div class="qual_text">품질 측정을 진행해 주세요.</div>
+  </div>
+</ng-template>

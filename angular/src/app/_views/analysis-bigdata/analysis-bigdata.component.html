@@ -1,0 +1,203 @@
+<!-- title -->
+<div class="title_area">
+  <div class="title">빅데이터 분석</div>
+</div>
+<!-- end title -->
+
+<!-- search-->
+<div class="search_view">
+  <form name="form1" method="post" action="" novalidate [formGroup]="qualityHistoryForm" (ngSubmit)="onAnalysisClick()">
+    <table border="0" cellspacing="0" cellpadding="6" class="search_analysis">
+      <tr>
+        <th>Sender IP</th>
+        <td *ngIf="selectAll" class="left" style="padding-right: 20px;">
+          <input type="text" name="textfield" class="" style="background: #dadada" disabled>
+        </td>
+        <td [hidden]="selectAll" class="left" style="padding-right: 20px;">
+            <input type="text" name="textfield" class="" [(ngModel)]="inputAnalysisItem.senderIp" placeholder="Sender IP 입력" formControlName="senderIp">
+        </td>
+        <th>Reflector IP</th>
+        <td *ngIf="selectAll">
+          <input type="text" name="textfield" class="" style="background: #dadada" disabled>
+        </td>
+        <td [hidden]="selectAll">
+          <input type="text" name="textfield" class="" [(ngModel)]="inputAnalysisItem.reflectorIp" placeholder="Reflector IP 입력" formControlName="reflectorIp">
+        </td>
+        <th colspan="2" style="background: white;">
+          <b class="checkboxb">
+            전체선택
+              <input type="checkbox" name="checkbox" class="checkbox" [checked]="selectAll" (change)="isCheck = $event.target.checked; selectAllCheckBoxClick($event.target.checked)">
+          </b>
+        </th>
+        <!-- <td style="padding-right: 30px;">
+            <input type="checkbox" name="checkbox" [checked]="selectAll" (change)="isCheck = $event.target.checked; selectAllCheckBoxClick($event.target.checked)">
+        </td> -->
+      </tr>
+      <tr>
+        <th>측정 시작시간</th>
+        <td>
+            <input placeholder="측정 시작 시간 입력"
+            [(ngModel)]="inputStartTime" [ngModelOptions]="{standalone: true}"
+            [owlDateTimeTrigger]="dst" [owlDateTime]="dst">
+            <owl-date-time #dst></owl-date-time>
+        </td>
+        <th>
+          측정 종료시간
+        </th>
+        <td colspan="2">
+            <input placeholder="측정 종료 시간 입력"
+            [(ngModel)]="inputEndTime" [ngModelOptions]="{standalone: true}"
+            [owlDateTimeTrigger]="det" [owlDateTime]="det">
+            <owl-date-time #det></owl-date-time>
+        </td>
+      </tr>
+      <tr>
+        <th style="background: url(app/_views/_images/icon_white.png); padding: 0" colspan="8">
+          <div class="middle_line">
+            임계치 설정
+          </div>
+        </th>
+      </tr>
+      <tr>
+        <th>Lost Packets</th>
+        <td>
+          <input type="text" name="textfield" class="threshold" [(ngModel)]="inputAnalysisItem.lostPacketTH" [ngModelOptions]="{standalone: true}">
+        </td>
+        <th>Duplicate Packets</th>
+        <td>
+          <input type="text" name="textfield" class="threshold" [(ngModel)]="inputAnalysisItem.duplicatePacketTH" [ngModelOptions]="{standalone: true}">
+        </td>
+        <th>Out Of Order Packets</th>
+        <td>
+          <input type="text" name="textfield" class="threshold" [(ngModel)]="inputAnalysisItem.outoforderPacketTH" [ngModelOptions]="{standalone: true}">
+        </td>
+      </tr>
+      <tr>
+        <th>PDV</th>
+        <td>
+          <input type="text" name="textfield" class="threshold" [(ngModel)]="inputAnalysisItem.pdvTH" [ngModelOptions]="{standalone: true}">
+        </td>
+        <th>IPDV</th>
+        <td>
+          <input type="text" name="textfield" class="threshold" [(ngModel)]="inputAnalysisItem.ipdvTH" [ngModelOptions]="{standalone: true}">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="8">
+          <button type="submit" class="btn" style="position: relative; left: 50%; transform: translateX(-55%);" 
+            mat-raised-button [ngClass]="{'btn-primary' : qualityHistoryForm.valid, 'disabled' : !qualityHistoryForm.valid}"
+            [disabled]="!qualityHistoryForm.valid">분석</button>
+        </td>
+      </tr>
+      <!-- <tr *ngIf="isAnalyzed">
+        <td>
+          <button type="button" class="btn btn-primary" mat-raised-button (click)="onAllListClick()">전체 목록 보기</button>
+        </td>
+      </tr> -->
+    </table>
+  </form>
+</div>
+<!-- end search -->
+
+<span *ngIf="listIsExist && !isAnalyzing && isAnalyzed">
+  <!-- table -->
+  <div class="table_header">
+    <div class="th_page">
+      <b>총
+        <span>{{count}}</span> 건</b> [{{pg}}/{{allpage}}페이지]
+        <b style="float: right;">소요 시간: <span>{{achiveTime}}</span>초</b></div>
+  </div>
+
+  <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_tl">
+    <tr>
+      <th>측정 시작시간</th>
+      <th>측정 완료시간</th>
+      <th>Sender IP</th>
+      <th>Reflector IP</th>
+      <th>Lost Packets</th>
+      <th>Duplicate Packets</th>
+      <th>Out of Order Packet</th>
+      <th>PDV</th>
+      <th>IPDV</th>
+      <!-- <th>비고</th> -->
+    </tr>
+    <tr *ngFor="let data of analysisBigdata">
+      <td>{{data._source.start_time.replace('T', ' ').replace('+0000', '')}}</td>
+      <td>{{data._source.end_time.replace('T', ' ').replace('+0000', '')}}</td>
+      <td>{{data._source.src_host}}</td>
+      <td>{{data._source.dst_host}}</td>
+      <td>{{data._source.up_lost_packets + data._source.down_lost_packets}}</td>
+      <td>{{data._source.up_duplicate_packets + data._source.down_duplicate_packets}}</td>
+      <td>{{data._source.up_outoforder_packets + data._source.down_outoforder_packets}}</td>
+      <td>{{data._source.pdv.pdv}}</td>
+      <td>{{data._source.ipdv.ipdv}}</td>
+    </tr>
+  </table>
+
+  <!-- end table -->
+
+  <!-- pageing -->
+  <div class="pagin_area">
+    <div class="paging">
+      <span *ngIf="pg > block && pg != 1">
+        <a (click)="pageMove(0)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_first.png" border="0" align="absmiddle" alt="back">
+        </a>
+        <a (click)="pageMove(pg - 2)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_prev.png" border="0" alt="back">
+        </a>
+      </span>
+      <span *ngFor="let index of paginationIndex">
+        <span *ngIf="pg == index; else notvalid">
+          <span (click)="pageMove(index - 1)" class="r">{{index}}</span>
+        </span>
+        <ng-template #notvalid>
+          <span style="cursor:pointer;" *ngIf="pg >= index || index <= allpage">
+            <a (click)="pageMove(index - 1)">{{index}}</a>
+          </span>
+        </ng-template>
+      </span>
+      <span *ngIf="endpage < allpage">
+        <a (click)="pageMove(pg)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_next.png" border="0" alt="next">
+        </a>
+        <a (click)="pageMove(allpage - 1)" class="p" style="cursor:pointer;">
+          <img src="app/_views/_images/btn_page_last.png" border="0" alt="next">
+        </a>
+      </span>
+    </div>
+  </div>
+  <!--end pageing-->
+</span>
+<span *ngIf="!listIsExist && !isAnalyzing && !isAnalyzed">
+<!-- <span> -->
+  <div class="div_quality">
+    <div class="analysis_progress_bar">빅데이터 분석을 진행해 주세요.</div>
+  </div>
+</span>
+
+<span *ngIf="!listIsExist && isAnalyzing && !isAnalyzed">
+<!-- <span> -->
+  <div class="div_quality">
+    <div class="analysis_progress_bar">
+      <mat-progress-bar class="green-progress" mode="indeterminate" style="top: -10px;"></mat-progress-bar>
+    </div>
+    <div class="analysis_progress_bar" style="top: 5px;">
+        분석중 입니다 ...
+      </div>
+  </div>
+</span>
+
+<span *ngIf="!listIsExist && !isAnalyzing && isAnalyzed">
+<!-- <span> -->
+  <div class="div_quality">
+    <div class="qual_text">분석 조건에 해당하는 값이 없습니다.</div>
+  </div>
+</span>
+
+<!-- 그래프 -->
+<!-- <div class="div_quality">
+  <p>
+    <img src="app/_views/_images/img_sample.gif" border="0">
+  </p>
+</div> -->

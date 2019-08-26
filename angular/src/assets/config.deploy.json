@@ -1,0 +1,19 @@
+{
+  "env": {
+    "name": "deploy"
+  },
+  "apiServer": {
+    "url": "http://210.120.248.53:8091"
+  },
+  "pagination": {
+    "size": 10,
+    "block": 10
+  },
+  "kibana": {
+    "version": "6.4.0"
+  },
+  "login": {
+    "id": "admin",
+    "password": "admin"
+  }
+}

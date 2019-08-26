@@ -1,0 +1,70 @@
+<!-- header -->
+<div id="header" *ngIf="isLogin">
+  <div class="header_area">
+    <h1 class="Logo">
+      <a href="#">
+        <img src="logo.png" alt="LGU+" border="0">
+      </a>
+    </h1>
+
+    <!-- menu -->
+    <div id="mNaviG">
+      <ul>
+        <li>
+          <a [routerLink]="['/dashboard']" [ngClass]="{'rollover': this.menuName == 'dashboard' || this.menuName == ''}">대시보드</a>
+        </li>
+        <li>
+          <a [routerLink]="['/qualityMeasurement']" [ngClass]="{'rollover': this.menuName == 'qualityMeasurement'}">품질 측정</a>
+        </li>
+        <li>
+          <a [routerLink]="['/qualityHistory']" [ngClass]="{'rollover': this.menuName == 'qualityHistory'}">품질 이력</a>
+        </li>
+        <li>
+          <a [routerLink]="['/analysisBigdata']" [ngClass]="{'rollover': this.menuName == 'analysisBigdata'}">빅데이터 분석</a>
+        </li>
+        <li>
+          <a [routerLink]="['/obstacle']" [ngClass]="{'rollover': this.menuName == 'obstacle'}">장애 이력</a>
+        </li>
+        <li>
+          <a [routerLink]="['/reflectorMgmt']" [ngClass]="{'rollover': this.menuName == 'reflectorMgmt'}">Reflector 관리</a>
+        </li>
+        <li>
+          <a [routerLink]="['/config']" [ngClass]="{'rollover': this.menuName == 'config'}">설정</a>
+        </li>
+      </ul>
+    </div>
+    <!-- END menu-->
+
+    
+  </div>
+</div>
+<!-- END header-->
+<div id="container">
+  <!-- cont -->
+  <div id="cont">
+    
+    <!-- sub_area -->
+    <div id="sub_area">
+      <div class="header_right" *ngIf="isLogin">
+        <span *ngIf="this.fullmeshisRunning" class="htex_on" style="margin-right: 18px">Fullmesh 동작중({{successCount}}/{{allCount}})</span>
+        <span *ngIf="!this.fullmeshisRunning" class="htex_off" style="margin-right: 18px">Fullmesh 동작정지</span>
+        <span class="htex_name">사용자님</span>
+        <a href="" class="btn_logout" (click)="logout()">Logout</a>
+      </div>
+      <router-outlet (activate)="selectMenu()"></router-outlet>
+    </div>
+  </div>
+</div>
+
+<span *ngIf="this.router.url != '/login'">
+  <!--footer-->
+  <div id="footer">
+    <div id="fGroup">
+      <p class="f_left">
+        <span class="f_left_l">네트워크 품질관리 플랫폼</span>
+      </p>
+      <p class="f_right">Copyright(c) YMTECH Corporation. All rights reserved. </p>
+    </div>
+  </div>
+  <!--END footer-->
+</span>

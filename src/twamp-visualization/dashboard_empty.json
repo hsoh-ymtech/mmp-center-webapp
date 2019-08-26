@@ -1,0 +1,16 @@
+{
+	"type": "dashboard",
+	"updated_at": "2018-08-14T07:28:51.862Z",
+	"dashboard": {
+		"title": "twamp-empty",
+		"hits": 0,
+		"description": "",
+		"panelsJSON": "[]",
+		"optionsJSON": "{\"darkTheme\":false,\"useMargins\":true,\"hidePanelTitles\":true}",
+		"version": 1,
+		"timeRestore": false,
+		"kibanaSavedObjectMeta": {
+			"searchSourceJSON": "{\"query\":{\"query\":\"\",\"language\":\"lucene\"},\"filter\":[],\"highlightAll\":true,\"version\":true}"
+		}
+	}
+}

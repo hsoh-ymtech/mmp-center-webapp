@@ -1,0 +1,26 @@
+{
+  "query": {
+    "bool": {
+      "must": [{
+        "bool": {
+          "should": [{
+            "bool": {
+              "must": [
+                {
+                  "range": {
+                    "timestamp": {
+                      "gte": 1557997700,
+                      "lte": 1557997750
+                    }
+                  }
+                }
+              ]
+            }
+          }]
+        }
+      }]
+    }
+  },
+  "from": 0,
+  "size": 10
+}
