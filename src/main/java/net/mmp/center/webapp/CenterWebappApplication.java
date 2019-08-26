@@ -28,6 +28,7 @@ import net.mmp.center.webapp.thread.FullmeshThreadPool;
 import net.mmp.center.webapp.util.ProcessRun;
 import net.mmp.center.webapp.util.Util;
 
+@ServletComponentScan
 @SpringBootApplication
 @EnableZuulProxy
 @EnableScheduling
