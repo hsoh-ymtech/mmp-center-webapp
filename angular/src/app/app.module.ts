@@ -101,7 +101,7 @@ import { LesionHistoryService } from './_services/lesionHistory/lesion-history.s
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyApKp8cF7q8closGar0zM5jNSM26JqEKds'
+      apiKey: 'AIzaSyC01VgsnnjkT1eVx4e-F1J5S9rrOYlrRPo'
     }),
     routing
   ],
