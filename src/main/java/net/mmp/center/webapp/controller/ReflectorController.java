@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -98,14 +99,10 @@ public class ReflectorController {
 	 * @return Reflectors Data
 	 */
 	@RequestMapping(value = "/api/v1/reflectors", method = RequestMethod.GET)
-	public ResponseEntity<List<ReflectorInfo>> reflectorList(final BindingResult result, HttpServletResponse response) {
-		if (result.hasErrors()) {
-			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
-		} else {
-            List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
-
-			return new ResponseEntity<List<ReflectorInfo>>(results, HttpStatus.OK);
-		}
+	public ResponseEntity<List<ReflectorInfo>> reflectorList(HttpServletResponse response) {
+        //List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
+		List<ReflectorInfo> results = new ArrayList<ReflectorInfo>();
+		return new ResponseEntity<List<ReflectorInfo>>(results, HttpStatus.OK);
 	}
 
 	/**
@@ -151,8 +148,8 @@ public class ReflectorController {
 	/**
 	 * Reflector 삭제
 	 * 
-	 * @param reflectorInfoDTO
-	 *            Reflector DTO
+	 * @param reflectorId
+	 *            Reflector Id
 	 * @return 삭제 결과
 	 */
 	@RequestMapping(value = "/reflector/{reflectorId}", method = RequestMethod.DELETE)
