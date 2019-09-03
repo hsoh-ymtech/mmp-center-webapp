@@ -113,30 +113,30 @@ public class ReflectorController {
      *
      * @return Reflectors Data
      */
-    class ReturnValue {
+    public class ReflectorShortInfo {
         String ipAddress;
         int port;
-        public ReturnValue(String ipAddress,int port) {
+        public ReflectorShortInfo(String ipAddress, int port) {
             this.ipAddress = ipAddress;
             this.port = port;
         }
     }
     @RequestMapping(value = "/api/v1/activeReflectors", method = RequestMethod.GET)
-    public ResponseEntity<List<ReturnValue>> liveReflectorList(HttpServletRequest request,HttpServletResponse response) {
+    public ResponseEntity<List<ReflectorShortInfo>> activeReflectorList(HttpServletRequest request, HttpServletResponse response) {
 
-        List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
-        if(results == null) {
-            results = new ArrayList<ReflectorInfo>();
+        List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
+        if(list == null) {
+            list = new ArrayList<ReflectorInfo>();
         }
 
-        results= results.stream().filter(result -> result.getReflectorIp()!= request.getRemoteAddr())
+        list= list.stream().filter(result -> result.getReflectorIp()!= request.getRemoteAddr())
                     .collect(Collectors.toList());
-        List<ReturnValue> retvals = new ArrayList<ReturnValue>();
+        List<ReflectorShortInfo> retvals = new ArrayList<ReflectorShortInfo>();
 
-        for (ReflectorInfo info : results) {
-            retvals.add(new ReturnValue(info.getReflectorIp(), info.getPort()));
+        for (ReflectorInfo info : list) {
+            retvals.add(new ReflectorShortInfo(info.getReflectorIp(), info.getPort()));
         }
-        return new ResponseEntity<List<ReturnValue>>(retvals, HttpStatus.OK);
+        return new ResponseEntity<List<ReflectorShortInfo>>(retvals, HttpStatus.OK);
     }
 
 	/**
