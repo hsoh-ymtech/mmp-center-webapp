@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -113,7 +114,7 @@ public class ReflectorController {
      *
      * @return Reflectors Data
      */
-    public class ReflectorShortInfo {
+    public class ReflectorShortInfo implements Serializable {
         String ipAddress;
         int port;
         public ReflectorShortInfo(String ipAddress, int port) {
