@@ -27,8 +27,15 @@ public interface ReflectorService {
 	 * @return
 	 * 										Reflectors Data
 	 */
-	PageImpl<ReflectorInfoDTO> reflectorsList(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO);
-	
+	PageImpl<ReflectorInfoDTO> reflectorsListPageable(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO);
+
+	/**
+	 * Reflector 조회
+	 * @return
+	 * 										Reflectors Data
+	 */
+	JSONObject reflectorsList();
+
 	/**
 	 * Reflector - IP 리스트 조회
 	 * @param request

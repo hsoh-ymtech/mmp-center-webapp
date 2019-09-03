@@ -83,7 +83,7 @@ public class ReflectorServiceImpl implements ReflectorService {
 		return RESULT_OK;
 	}
 
-	public PageImpl<ReflectorInfoDTO> reflectorsList(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO) {
+	public PageImpl<ReflectorInfoDTO> reflectorsListPageable(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO) {
 		
 		PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 
@@ -118,6 +118,22 @@ public class ReflectorServiceImpl implements ReflectorService {
 		logger.info("Reflector 조회 성공");
 		return resultConvert;
 		
+	}
+
+	@SuppressWarnings("unchecked")
+	public JSONObject reflectorsList() {
+		List<ReflectorInfo> reflData = reflectorInfoRepository.findAll();
+		JSONObject result = new JSONObject();
+		List<String> arr = new ArrayList<>();
+		if (reflData.isEmpty()) {
+			throw new NotFoundException("Reflector Data가 없습니다.");
+		} else {
+			for (int a = 0; a < reflData.size(); a++) {
+				arr.add(reflData.get(a).getReflectorIp() + ":" + reflData.get(a).getPort());
+			}
+		}
+		result.put("result", arr);
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
