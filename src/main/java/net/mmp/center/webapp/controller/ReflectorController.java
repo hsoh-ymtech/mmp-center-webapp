@@ -108,6 +108,17 @@ public class ReflectorController {
 	}
 
 	/**
+	 * Reflector 조회
+	 *
+	 * @return Reflectors Data
+	 */
+	@RequestMapping(value = "/api/v1/checkip", method = RequestMethod.GET)
+	public ResponseEntity<String> checkIpAddress(HttpServletRequest request, HttpServletResponse response) {
+		String result = request.getRemoteAddr();
+		return new ResponseEntity<String>(result, HttpStatus.OK);
+	}
+
+	/**
 	 * Reflector List - IP 조회
 	 * 
 	 * @return Reflectors Data
