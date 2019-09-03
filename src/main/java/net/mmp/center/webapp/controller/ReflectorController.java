@@ -108,9 +108,9 @@ public class ReflectorController {
 	}
 
 	/**
-	 * Reflector 조회
+	 * Remote Ip Address 조회
 	 *
-	 * @return Reflectors Data
+	 * @return Remote Ip Address
 	 */
 	@RequestMapping(value = "/api/v1/checkip", method = RequestMethod.GET)
 	public ResponseEntity<String> checkIpAddress(HttpServletRequest request, HttpServletResponse response) {
