@@ -478,7 +478,7 @@
 					<user>mmpuser</user>
 					<password>mmppass</password>
 					<locations>
-						<location>classpath:db/migration</location>
+						<location>classpath:db/migrations</location>
 					</locations>
 				</configuration>
 			</plugin>
