@@ -125,16 +125,16 @@ public class ReflectorController {
     public ResponseEntity<List<ReturnValue>> liveReflectorList(HttpServletRequest request,HttpServletResponse response) {
 
         List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
-        List<ReturnValue> retvals = null;
         if(results == null) {
             results = new ArrayList<ReflectorInfo>();
-            retvals = new ArrayList<ReturnValue>();
-        } else {
-            results= results.stream().filter(result -> result.getReflectorIp()!= request.getRemoteAddr())
+        }
+
+        results= results.stream().filter(result -> result.getReflectorIp()!= request.getRemoteAddr())
                     .collect(Collectors.toList());
-            for (ReflectorInfo info : results) {
-                retvals.add(new ReturnValue(info.getReflectorIp(), info.getPort()));
-            }
+        List<ReturnValue> retvals = new ArrayList<ReturnValue>();
+
+        for (ReflectorInfo info : results) {
+            retvals.add(new ReturnValue(info.getReflectorIp(), info.getPort()));
         }
         return new ResponseEntity<List<ReturnValue>>(retvals, HttpStatus.OK);
     }
