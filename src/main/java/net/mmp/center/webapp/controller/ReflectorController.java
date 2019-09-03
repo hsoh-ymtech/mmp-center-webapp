@@ -113,16 +113,30 @@ public class ReflectorController {
      *
      * @return Reflectors Data
      */
+    class ReturnValue {
+        String ipAddress;
+        int port;
+        public ReturnValue(String ipAddress,int port) {
+            this.ipAddress = ipAddress;
+            this.port = port;
+        }
+    }
     @RequestMapping(value = "/api/v1/activeReflectors", method = RequestMethod.GET)
-    public ResponseEntity<List<ReflectorInfo>> liveReflectorList(HttpServletRequest request,HttpServletResponse response) {
+    public ResponseEntity<List<ReturnValue>> liveReflectorList(HttpServletRequest request,HttpServletResponse response) {
+
         List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
+        List<ReturnValue> retvals = null;
         if(results == null) {
             results = new ArrayList<ReflectorInfo>();
+            retvals = new ArrayList<ReturnValue>();
         } else {
             results= results.stream().filter(result -> result.getReflectorIp()!= request.getRemoteAddr())
                     .collect(Collectors.toList());
+            for (ReflectorInfo info : results) {
+                retvals.add(new ReturnValue(info.getReflectorIp(), info.getPort()));
+            }
         }
-        return new ResponseEntity<List<ReflectorInfo>>(results, HttpStatus.OK);
+        return new ResponseEntity<List<ReturnValue>>(retvals, HttpStatus.OK);
     }
 
 	/**
