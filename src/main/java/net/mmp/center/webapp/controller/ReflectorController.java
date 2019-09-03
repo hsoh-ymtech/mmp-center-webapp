@@ -100,8 +100,10 @@ public class ReflectorController {
 	 */
 	@RequestMapping(value = "/api/v1/reflectors", method = RequestMethod.GET)
 	public ResponseEntity<List<ReflectorInfo>> reflectorList(HttpServletResponse response) {
-        //List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
-		List<ReflectorInfo> results = new ArrayList<ReflectorInfo>();
+        List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
+		if(results == null) {
+			results = new ArrayList<ReflectorInfo>();
+		}
 		return new ResponseEntity<List<ReflectorInfo>>(results, HttpStatus.OK);
 	}
 
