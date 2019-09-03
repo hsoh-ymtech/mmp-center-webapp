@@ -3,11 +3,14 @@ package net.mmp.center.webapp.service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.mmp.center.webapp.domain.ReflectorInfo;
 import org.json.simple.JSONObject;
 import net.mmp.center.webapp.dto.ReflectorInfoDTO;
 import net.mmp.center.webapp.dto.ReflectorInfoDTO.ReflectorInfoSearchDTO;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface ReflectorService {
 	
@@ -34,7 +37,7 @@ public interface ReflectorService {
 	 * @return
 	 * 										Reflectors Data
 	 */
-	JSONObject reflectorsList();
+	List<ReflectorInfo> reflectorsList();
 
 	/**
 	 * Reflector - IP 리스트 조회

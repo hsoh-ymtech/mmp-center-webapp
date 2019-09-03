@@ -121,19 +121,9 @@ public class ReflectorServiceImpl implements ReflectorService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public JSONObject reflectorsList() {
+	public List<ReflectorInfo> reflectorsList() {
 		List<ReflectorInfo> reflData = reflectorInfoRepository.findAll();
-		JSONObject result = new JSONObject();
-		List<String> arr = new ArrayList<>();
-		if (reflData.isEmpty()) {
-			throw new NotFoundException("Reflector Data가 없습니다.");
-		} else {
-			for (int a = 0; a < reflData.size(); a++) {
-				arr.add(reflData.get(a).getReflectorIp() + ":" + reflData.get(a).getPort());
-			}
-		}
-		result.put("result", arr);
-		return result;
+		return reflData;
 	}
 
 	@SuppressWarnings("unchecked")

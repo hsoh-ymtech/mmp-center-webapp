@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import net.mmp.center.webapp.domain.ReflectorInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -32,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class ReflectorController {
@@ -95,18 +98,13 @@ public class ReflectorController {
 	 * @return Reflectors Data
 	 */
 	@RequestMapping(value = "/api/v1/reflectors", method = RequestMethod.GET)
-	public ResponseEntity<ResponseData> reflectorList(@ModelAttribute @Valid ReflectorInfoSearchDTO reflectorInfoSearchDTO, final BindingResult result, HttpServletResponse response) {
-		ResponseData responseData = new ResponseData();
-
+	public ResponseEntity<List<ReflectorInfo>> reflectorList(final BindingResult result, HttpServletResponse response) {
 		if (result.hasErrors()) {
 			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
 		} else {
-			JSONObject resultObj = reflectormanagementService.reflectorsList();
-			responseData.setType(1);
-			responseData.setMessage(message.get("responseData.message.search.pageable.ok", response));
-			responseData.setResult(resultObj);
+            List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
 
-			return new ResponseEntity<ResponseData>(responseData, HttpStatus.OK);
+			return new ResponseEntity<List<ReflectorInfo>>(results, HttpStatus.OK);
 		}
 	}
 
