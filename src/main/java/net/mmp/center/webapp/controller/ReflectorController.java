@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import net.mmp.center.webapp.domain.ReflectorInfo;
+import net.mmp.center.webapp.dto.ReflectorShortInfoDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -114,16 +115,8 @@ public class ReflectorController {
      *
      * @return Reflectors Data
      */
-    public class ReflectorShortInfo implements Serializable {
-        String ipAddress;
-        int port;
-        public ReflectorShortInfo(String ipAddress, int port) {
-            this.ipAddress = ipAddress;
-            this.port = port;
-        }
-    }
     @RequestMapping(value = "/api/v1/activeReflectors", method = RequestMethod.GET)
-    public ResponseEntity<List<ReflectorShortInfo>> activeReflectorList(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<List<ReflectorShortInfoDTO>> activeReflectorList(HttpServletRequest request, HttpServletResponse response) {
 
         List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
         if(list == null) {
@@ -132,12 +125,12 @@ public class ReflectorController {
 
         list= list.stream().filter(result -> result.getReflectorIp()!= request.getRemoteAddr())
                     .collect(Collectors.toList());
-        List<ReflectorShortInfo> retvals = new ArrayList<ReflectorShortInfo>();
+        List<ReflectorShortInfoDTO> retvals = new ArrayList<ReflectorShortInfoDTO>();
 
         for (ReflectorInfo info : list) {
-            retvals.add(new ReflectorShortInfo(info.getReflectorIp(), info.getPort()));
+            retvals.add(new ReflectorShortInfoDTO(info.getReflectorIp(), info.getPort()));
         }
-        return new ResponseEntity<List<ReflectorShortInfo>>(retvals, HttpStatus.OK);
+        return new ResponseEntity<List<ReflectorShortInfoDTO>>(retvals, HttpStatus.OK);
     }
 
 	/**
