@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ReflectorController {
@@ -99,13 +100,30 @@ public class ReflectorController {
 	 * @return Reflectors Data
 	 */
 	@RequestMapping(value = "/api/v1/reflectors", method = RequestMethod.GET)
-	public ResponseEntity<List<ReflectorInfo>> reflectorList(HttpServletResponse response) {
+	public ResponseEntity<List<ReflectorInfo>> reflectorList(HttpServletRequest request,HttpServletResponse response) {
         List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
 		if(results == null) {
 			results = new ArrayList<ReflectorInfo>();
 		}
 		return new ResponseEntity<List<ReflectorInfo>>(results, HttpStatus.OK);
 	}
+
+    /**
+     * 현재 동작하고 있는 Reflector 조회
+     *
+     * @return Reflectors Data
+     */
+    @RequestMapping(value = "/api/v1/activeReflectors", method = RequestMethod.GET)
+    public ResponseEntity<List<ReflectorInfo>> liveReflectorList(HttpServletRequest request,HttpServletResponse response) {
+        List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
+        if(results == null) {
+            results = new ArrayList<ReflectorInfo>();
+        } else {
+            results= results.stream().filter(result -> result.getReflectorIp()!= request.getRemoteAddr())
+                    .collect(Collectors.toList());
+        }
+        return new ResponseEntity<List<ReflectorInfo>>(results, HttpStatus.OK);
+    }
 
 	/**
 	 * Remote Ip Address 조회
