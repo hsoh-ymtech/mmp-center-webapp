@@ -115,7 +115,7 @@ public class ReflectorController {
      *
      * @return Reflectors Data
      */
-    @RequestMapping(value = "/api/v1/activeReflectors", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/v1/activeReflectors", method = RequestMethod.GET,consumes="application/json",produces="application/json")
     public ResponseEntity<List<ReflectorShortInfoDTO>> activeReflectorList(HttpServletRequest request, HttpServletResponse response) {
 
         List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
