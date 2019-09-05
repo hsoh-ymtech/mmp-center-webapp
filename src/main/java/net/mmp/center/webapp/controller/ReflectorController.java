@@ -102,7 +102,7 @@ public class ReflectorController {
 	 *
 	 * @return Reflectors Data
 	 */
-	@RequestMapping(value = "/api/v1/reflectors", method = RequestMethod.GET)
+	@RequestMapping(value = "/v1/reflectors", method = RequestMethod.GET)
 	public ResponseEntity<List<ReflectorInfo>> reflectorList(HttpServletRequest request,HttpServletResponse response) {
         List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
 		if(results == null) {
@@ -116,7 +116,7 @@ public class ReflectorController {
      *
      * @return Reflectors Data
      */
-    @RequestMapping(value = "/api/v1/activeReflectors", method = RequestMethod.GET)
+    @RequestMapping(value = "/v1/activeReflectors", method = RequestMethod.GET)
     public ResponseEntity<List<ReflectorShortInfoDTO>> activeReflectorList(HttpServletRequest request, HttpServletResponse response) {
 
         List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
@@ -134,7 +134,7 @@ public class ReflectorController {
         return new ResponseEntity<List<ReflectorShortInfoDTO>>(retvals, HttpStatus.OK);
     }
 
-	@RequestMapping(value = "/api/v1/reflectorStatistics", method = RequestMethod.GET)
+	@RequestMapping(value = "/v1/reflectorStatistics", method = RequestMethod.GET)
 	public ResponseEntity<ReflectorStatisticsDTO> reflectorStatistics(HttpServletRequest request, HttpServletResponse response) {
 
 		List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
@@ -160,7 +160,7 @@ public class ReflectorController {
 	 *
 	 * @return Remote Ip Address
 	 */
-	@RequestMapping(value = "/api/v1/checkip", method = RequestMethod.GET)
+	@RequestMapping(value = "/v1/checkip", method = RequestMethod.GET)
 	public ResponseEntity<String> checkIpAddress(HttpServletRequest request, HttpServletResponse response) {
 		String result = request.getRemoteAddr();
 		return new ResponseEntity<String>(result, HttpStatus.OK);
