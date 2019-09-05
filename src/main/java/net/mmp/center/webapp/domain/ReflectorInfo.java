@@ -1,5 +1,7 @@
 package net.mmp.center.webapp.domain;
 
+import lombok.Data;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +13,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToOne;
 
 @Entity
+@Data
 public class ReflectorInfo {
 
 	@Id
@@ -32,64 +35,12 @@ public class ReflectorInfo {
 	
 	@Column(name = "address")
 	private String address;
-	
+
+/*	@Column(name = "country")
+	private String country;
+*/
 	@OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
 	@JoinTable(name = "reflector_protocol_relationship", joinColumns = @JoinColumn(name = "reflector_id", referencedColumnName = "reflector_id"), inverseJoinColumns = @JoinColumn(name = "protocol_id", referencedColumnName = "protocol_id"))
 	private ProtocolInfo  protocolInfo;
-	
-	public int getReflectorId() {
-		return reflectorId;
-	}
 
-	public void setReflectorId(int reflectorId) {
-		this.reflectorId = reflectorId;
-	}
-
-	public String getReflectorIp() {
-		return reflectorIp;
-	}
-
-	public void setReflectorIp(String reflectorIp) {
-		this.reflectorIp = reflectorIp;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public float getLat() {
-		return lat;
-	}
-
-	public void setLat(float lat) {
-		this.lat = lat;
-	}
-
-	public float getLng() {
-		return lng;
-	}
-
-	public void setLng(float lng) {
-		this.lng = lng;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public ProtocolInfo getProtocolInfo() {
-		return protocolInfo;
-	}
-
-	public void setProtocolInfo(ProtocolInfo protocolInfo) {
-		this.protocolInfo = protocolInfo;
-	}
 }
