@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import net.mmp.center.webapp.domain.ReflectorInfo;
 import net.mmp.center.webapp.dto.ReflectorShortInfoDTO;
+import net.mmp.center.webapp.dto.ReflectorStatisticsDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -132,6 +133,27 @@ public class ReflectorController {
         }
         return new ResponseEntity<List<ReflectorShortInfoDTO>>(retvals, HttpStatus.OK);
     }
+
+	@RequestMapping(value = "/api/v1/reflectorStatistics", method = RequestMethod.GET)
+	public ResponseEntity<ReflectorStatisticsDTO> reflectorStatistics(HttpServletRequest request, HttpServletResponse response) {
+
+		List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
+		if(list == null) {
+			list = new ArrayList<ReflectorInfo>();
+		}
+
+		int countTotal = list.size();
+
+		int countKR = list.stream().filter(result -> result.getCountry().equals("KR"))
+				.collect(Collectors.toList()).size();
+		int countUnknown = list.stream().filter(result -> result.getCountry().equals("00"))
+				.collect(Collectors.toList()).size();
+		int countNotKR = countTotal - countKR - countUnknown;
+
+		ReflectorStatisticsDTO retval = new ReflectorStatisticsDTO(countKR, countNotKR, countUnknown);
+
+		return new ResponseEntity<ReflectorStatisticsDTO>(retval, HttpStatus.OK);
+	}
 
 	/**
 	 * Remote Ip Address 조회
