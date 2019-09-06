@@ -1,5 +1,7 @@
 package net.mmp.center.webapp.domain;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -9,6 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "quality_history")
+@Data
 public class QualityHistory {
 
 	@Id
@@ -48,100 +51,4 @@ public class QualityHistory {
 	@Column(name = "measure_result")
 	private String measureResult;
 
-
-	public int getSessId() {
-		return sessId;
-	}
-
-	public void setSessId(int sessId) {
-		this.sessId = sessId;
-	}
-
-	public String getSenderIp() {
-		return senderIp;
-	}
-
-	public void setSenderIp(String senderIp) {
-		this.senderIp = senderIp;
-	}
-
-	public String getReflectorIp() {
-		return reflectorIp;
-	}
-
-	public void setReflectorIp(String reflectorIp) {
-		this.reflectorIp = reflectorIp;
-	}
-
-	public int getSendCount() {
-		return sendCount;
-	}
-
-	public void setSendCount(int sendCount) {
-		this.sendCount = sendCount;
-	}
-
-	public int getRepeatCount() {
-		return repeatCount;
-	}
-
-	public void setRepeatCount(int repeatCount) {
-		this.repeatCount = repeatCount;
-	}
-
-	public LocalDateTime getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(LocalDateTime startTime) {
-		this.startTime = startTime;
-	}
-
-	public LocalDateTime getCompleteTime() {
-		return completeTime;
-	}
-
-	public void setCompleteTime(LocalDateTime completeTime) {
-		this.completeTime = completeTime;
-	}
-	
-	public String getMeasureProtocol() {
-		return measureProtocol;
-	}
-
-	public void setMeasureProtocol(String measureProtocol) {
-		this.measureProtocol = measureProtocol;
-	}
-
-	public String getMeasureMode() {
-		return measureMode;
-	}
-
-	public void setMeasureMode(String measureMode) {
-		this.measureMode = measureMode;
-	}
-
-	public int getSenderPort() {
-		return senderPort;
-	}
-
-	public void setSenderPort(int senderPort) {
-		this.senderPort = senderPort;
-	}
-
-	public int getReflectorPort() {
-		return reflectorPort;
-	}
-
-	public void setReflectorPort(int reflectorPort) {
-		this.reflectorPort = reflectorPort;
-	}
-
-	public String getMeasureResult() {
-		return measureResult;
-	}
-
-	public void setMeasureResult(String measureResult) {
-		this.measureResult = measureResult;
-	}
 }
