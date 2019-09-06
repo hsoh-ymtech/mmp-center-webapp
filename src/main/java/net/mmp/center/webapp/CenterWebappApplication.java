@@ -173,17 +173,8 @@ private static final Logger logger = LogManager.getLogger(CenterWebappApplicatio
 	public IntegrationFlow processUniCastUdpMessage() {
 		return IntegrationFlows
 				.from(new UnicastReceivingChannelAdapter(80))
-				.handle("UDPServer", "handleMessage")
+				.handle("UDPServiceImpl", "handleMessage")
 				.get();
 	}
 
-	@Service
-	public class UDPServer
-	{
-		public void handleMessage(Message message)
-		{
-			String data = new String((byte[]) message.getPayload());
-			System.out.print(data);
-		}
-	}
 }
