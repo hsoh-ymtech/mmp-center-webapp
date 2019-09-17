@@ -163,8 +163,10 @@ public class ReflectorController {
 	@RequestMapping(value = "/v1/checkip", method = RequestMethod.GET)
 	public ResponseEntity<String> checkIpAddress(HttpServletRequest request, HttpServletResponse response) {
 		//String result = request.getRemoteAddr();
-		String result = request.getHeader("X-FORWARDED-FOR");
-		return new ResponseEntity<String>(result, HttpStatus.OK);
+		String ip = request.getHeader("X-FORWARDED-FOR");
+		if (ip == null)
+			ip = request.getRemoteAddr();
+		return new ResponseEntity<String>(ip, HttpStatus.OK);
 	}
 
 	/**
