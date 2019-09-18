@@ -69,7 +69,7 @@ public class ReflectorController {
 		if (result.hasErrors()) {
 			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
 		} else {
-			int resultObj = reflectormanagementService.reflectorRegister(reflectorInfoDTO);
+			int resultObj = reflectormanagementService.reflectorSave(reflectorInfoDTO);
 			responseData.setType(resultObj);
 			responseData.setMessage(message.get("responseData.message.insert.ok", response));
 			return new ResponseEntity<ResponseData>(responseData, HttpStatus.CREATED);
@@ -129,7 +129,7 @@ public class ReflectorController {
         List<ReflectorShortInfoDTO> retvals = new ArrayList<ReflectorShortInfoDTO>();
 
         for (ReflectorInfo info : list) {
-            retvals.add(new ReflectorShortInfoDTO(info.getReflectorIp(), info.getPort()));
+            retvals.add(new ReflectorShortInfoDTO(info.getMeshId(),info.getReflectorIp(), info.getPort()));
         }
         return new ResponseEntity<List<ReflectorShortInfoDTO>>(retvals, HttpStatus.OK);
     }
@@ -202,7 +202,7 @@ public class ReflectorController {
 		if (result.hasErrors()) {
 			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
 		} else {
-			int resultObj = reflectormanagementService.reflectorChange(reflectorInfoDTO);
+			int resultObj = reflectormanagementService.reflectorSave(reflectorInfoDTO);
 			responseData.setType(resultObj);
 			responseData.setMessage(message.get("responseData.message.update.ok", response));
 			return new ResponseEntity<ResponseData>(responseData, HttpStatus.OK);

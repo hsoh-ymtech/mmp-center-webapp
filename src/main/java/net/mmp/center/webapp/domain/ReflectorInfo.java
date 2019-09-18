@@ -19,7 +19,7 @@ public class ReflectorInfo {
 	@Id
 	@Column(name = "reflector_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)//기본키 생성을 db에 위임
-	private int reflectorId;
+	private Integer reflectorId;
 	
 	@Column(name = "reflector_ip")
 	private String reflectorIp;
@@ -35,6 +35,9 @@ public class ReflectorInfo {
 
 	@Column(name = "address")
 	private String address;
+
+	@Column(name = "meshId")
+	private String meshId;
 
 	/*
     ALTER TABLE reflector_info ADD country CHAR(2) DEFAULT '00' NOT NULL;

@@ -21,7 +21,7 @@ public interface ReflectorService {
 	 * @return
 	 * 										등록 결과
 	 */
-	int reflectorRegister(ReflectorInfoDTO reflectorInfoDTO);
+	int reflectorSave(ReflectorInfoDTO reflectorInfoDTO);
 	
 	/**
 	 * Reflector 조회
@@ -53,12 +53,13 @@ public interface ReflectorService {
 	 * 										Reflector DTO
 	 * @return
 	 * 										수정 결과
-	 */
+
 	int reflectorChange(ReflectorInfoDTO reflectorInfoDTO);
-	
+	 */
+
 	/**
 	 * Reflector 삭제
-	 * @param reflectorInfoDTO
+	 * @param reflectorId
 	 * 										Reflector DTO
 	 * @return
 	 * 										삭제 결과
