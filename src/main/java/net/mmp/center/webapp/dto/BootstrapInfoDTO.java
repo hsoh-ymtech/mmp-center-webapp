@@ -1,7 +1,6 @@
 package net.mmp.center.webapp.dto;
 
 import lombok.Data;
-import lombok.Getter;
 
 @Data
 public class BootstrapInfoDTO {
@@ -10,7 +9,7 @@ public class BootstrapInfoDTO {
     private String os;
     private String osVersion;
     private String publicIpAddress;
-    private String privateIpAddress;
+    private String outboundIpAddress;
 
     public BootstrapInfoDTO(String meshId, int port, String os, String osVersion, String publicIpAddress, String privateIpAddress) {
         this.meshId = meshId;
@@ -18,6 +17,6 @@ public class BootstrapInfoDTO {
         this.os = os;
         this.osVersion = osVersion;
         this.publicIpAddress = publicIpAddress;
-        this.privateIpAddress = privateIpAddress;
+        this.outboundIpAddress = privateIpAddress;
     }
 }
