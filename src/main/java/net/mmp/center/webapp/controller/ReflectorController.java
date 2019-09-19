@@ -124,8 +124,16 @@ public class ReflectorController {
             list = new ArrayList<ReflectorInfo>();
         }
 
-        list= list.stream().filter(result -> result.getReflectorIp()!= request.getRemoteAddr())
-                    .collect(Collectors.toList());
+		String remoteAddr = request.getHeader("X-FORWARDED-FOR");
+		if (remoteAddr == null)
+			remoteAddr = request.getRemoteAddr();
+
+		String finalRemoteAddr = remoteAddr;
+
+		list= list.stream().filter(result -> result.getReflectorIp() != finalRemoteAddr)
+				.filter(result -> result.getMeshId().length()>31)
+                .collect(Collectors.toList());
+
         List<ReflectorShortInfoDTO> retvals = new ArrayList<ReflectorShortInfoDTO>();
 
         for (ReflectorInfo info : list) {
