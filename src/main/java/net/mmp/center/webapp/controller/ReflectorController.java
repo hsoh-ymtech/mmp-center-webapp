@@ -131,7 +131,7 @@ public class ReflectorController {
 		String finalRemoteAddr = remoteAddr;
 
 		list= list.stream().filter(result -> result.getReflectorIp() != finalRemoteAddr)
-				.filter(result -> result.getMeshId().length()>31)
+				.filter(result -> result.getMeshId().length()>31 && result.getEnabled()==Boolean.TRUE)
                 .collect(Collectors.toList());
 
         List<ReflectorShortInfoDTO> retvals = new ArrayList<ReflectorShortInfoDTO>();

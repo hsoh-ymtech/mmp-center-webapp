@@ -56,6 +56,9 @@ public class ReflectorInfo {
     @Column(name = "os_version")
     private String osVersion;
 
+	@Column(name = "enabled")
+	private Boolean enabled;
+
 	@OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
 	@JoinTable(name = "reflector_protocol_relationship", joinColumns = @JoinColumn(name = "reflector_id", referencedColumnName = "reflector_id"), inverseJoinColumns = @JoinColumn(name = "protocol_id", referencedColumnName = "protocol_id"))
 	private ProtocolInfo  protocolInfo;
