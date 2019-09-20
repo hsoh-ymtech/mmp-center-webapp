@@ -85,6 +85,8 @@ public class ReflectorServiceImpl implements ReflectorService {
 
 		if(flist.size()>0) {
 			reflectorInfoDB.setReflectorId(flist.get(0).getReflectorId());
+		} else {
+			reflectorInfoDB.setCountry("00");
 		}
 		reflectorInfoDB.setReflectorIp(reflectorInfoDTO.getReflectorIp());
 		reflectorInfoDB.setPort(reflectorInfoDTO.getPort());
@@ -93,7 +95,6 @@ public class ReflectorServiceImpl implements ReflectorService {
 		reflectorInfoDB.setLng(reflectorInfoDTO.getLng());
 		reflectorInfoDB.setAddress(reflectorInfoDTO.getAddress());
 		reflectorInfoDB.setMeshId(reflectorInfoDTO.getMeshId());
-		reflectorInfoDB.setCountry("KR");
 		reflectorInfoDB.setOs(reflectorInfoDTO.getOs()==null?"00":reflectorInfoDTO.getOs());
 		reflectorInfoDB.setOsVersion(reflectorInfoDTO.getOsVersion()==null?"00":reflectorInfoDTO.getOsVersion());
 		reflectorData = reflectorInfoRepository.save(reflectorInfoDB);
