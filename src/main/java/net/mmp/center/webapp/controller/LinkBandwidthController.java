@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -43,7 +40,7 @@ public class LinkBandwidthController {
 	 * @return 등록 결과S
 	 */
 	@RequestMapping(value = "/v1/linkBandwidths", method = RequestMethod.POST)
-	public ResponseEntity<LinkBandwidthDTO> bootstrap(@RequestBody @Valid LinkBandwidthDTO linkBandwidthDTO,
+	public ResponseEntity<LinkBandwidthDTO> postBootstrap(@RequestBody @Valid LinkBandwidthDTO linkBandwidthDTO,
 		final BindingResult result, HttpServletResponse request, HttpServletResponse response) {
 
 		LinkBandwidth entity = new LinkBandwidth();
@@ -66,4 +63,26 @@ public class LinkBandwidthController {
 
 		return new ResponseEntity<LinkBandwidthDTO>(retval, HttpStatus.CREATED);
 	}
+
+    @RequestMapping(value = "/v1/linkBandwidths", method = RequestMethod.GET)
+    public ResponseEntity<LinkBandwidthDTO> getBootstrap(@RequestParam(value = "meshId")String meshId,
+														 @RequestParam(value = "srcIpAddress")String srcIpAddress,
+														 @RequestParam(value = "destIpAddress")String destIpAddress)  {
+
+        List<LinkBandwidth> list = repository.findAll();
+        float avgLinkBandwidth = 0.0f;
+
+        // TODO:
+        for(LinkBandwidth item : list) {
+            //평균값 계산
+        }
+
+        LinkBandwidthDTO retval = new LinkBandwidthDTO();
+        retval.setBandwidth(avgLinkBandwidth);
+        retval.setDestIpAddress(destIpAddress);
+        retval.setMeshId(meshId);
+        retval.setSrcIpAddress(srcIpAddress);
+
+        return new ResponseEntity<LinkBandwidthDTO>(retval, HttpStatus.OK);
+    }
 }
