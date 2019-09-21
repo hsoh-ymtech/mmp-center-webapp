@@ -1,18 +1,11 @@
 package net.mmp.center.webapp.controller;
 
 import net.mmp.center.webapp.domain.LinkBandwidth;
-import net.mmp.center.webapp.domain.ReflectorInfo;
-import net.mmp.center.webapp.dto.BootstrapInfoDTO;
-import net.mmp.center.webapp.dto.LinkBandwidthDTO;
-import net.mmp.center.webapp.dto.ProtocolDTO;
-import net.mmp.center.webapp.dto.ReflectorInfoDTO;
+import net.mmp.center.webapp.dto.*;
 import net.mmp.center.webapp.repository.LinkBandwidthRepository;
-import net.mmp.center.webapp.service.ReflectorService;
-import net.mmp.center.webapp.service.impl.ReflectorServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -22,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class LinkBandwidthController {
@@ -78,11 +70,34 @@ public class LinkBandwidthController {
         }
 
         LinkBandwidthDTO retval = new LinkBandwidthDTO();
-        retval.setBandwidth(avgLinkBandwidth);
-        retval.setDestIpAddress(destIpAddress);
         retval.setMeshId(meshId);
+        retval.setBandwidth(avgLinkBandwidth);
         retval.setSrcIpAddress(srcIpAddress);
+        retval.setDestIpAddress(destIpAddress);
 
         return new ResponseEntity<LinkBandwidthDTO>(retval, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/v1/linkLossRates", method = RequestMethod.GET)
+    public ResponseEntity<LinkLossRateDTO> getLinkLossRate(@RequestParam(value = "meshId")String meshId,
+                                                           @RequestParam(value = "srcIpAddress")String srcIpAddress,
+                                                           @RequestParam(value = "destIpAddress")String destIpAddress)  {
+	    // ES와 연결하여 관련 정보를 가지고 온다.
+
+        // TODO:
+        // 계산한다.
+        int totalLossPacketCount = 0;
+        int totalMeasuredPacketCount = 100;
+        float lossRate = 0.1f;
+
+        LinkLossRateDTO retval = new LinkLossRateDTO();
+        retval.setMeshId(meshId);
+        retval.setLossRate(lossRate);
+        retval.setTotalLossPacketCount(totalLossPacketCount);
+        retval.setTotalMeasuredPacketCount(totalMeasuredPacketCount);
+        retval.setSrcIpAddress(srcIpAddress);
+        retval.setDestIpAddress(destIpAddress);
+
+        return new ResponseEntity<LinkLossRateDTO>(retval, HttpStatus.OK);
     }
 }
