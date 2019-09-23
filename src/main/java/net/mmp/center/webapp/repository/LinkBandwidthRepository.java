@@ -1,11 +1,13 @@
 package net.mmp.center.webapp.repository;
 
-import net.mmp.center.webapp.domain.KibanaInfo;
-import net.mmp.center.webapp.domain.LinkBandwidth;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import net.mmp.center.webapp.domain.LinkBandwidth;
+
 @Repository
 public interface LinkBandwidthRepository extends JpaRepository<LinkBandwidth, Integer>{
-
+	List<LinkBandwidth> findBySrcIpAddressAndDestIpAddress(String srcIpAddress, String destIpAddress);
 }
