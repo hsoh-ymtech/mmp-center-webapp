@@ -39,7 +39,7 @@ public class LinkBandwidthController {
 		entity.setId(null);
 		entity.setBandwidth(linkBandwidthDTO.getBandwidth());
 		entity.setDestIpAddress(linkBandwidthDTO.getDestIpAddress());
-		entity.setMeasuredTime(LocalDateTime.now());//linkBandwidthDTO.getMeasuredTime());
+		entity.setMeasuredTime(linkBandwidthDTO.getMeasuredTime());//linkBandwidthDTO.getMeasuredTime());
 		entity.setMeshId(linkBandwidthDTO.getMeshId());
 		entity.setSrcIpAddress(linkBandwidthDTO.getSrcIpAddress());
 
