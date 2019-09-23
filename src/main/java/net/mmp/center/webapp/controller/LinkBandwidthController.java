@@ -61,14 +61,21 @@ public class LinkBandwidthController {
 														 @RequestParam(value = "srcIpAddress")String srcIpAddress,
 														 @RequestParam(value = "destIpAddress")String destIpAddress)  {
 
-        List<LinkBandwidth> list = repository.findAll();
+//        List<LinkBandwidth> list = repository.findAll();
+    	List<LinkBandwidth> list = repository.findBySrcIpAddressAndDestIpAddress(srcIpAddress, destIpAddress);
         float avgLinkBandwidth = 0.0f;
-
-        // TODO:
+        
+        float totalLinkBandwidth = 0.0f;
         for(LinkBandwidth item : list) {
-            //평균값 계산
+        	totalLinkBandwidth += item.getBandwidth();
         }
-
+        
+        if (list.size() == 0) {
+        	avgLinkBandwidth = 0.0f;
+        } else {
+        	avgLinkBandwidth = totalLinkBandwidth / list.size();
+        }
+        
         LinkBandwidthDTO retval = new LinkBandwidthDTO();
         retval.setMeshId(meshId);
         retval.setBandwidth(avgLinkBandwidth);
