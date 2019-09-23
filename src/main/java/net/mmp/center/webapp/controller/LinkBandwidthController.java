@@ -63,7 +63,7 @@ public class LinkBandwidthController {
 
 //        List<LinkBandwidth> list = repository.findAll();
 //    	List<LinkBandwidth> list = repository.findBySrcIpAddressAndDestIpAddress(srcIpAddress, destIpAddress);
-    	List<LinkBandwidth> list = repository.findTop1BySrcIpAddressAndDestIpAddressOrderByMeasuredTimeDesc(srcIpAddress, destIpAddress);
+    	List<LinkBandwidth> list = repository.findTop1000BySrcIpAddressAndDestIpAddressOrderByMeasuredTimeDesc(srcIpAddress, destIpAddress);
         float avgLinkBandwidth = 0.0f;
         
         float totalLinkBandwidth = 0.0f;
