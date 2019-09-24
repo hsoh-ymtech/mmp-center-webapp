@@ -18,9 +18,11 @@
         <th height="40">Protocol</th>
         <td>
           <span class="p_r25">
-            <input name="checkbox" type="checkbox" [checked]="fullTWAMP" (change)="fullTWAMP = $event.target.checked"> Full TWAMP </span>
+            <input name="checkbox" type="checkbox" [checked]="fullTWAMP" (change)="fullTWAMP = $event.target.checked"> Full TWAMP
+          </span>
           <span class="p_r25">
-            <input name="checkbox" type="checkbox" [checked]="lightTWAMP" (change)="lightTWAMP = $event.target.checked"> Light TWAMP </span>
+            <input name="checkbox" type="checkbox" [checked]="lightTWAMP" (change)="lightTWAMP = $event.target.checked"> Light TWAMP
+          </span>
         </td>
       </tr>
       <tr>
@@ -29,7 +31,7 @@
           <input type="text" name="textfield" [(ngModel)]="port" formControlName="port" required>
         </td> -->
         <td *ngIf="fullTWAMP == false && lightTWAMP == true; else modifyport">
-            <input type="text" name="textfield" [(ngModel)]="port" style="background: #dadada" disabled>
+            <input type="text" name="textfield" style="background: #dadada" disabled>
           </td>
           <ng-template #modifyport>
               <td>
