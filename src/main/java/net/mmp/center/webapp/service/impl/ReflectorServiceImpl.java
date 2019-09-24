@@ -116,7 +116,7 @@ public class ReflectorServiceImpl implements ReflectorService {
 			spec = spec.and((root, query, cb) -> cb.equal(root.get("reflectorIp"), reflectorInfoSearchDTO.getReflectorIp()));
 		}
 		
-		if (Util.checkNullStr(reflectorInfoSearchDTO.getProtocol())) {
+		if (Util.checkNullStr(reflectorInfoSearchDTO.getProtocol()) && !"all".equalsIgnoreCase(reflectorInfoSearchDTO.getProtocol())) {
 			spec = spec.and((root, query, cb) -> cb.equal(root.join("protocolInfo").get("type"), reflectorInfoSearchDTO.getProtocol()));
 		}
 		if (pageable.getPageSize() == 2000) {
