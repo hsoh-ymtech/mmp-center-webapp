@@ -54,7 +54,24 @@ app.use('/api', function(req, res) {
         req.pipe(r).pipe(res);
     }
 });
+// app.use('/stream', function(req, res) {
+//     var url = 'http://127.0.0.1:8090/' + req.url;
+//     var r = null;
 
+//     if (req.method === 'POST') {
+//         r = request.post({uri: url, json: req.body});
+//         req.pipe(r, {end: false}).pipe(res);
+//     } else if (req.method === 'PUT') {
+//         r = request.put({uri: url, json: req.body});
+//         req.pipe(r, {end: false}).pipe(res);
+//     } else if (req.method === 'DELETE') { 
+//         r = request.delete({uri: url, json: req.body});
+//         req.pipe(r, {end: false}).pipe(res);
+//     } else {
+//         r = request(url);
+//         req.pipe(r).pipe(res);
+//     }
+// });
 
 app.use(express.static(path.resolve(__dirname, './dist')));
 app.get('*', function(req, res) {
