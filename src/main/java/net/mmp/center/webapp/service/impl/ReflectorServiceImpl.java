@@ -97,6 +97,10 @@ public class ReflectorServiceImpl implements ReflectorService {
 		reflectorInfoDB.setMeshId(reflectorInfoDTO.getMeshId());
 		reflectorInfoDB.setOs(reflectorInfoDTO.getOs()==null?"00":reflectorInfoDTO.getOs());
 		reflectorInfoDB.setOsVersion(reflectorInfoDTO.getOsVersion()==null?"00":reflectorInfoDTO.getOsVersion());
+		reflectorInfoDB.setMacAddress(reflectorInfoDTO.getMacAddress()==null?"00":reflectorInfoDTO.getMacAddress());
+		reflectorInfoDB.setOutboundIpAddress(reflectorInfoDTO.getOutboundIpAddress()==null?"00":reflectorInfoDTO.getOutboundIpAddress());
+		reflectorInfoDB.setEnabled(reflectorInfoDTO.getEnabled()==null?Boolean.FALSE:reflectorInfoDTO.getEnabled());
+
 		reflectorData = reflectorInfoRepository.save(reflectorInfoDB);
 
 		if (reflectorData == null) {
@@ -116,7 +120,7 @@ public class ReflectorServiceImpl implements ReflectorService {
 			spec = spec.and((root, query, cb) -> cb.equal(root.get("reflectorIp"), reflectorInfoSearchDTO.getReflectorIp()));
 		}
 		
-		if (Util.checkNullStr(reflectorInfoSearchDTO.getProtocol())) {
+		if (Util.checkNullStr(reflectorInfoSearchDTO.getProtocol()) && !"all".equalsIgnoreCase(reflectorInfoSearchDTO.getProtocol())) {
 			spec = spec.and((root, query, cb) -> cb.equal(root.join("protocolInfo").get("type"), reflectorInfoSearchDTO.getProtocol()));
 		}
 		if (pageable.getPageSize() == 2000) {
