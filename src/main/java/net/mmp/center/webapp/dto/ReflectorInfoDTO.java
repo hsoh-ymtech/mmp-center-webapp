@@ -12,7 +12,7 @@ public class ReflectorInfoDTO {
 	 * Reflector ID
 	 */
 	@NotNull
-	private int reflectorId;
+	private Integer reflectorId;
 	
 	/**
 	 * Reflector IP Address
@@ -39,7 +39,43 @@ public class ReflectorInfoDTO {
 	 * Address
 	 */
 	private String address;
-	
+
+	/**
+	 * meshId
+	 */
+	private String meshId;
+
+	private String os;
+
+	private String osVersion;
+
+	public String getOs() {
+		return os;
+	}
+
+	public void setOs(String os) {
+		this.os = os;
+	}
+
+	public String getOsVersion() {
+		return osVersion;
+	}
+
+	public void setOsVersion(String osVersion) {
+		this.osVersion = osVersion;
+	}
+
+
+
+
+	public String getMeshId() {
+		return meshId;
+	}
+
+	public void setMeshId(String meshId) {
+		this.meshId = meshId;
+	}
+
 	/**
 	 * Reflector Port
 	 * 	

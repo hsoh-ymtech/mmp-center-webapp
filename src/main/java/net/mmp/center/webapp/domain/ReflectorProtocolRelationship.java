@@ -1,5 +1,7 @@
 package net.mmp.center.webapp.domain;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "reflector_protocol_relationship")
+@Data
 public class ReflectorProtocolRelationship {
 	
 	@Id
@@ -18,20 +21,4 @@ public class ReflectorProtocolRelationship {
 	
 	@Column(name = "protocol_id")
 	private int protocolId;
-
-	public int getReflectorId() {
-		return reflectorId;
-	}
-
-	public void setReflectorId(int reflectorId) {
-		this.reflectorId = reflectorId;
-	}
-
-	public int getProtocolId() {
-		return protocolId;
-	}
-
-	public void setProtocolId(int protocolId) {
-		this.protocolId = protocolId;
-	}
 }

@@ -20,6 +20,8 @@ public interface ReflectorInfoRepository extends JpaRepository<ReflectorInfo, In
 	 * 									row List
 	 */
 	List<ReflectorInfo> findByReflectorIpAndPort(String ReflectorIp, int Port);
+
+	List<ReflectorInfo> findByMeshId(String MeshId);
 	
 	List<ReflectorInfo> findByReflectorIp(String ReflectorIp);
 	

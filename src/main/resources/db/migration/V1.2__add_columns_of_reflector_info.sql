@@ -1,0 +1,1 @@
+ALTER TABLE reflector_info ADD mesh_id VARCHAR(64) DEFAULT '00' NOT NULL;

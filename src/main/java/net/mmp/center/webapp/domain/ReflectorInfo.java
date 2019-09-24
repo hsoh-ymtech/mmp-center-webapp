@@ -1,5 +1,7 @@
 package net.mmp.center.webapp.domain;
 
+import lombok.Data;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,12 +13,13 @@ import javax.persistence.JoinTable;
 import javax.persistence.OneToOne;
 
 @Entity
+@Data
 public class ReflectorInfo {
 
 	@Id
 	@Column(name = "reflector_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)//기본키 생성을 db에 위임
-	private int reflectorId;
+	private Integer reflectorId;
 	
 	@Column(name = "reflector_ip")
 	private String reflectorIp;
@@ -29,67 +32,35 @@ public class ReflectorInfo {
 	
 	@Column(name = "lng")
 	private float lng;
-	
+
 	@Column(name = "address")
 	private String address;
-	
+
+	@Column(name = "meshId")
+	private String meshId;
+
+	/*
+    ALTER TABLE reflector_info ADD country CHAR(2) DEFAULT '00' NOT NULL;
+    ALTER TABLE reflector_info ADD os VARCHAR(16);
+    ALTER TABLE reflector_info ADD os_version VARCHAR(16);
+    ALTER TABLE reflector_info DROP country;
+    ALTER TABLE reflector_info DROP os;
+    ALTER TABLE reflector_info DROP os_version;
+    */
+	@Column(name = "country")
+	private String country;
+
+    @Column(name = "os")
+    private String os;
+
+    @Column(name = "os_version")
+    private String osVersion;
+
+	@Column(name = "enabled")
+	private Boolean enabled;
+
 	@OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
 	@JoinTable(name = "reflector_protocol_relationship", joinColumns = @JoinColumn(name = "reflector_id", referencedColumnName = "reflector_id"), inverseJoinColumns = @JoinColumn(name = "protocol_id", referencedColumnName = "protocol_id"))
 	private ProtocolInfo  protocolInfo;
-	
-	public int getReflectorId() {
-		return reflectorId;
-	}
 
-	public void setReflectorId(int reflectorId) {
-		this.reflectorId = reflectorId;
-	}
-
-	public String getReflectorIp() {
-		return reflectorIp;
-	}
-
-	public void setReflectorIp(String reflectorIp) {
-		this.reflectorIp = reflectorIp;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	public float getLat() {
-		return lat;
-	}
-
-	public void setLat(float lat) {
-		this.lat = lat;
-	}
-
-	public float getLng() {
-		return lng;
-	}
-
-	public void setLng(float lng) {
-		this.lng = lng;
-	}
-
-	public String getAddress() {
-		return address;
-	}
-
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
-	public ProtocolInfo getProtocolInfo() {
-		return protocolInfo;
-	}
-
-	public void setProtocolInfo(ProtocolInfo protocolInfo) {
-		this.protocolInfo = protocolInfo;
-	}
 }

@@ -1,0 +1,1 @@
+ALTER TABLE reflector_info ADD enabled BOOLEAN NOT NULL DEFAULT TRUE;

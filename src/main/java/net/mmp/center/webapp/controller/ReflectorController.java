@@ -6,6 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import net.mmp.center.webapp.domain.ReflectorInfo;
+import net.mmp.center.webapp.dto.ReflectorShortInfoDTO;
+import net.mmp.center.webapp.dto.ReflectorStatisticsDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -32,6 +35,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ReflectorController {
@@ -61,7 +69,7 @@ public class ReflectorController {
 		if (result.hasErrors()) {
 			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
 		} else {
-			int resultObj = reflectormanagementService.reflectorRegister(reflectorInfoDTO);
+			int resultObj = reflectormanagementService.reflectorSave(reflectorInfoDTO);
 			responseData.setType(resultObj);
 			responseData.setMessage(message.get("responseData.message.insert.ok", response));
 			return new ResponseEntity<ResponseData>(responseData, HttpStatus.CREATED);
@@ -80,13 +88,93 @@ public class ReflectorController {
 		if (result.hasErrors()) {
 			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
 		} else {
-			PageImpl<ReflectorInfoDTO> resultObj = reflectormanagementService.reflectorsList(pageable, reflectorInfoSearchDTO);
+			PageImpl<ReflectorInfoDTO> resultObj = reflectormanagementService.reflectorsListPageable(pageable, reflectorInfoSearchDTO);
 			responseData.setType(1);
 			responseData.setMessage(message.get("responseData.message.search.pageable.ok", response));
 			responseData.setResult(resultObj);
 
 			return new ResponseEntity<ResponseData>(responseData, HttpStatus.OK);
 		}
+	}
+
+	/**
+	 * Reflector 조회
+	 *
+	 * @return Reflectors Data
+	 */
+	@RequestMapping(value = "/v1/reflectors", method = RequestMethod.GET)
+	public ResponseEntity<List<ReflectorInfo>> reflectorList(HttpServletRequest request,HttpServletResponse response) {
+        List<ReflectorInfo> results = reflectormanagementService.reflectorsList();
+		if(results == null) {
+			results = new ArrayList<ReflectorInfo>();
+		}
+		return new ResponseEntity<List<ReflectorInfo>>(results, HttpStatus.OK);
+	}
+
+    /**
+     * 현재 동작하고 있는 Reflector 조회
+     *
+     * @return Reflectors Data
+     */
+    @RequestMapping(value = "/v1/activeReflectors", method = RequestMethod.GET)
+    public ResponseEntity<List<ReflectorShortInfoDTO>> activeReflectorList(HttpServletRequest request, HttpServletResponse response) {
+
+        List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
+        if(list == null) {
+            list = new ArrayList<ReflectorInfo>();
+        }
+
+		String remoteAddr = request.getHeader("X-FORWARDED-FOR");
+		if (remoteAddr == null)
+			remoteAddr = request.getRemoteAddr();
+
+		String finalRemoteAddr = remoteAddr;
+
+		list= list.stream().filter(result -> result.getReflectorIp() != finalRemoteAddr)
+				.filter(result -> result.getMeshId().length()>31 && result.getEnabled()==Boolean.TRUE)
+                .collect(Collectors.toList());
+
+        List<ReflectorShortInfoDTO> retvals = new ArrayList<ReflectorShortInfoDTO>();
+
+        for (ReflectorInfo info : list) {
+            retvals.add(new ReflectorShortInfoDTO(info.getMeshId(),info.getReflectorIp(), info.getPort()));
+        }
+        return new ResponseEntity<List<ReflectorShortInfoDTO>>(retvals, HttpStatus.OK);
+    }
+
+	@RequestMapping(value = "/v1/reflectorStatistics", method = RequestMethod.GET)
+	public ResponseEntity<ReflectorStatisticsDTO> reflectorStatistics(HttpServletRequest request, HttpServletResponse response) {
+
+		List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
+		if(list == null) {
+			list = new ArrayList<ReflectorInfo>();
+		}
+
+		int countTotal = list.size();
+
+		int countKR = list.stream().filter(result -> result.getCountry().equals("KR"))
+				.collect(Collectors.toList()).size();
+		int countUnknown = list.stream().filter(result -> result.getCountry().equals("00"))
+				.collect(Collectors.toList()).size();
+		int countNotKR = countTotal - countKR - countUnknown;
+
+		ReflectorStatisticsDTO retval = new ReflectorStatisticsDTO(countKR, countNotKR, countUnknown);
+
+		return new ResponseEntity<ReflectorStatisticsDTO>(retval, HttpStatus.OK);
+	}
+
+	/**
+	 * Remote Ip Address 조회
+	 *
+	 * @return Remote Ip Address
+	 */
+	@RequestMapping(value = "/v1/checkip", method = RequestMethod.GET)
+	public ResponseEntity<String> checkIpAddress(HttpServletRequest request, HttpServletResponse response) {
+		//String result = request.getRemoteAddr();
+		String ip = request.getHeader("X-FORWARDED-FOR");
+		if (ip == null)
+			ip = request.getRemoteAddr();
+		return new ResponseEntity<String>(ip, HttpStatus.OK);
 	}
 
 	/**
@@ -122,7 +210,7 @@ public class ReflectorController {
 		if (result.hasErrors()) {
 			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
 		} else {
-			int resultObj = reflectormanagementService.reflectorChange(reflectorInfoDTO);
+			int resultObj = reflectormanagementService.reflectorSave(reflectorInfoDTO);
 			responseData.setType(resultObj);
 			responseData.setMessage(message.get("responseData.message.update.ok", response));
 			return new ResponseEntity<ResponseData>(responseData, HttpStatus.OK);
@@ -132,8 +220,8 @@ public class ReflectorController {
 	/**
 	 * Reflector 삭제
 	 * 
-	 * @param reflectorInfoDTO
-	 *            Reflector DTO
+	 * @param reflectorId
+	 *            Reflector Id
 	 * @return 삭제 결과
 	 */
 	@RequestMapping(value = "/reflector/{reflectorId}", method = RequestMethod.DELETE)

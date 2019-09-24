@@ -51,7 +51,10 @@ public class ReflectorServiceImpl implements ReflectorService {
 	public final static int RESULT_OK = 1;
 	public final static int RESULT_FAIL = 0;
 
-	public int reflectorRegister(ReflectorInfoDTO reflectorInfoDTO) {
+	/*
+	신규 등록 없으면 업데이트
+	 */
+	public int reflectorSave(ReflectorInfoDTO reflectorInfoDTO) {
 
 		ReflectorInfo reflectorInfoDB = new ReflectorInfo();
 
@@ -59,15 +62,31 @@ public class ReflectorServiceImpl implements ReflectorService {
 		ReflectorInfo reflectorData = new ReflectorInfo();
 
 		// 입력한 값과 같은 row가 이미 존재한다면
-		List<ReflectorInfo> findReflData = reflectorInfoRepository.findByReflectorIpAndPort(reflectorInfoDTO.getReflectorIp(),
-				reflectorInfoDTO.getPort());
+		/*
+		List<ReflectorInfo> findReflData =
+				reflectorInfoRepository.findByReflectorIpAndPort(
+						reflectorInfoDTO.getReflectorIp(),
+						reflectorInfoDTO.getPort());
+		*/
+
+		List<ReflectorInfo> flist =
+				reflectorInfoRepository.findByMeshId(reflectorInfoDTO.getMeshId());
+		/*
 		if (!findReflData.isEmpty()) {
 			throw new AlreadyExistException("Reflector Info is Exist !! = IP : " + reflectorInfoDTO.getProtocol()
 					+ ", PORT : " + reflectorInfoDTO.getPort() + ", PROTOCOL : " + reflectorInfoDTO.getProtocol());
 		}
-		protocolData = prtoocolInfoRepository.findByType(reflectorInfoDTO.getProtocol().getType());
+		 */
+		protocolData = prtoocolInfoRepository.findByType(reflectorInfoDTO.getProtocol().getType()==null?"Light TWAMP":reflectorInfoDTO.getProtocol().getType());
+
 		if (protocolData == null) {
 			throw new NotFoundException("Not found Protocol Type = " + reflectorInfoDTO.getProtocol());
+		}
+
+		if(flist.size()>0) {
+			reflectorInfoDB.setReflectorId(flist.get(0).getReflectorId());
+		} else {
+			reflectorInfoDB.setCountry("00");
 		}
 		reflectorInfoDB.setReflectorIp(reflectorInfoDTO.getReflectorIp());
 		reflectorInfoDB.setPort(reflectorInfoDTO.getPort());
@@ -75,7 +94,11 @@ public class ReflectorServiceImpl implements ReflectorService {
 		reflectorInfoDB.setLat(reflectorInfoDTO.getLat());
 		reflectorInfoDB.setLng(reflectorInfoDTO.getLng());
 		reflectorInfoDB.setAddress(reflectorInfoDTO.getAddress());
+		reflectorInfoDB.setMeshId(reflectorInfoDTO.getMeshId());
+		reflectorInfoDB.setOs(reflectorInfoDTO.getOs()==null?"00":reflectorInfoDTO.getOs());
+		reflectorInfoDB.setOsVersion(reflectorInfoDTO.getOsVersion()==null?"00":reflectorInfoDTO.getOsVersion());
 		reflectorData = reflectorInfoRepository.save(reflectorInfoDB);
+
 		if (reflectorData == null) {
 			return RESULT_FAIL;
 		}
@@ -83,7 +106,7 @@ public class ReflectorServiceImpl implements ReflectorService {
 		return RESULT_OK;
 	}
 
-	public PageImpl<ReflectorInfoDTO> reflectorsList(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO) {
+	public PageImpl<ReflectorInfoDTO> reflectorsListPageable(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO) {
 		
 		PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 
@@ -121,6 +144,12 @@ public class ReflectorServiceImpl implements ReflectorService {
 	}
 
 	@SuppressWarnings("unchecked")
+	public List<ReflectorInfo> reflectorsList() {
+		List<ReflectorInfo> reflData = reflectorInfoRepository.findAll();
+		return reflData;
+	}
+
+	@SuppressWarnings("unchecked")
 	public JSONObject reflectorsIPList(HttpServletRequest request, HttpServletResponse response) {
 		
 		String addr = request.getRemoteAddr();
@@ -143,7 +172,7 @@ public class ReflectorServiceImpl implements ReflectorService {
 		result.put("clientip", addr);
 		return result;
 	}
-	
+	/*
 	public int reflectorChange(ReflectorInfoDTO reflectorInfoDTO) {
 
 		ProtocolInfo protocolData = new ProtocolInfo();
@@ -178,7 +207,7 @@ public class ReflectorServiceImpl implements ReflectorService {
 		logger.info("Reflector 수정 성공");
 		return RESULT_OK;
 	}
-
+	*/
 	public int reflectorDelete(int reflectorId) {
 		Optional<ReflectorInfo> reflector = reflectorInfoRepository.findById(reflectorId);
 		if (reflector == null) {
