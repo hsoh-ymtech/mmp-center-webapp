@@ -20,7 +20,6 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.ip.udp.UnicastReceivingChannelAdapter;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -32,7 +31,6 @@ import net.mmp.center.webapp.thread.FullmeshThread;
 import net.mmp.center.webapp.thread.FullmeshThreadPool;
 import net.mmp.center.webapp.util.ProcessRun;
 import net.mmp.center.webapp.util.Util;
-import org.springframework.stereotype.Service;
 
 @ServletComponentScan
 @SpringBootApplication
