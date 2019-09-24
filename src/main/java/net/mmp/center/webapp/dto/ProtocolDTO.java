@@ -8,6 +8,11 @@ public class ProtocolDTO {
 	
 	@NotBlank
 	private String type;
+	
+	public ProtocolDTO() {
+		
+	}
+	
 	public ProtocolDTO(String type) {
 		this.type = type;
 	}
