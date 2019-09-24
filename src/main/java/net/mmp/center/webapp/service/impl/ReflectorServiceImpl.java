@@ -84,6 +84,7 @@ public class ReflectorServiceImpl implements ReflectorService {
 		}
 
 		if(flist.size()>0) {
+			reflectorInfoDB.setCountry(flist.get(0).getCountry());
 			reflectorInfoDB.setReflectorId(flist.get(0).getReflectorId());
 		} else {
 			reflectorInfoDB.setCountry("00");
