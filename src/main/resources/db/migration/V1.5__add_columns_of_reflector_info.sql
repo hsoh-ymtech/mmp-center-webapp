@@ -1,0 +1,2 @@
+ALTER TABLE reflector_info ADD mac VARCHAR(32) DEFAULT '00' NOT NULL;
+ALTER TABLE reflector_info ADD outbound_ip VARCHAR(16) DEFAULT '00' NOT NULL;
