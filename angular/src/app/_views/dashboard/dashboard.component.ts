@@ -26,7 +26,7 @@ interface marker {
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
-    public zoom = 8;
+    public zoom = 1.5;
     public lat = 36.409522;
     public lng = 127.831503;
     public clickedmarker: marker;
