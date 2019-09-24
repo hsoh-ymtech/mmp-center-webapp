@@ -68,10 +68,11 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
         let result: number;
         this.getGlobalMessage();
         this.protocol = [
+        	{ id: 0, type: "All" },
             { id: 1, type: "Full TWAMP" },
             { id: 2, type: "Light TWAMP" }
         ]
-        this.ptcSelected = '1';
+        this.ptcSelected = '0';
         this.validation();
         this.pageMove(0);
     }
