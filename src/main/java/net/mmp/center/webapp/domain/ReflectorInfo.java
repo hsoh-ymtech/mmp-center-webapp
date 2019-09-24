@@ -59,6 +59,13 @@ public class ReflectorInfo {
 	@Column(name = "enabled")
 	private Boolean enabled;
 
+	@Column(name = "mac")
+	private String macAddress;
+
+	@Column(name = "outbound_ip")
+	private String outboundIpAddress;
+
+
 	@OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
 	@JoinTable(name = "reflector_protocol_relationship", joinColumns = @JoinColumn(name = "reflector_id", referencedColumnName = "reflector_id"), inverseJoinColumns = @JoinColumn(name = "protocol_id", referencedColumnName = "protocol_id"))
 	private ProtocolInfo  protocolInfo;

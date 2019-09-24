@@ -49,6 +49,36 @@ public class ReflectorInfoDTO {
 
 	private String osVersion;
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	private Boolean enabled;
+
+	public String getMacAddress() {
+		return macAddress;
+	}
+
+	public void setMacAddress(String macAddress) {
+		this.macAddress = macAddress;
+	}
+
+	public String getOutboundIpAddress() {
+		return outboundIpAddress;
+	}
+
+	public void setOutboundIpAddress(String outboundIpAddress) {
+		this.outboundIpAddress = outboundIpAddress;
+	}
+
+	private String macAddress;
+
+	private String outboundIpAddress;
+
 	public String getOs() {
 		return os;
 	}
@@ -65,9 +95,6 @@ public class ReflectorInfoDTO {
 		this.osVersion = osVersion;
 	}
 
-
-
-
 	public String getMeshId() {
 		return meshId;
 	}
@@ -75,6 +102,8 @@ public class ReflectorInfoDTO {
 	public void setMeshId(String meshId) {
 		this.meshId = meshId;
 	}
+
+
 
 	/**
 	 * Reflector Port
