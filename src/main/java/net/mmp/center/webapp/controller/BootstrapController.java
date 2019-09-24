@@ -47,6 +47,8 @@ public class BootstrapController {
 	public ResponseEntity<BootstrapInfoDTO> bootstrap(@RequestBody @Valid BootstrapInfoDTO bootstrapInfoDTO,
 		final BindingResult result, HttpServletResponse request, HttpServletResponse response) {
 
+		logger.info(bootstrapInfoDTO);
+
 		List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
 		List<ReflectorInfo> flist = list.stream().filter(item -> item.getMeshId().equals(bootstrapInfoDTO.getMeshId()))
 				.collect(Collectors.toList());
