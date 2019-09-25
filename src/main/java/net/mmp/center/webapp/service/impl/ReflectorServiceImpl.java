@@ -226,4 +226,13 @@ public class ReflectorServiceImpl implements ReflectorService {
 		logger.info("Reflector 삭제 성공");
 		return result;
 	}
+	
+	public ReflectorInfo getRequestReflectorInfo(String meshId) {
+		List<ReflectorInfo> reflectorList = reflectorInfoRepository.findByMeshId(meshId);
+		if (reflectorList != null && !reflectorList.isEmpty()) {
+			return reflectorList.get(0);
+		}
+		
+		return null;
+	}
 }

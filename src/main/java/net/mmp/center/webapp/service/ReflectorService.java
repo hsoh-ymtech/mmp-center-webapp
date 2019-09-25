@@ -65,4 +65,11 @@ public interface ReflectorService {
 	 * 										삭제 결과
 	 */
 	int reflectorDelete(int reflectorId);
+	
+	/**
+	 * Mesh ID를 통한 Reflector 정보 확인
+	 * @param meshId
+	 * @return
+	 */
+	ReflectorInfo getRequestReflectorInfo(String meshId);
 }

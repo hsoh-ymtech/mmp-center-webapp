@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.mmp.center.webapp.domain.ReflectorInfo;
@@ -117,7 +118,7 @@ public class ReflectorController {
      * @return Reflectors Data
      */
     @RequestMapping(value = "/v1/activeReflectors", method = RequestMethod.GET)
-    public ResponseEntity<List<ReflectorShortInfoDTO>> activeReflectorList(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<List<ReflectorShortInfoDTO>> activeReflectorList(@RequestParam(value="meshid")String meshId, HttpServletRequest request, HttpServletResponse response) {
 
         List<ReflectorInfo> reflectorInfoList = reflectormanagementService.reflectorsList();
         List<ReflectorShortInfoDTO> activeReflectorList = new ArrayList<ReflectorShortInfoDTO>();
@@ -125,6 +126,12 @@ public class ReflectorController {
         // Reflector 리스트가 존재하지 않는 경우
         if(reflectorInfoList == null || reflectorInfoList.isEmpty()) {
             return new ResponseEntity<List<ReflectorShortInfoDTO>>(new ArrayList<ReflectorShortInfoDTO>(), HttpStatus.OK);
+        }
+        
+        // Reflector가 등록되지 않았거나 enable 상태가 확인이 되지 않거나 false 인 경우 
+        ReflectorInfo requestReflectorInfo = reflectormanagementService.getRequestReflectorInfo(meshId);
+        if (requestReflectorInfo == null || requestReflectorInfo.getEnabled() == null || requestReflectorInfo.getEnabled() == Boolean.FALSE) {
+        	return new ResponseEntity<List<ReflectorShortInfoDTO>>(new ArrayList<ReflectorShortInfoDTO>(), HttpStatus.OK);
         }
         
         // 리스트를 요청한 Sender의 공인 IP 확인
