@@ -2,25 +2,17 @@ package net.mmp.center.webapp.controller;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import net.mmp.center.webapp.domain.ReflectorInfo;
-import net.mmp.center.webapp.dto.ReflectorShortInfoDTO;
-import net.mmp.center.webapp.dto.ReflectorStatisticsDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
-import net.mmp.center.webapp.dto.ReflectorInfoDTO;
-import net.mmp.center.webapp.dto.ReflectorInfoDTO.ReflectorInfoSearchDTO;
-import net.mmp.center.webapp.exception.AlreadyExistException;
-import net.mmp.center.webapp.exception.NotFoundException;
-import net.mmp.center.webapp.model.ResponseData;
-import net.mmp.center.webapp.service.MessagesService;
-import net.mmp.center.webapp.service.ReflectorService;
-import net.mmp.center.webapp.service.impl.MessagesImpl;
-import net.mmp.center.webapp.service.impl.ReflectorServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageImpl;
@@ -36,12 +28,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import net.mmp.center.webapp.domain.ReflectorInfo;
+import net.mmp.center.webapp.dto.ReflectorInfoDTO;
+import net.mmp.center.webapp.dto.ReflectorInfoDTO.ReflectorInfoSearchDTO;
+import net.mmp.center.webapp.dto.ReflectorShortInfoDTO;
+import net.mmp.center.webapp.dto.ReflectorStatisticsDTO;
+import net.mmp.center.webapp.exception.AlreadyExistException;
+import net.mmp.center.webapp.exception.NotFoundException;
+import net.mmp.center.webapp.model.ResponseData;
+import net.mmp.center.webapp.service.MessagesService;
+import net.mmp.center.webapp.service.ReflectorService;
+import net.mmp.center.webapp.service.impl.MessagesImpl;
+import net.mmp.center.webapp.service.impl.ReflectorServiceImpl;
 
 @RestController
 public class ReflectorController {
@@ -121,41 +119,34 @@ public class ReflectorController {
     @RequestMapping(value = "/v1/activeReflectors", method = RequestMethod.GET)
     public ResponseEntity<List<ReflectorShortInfoDTO>> activeReflectorList(HttpServletRequest request, HttpServletResponse response) {
 
-        List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
-        if(list == null) {
-            list = new ArrayList<ReflectorInfo>();
+        List<ReflectorInfo> reflectorInfoList = reflectormanagementService.reflectorsList();
+        List<ReflectorShortInfoDTO> activeReflectorList = new ArrayList<ReflectorShortInfoDTO>();
+        
+        // Reflector 리스트가 존재하지 않는 경우
+        if(reflectorInfoList == null || reflectorInfoList.isEmpty()) {
+            return new ResponseEntity<List<ReflectorShortInfoDTO>>(new ArrayList<ReflectorShortInfoDTO>(), HttpStatus.OK);
         }
-
-		String remoteAddr = request.getHeader("X-FORWARDED-FOR");
+        
+        // 리스트를 요청한 Sender의 공인 IP 확인
+        String remoteAddr = request.getHeader("X-FORWARDED-FOR");
 		if (remoteAddr == null)
 			remoteAddr = request.getRemoteAddr();
 
 		String finalRemoteAddr = remoteAddr;
-
-		list= list.stream().filter(result -> result.getReflectorIp().equals(finalRemoteAddr)&&result.getEnabled()==Boolean.FALSE)
-				.collect(Collectors.toList());
-
-		if (list.size() > 0) {
-			List<ReflectorShortInfoDTO> retvals = new ArrayList<ReflectorShortInfoDTO>();
-			new ResponseEntity<List<ReflectorShortInfoDTO>>(retvals, HttpStatus.OK);
+		
+		// Active Reflector 리스트 추출
+		// 요청온 공인아이피와 다르고 enable 상태가 1인 경우
+		List<ReflectorInfo> filteredReflectorInfoList = reflectorInfoList.stream().filter(result -> !result.getReflectorIp().equals(finalRemoteAddr) && result.getEnabled() == Boolean.TRUE).collect(Collectors.toList());
+		
+		if (filteredReflectorInfoList == null || filteredReflectorInfoList.isEmpty()) {
+			return new ResponseEntity<List<ReflectorShortInfoDTO>>(new ArrayList<ReflectorShortInfoDTO>(), HttpStatus.OK);
 		}
-
-		list= list.stream().filter(result -> result.getReflectorIp() != finalRemoteAddr)
-				.filter(result -> result.getMeshId().length()>31 && result.getEnabled()==Boolean.TRUE)
-                .collect(Collectors.toList());
-
-        Set<ReflectorShortInfoDTO> sets = new HashSet<ReflectorShortInfoDTO>();
-
-		for (ReflectorInfo info : list) {
-			sets.add(new ReflectorShortInfoDTO(info.getMeshId(),info.getReflectorIp(), info.getPort()));
+		
+		for (ReflectorInfo reflectorInfo : filteredReflectorInfoList) {
+			activeReflectorList.add(new ReflectorShortInfoDTO(reflectorInfo.getMeshId(), reflectorInfo.getReflectorIp(), reflectorInfo.getPort()));
 		}
-
-		List<ReflectorShortInfoDTO> retvals = new ArrayList<ReflectorShortInfoDTO>();
-
-        for (ReflectorShortInfoDTO info : sets) {
-            retvals.add(new ReflectorShortInfoDTO(info.getMeshId(),info.getIpAddress(), info.getPort()));
-        }
-        return new ResponseEntity<List<ReflectorShortInfoDTO>>(retvals, HttpStatus.OK);
+		
+		return new ResponseEntity<List<ReflectorShortInfoDTO>>(activeReflectorList, HttpStatus.OK);
     }
 
 	@RequestMapping(value = "/v1/reflectorStatistics", method = RequestMethod.GET)

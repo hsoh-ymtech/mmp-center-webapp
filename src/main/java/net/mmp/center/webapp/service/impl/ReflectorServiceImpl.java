@@ -12,16 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.modelmapper.ModelMapper;
-import net.mmp.center.webapp.domain.ProtocolInfo;
-import net.mmp.center.webapp.domain.ReflectorInfo;
-import net.mmp.center.webapp.dto.ReflectorInfoDTO;
-import net.mmp.center.webapp.dto.ReflectorInfoDTO.ReflectorInfoSearchDTO;
-import net.mmp.center.webapp.exception.AlreadyExistException;
-import net.mmp.center.webapp.exception.NotFoundException;
-import net.mmp.center.webapp.repository.ProtocolInfoRepository;
-import net.mmp.center.webapp.repository.ReflectorInfoRepository;
-import net.mmp.center.webapp.service.ReflectorService;
-import net.mmp.center.webapp.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,6 +20,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import net.mmp.center.webapp.domain.ProtocolInfo;
+import net.mmp.center.webapp.domain.ReflectorInfo;
+import net.mmp.center.webapp.dto.ReflectorInfoDTO;
+import net.mmp.center.webapp.dto.ReflectorInfoDTO.ReflectorInfoSearchDTO;
+import net.mmp.center.webapp.exception.NotFoundException;
+import net.mmp.center.webapp.repository.ProtocolInfoRepository;
+import net.mmp.center.webapp.repository.ReflectorInfoRepository;
+import net.mmp.center.webapp.service.ReflectorService;
+import net.mmp.center.webapp.util.Util;
 
 @SuppressWarnings("deprecation")
 @Service(ReflectorServiceImpl.BEAN_QUALIFIER)
@@ -61,29 +61,30 @@ public class ReflectorServiceImpl implements ReflectorService {
 		ProtocolInfo protocolData = new ProtocolInfo();
 		ReflectorInfo reflectorData = new ReflectorInfo();
 
-		// 입력한 값과 같은 row가 이미 존재한다면
-		/*
-		List<ReflectorInfo> findReflData =
-				reflectorInfoRepository.findByReflectorIpAndPort(
-						reflectorInfoDTO.getReflectorIp(),
-						reflectorInfoDTO.getPort());
-		*/
+		Boolean enabled = reflectorInfoDTO.getEnabled();
 
-		List<ReflectorInfo> flist =
-				reflectorInfoRepository.findByMeshId(reflectorInfoDTO.getMeshId());
-		/*
-		if (!findReflData.isEmpty()) {
-			throw new AlreadyExistException("Reflector Info is Exist !! = IP : " + reflectorInfoDTO.getProtocol()
-					+ ", PORT : " + reflectorInfoDTO.getPort() + ", PROTOCOL : " + reflectorInfoDTO.getProtocol());
+		// enable 값을 true로 변경하는 경우 같은 IP를 갖고 있는 다른 Reflector 들의 enable 값을 false로 변경
+		if (enabled != null && enabled.booleanValue() == true) {
+			List<ReflectorInfo> sameIpReflector = reflectorInfoRepository
+					.findByReflectorIp(reflectorInfoDTO.getReflectorIp());
+			if (sameIpReflector != null && !sameIpReflector.isEmpty()) {
+				for (ReflectorInfo reflector : sameIpReflector) {
+					reflector.setEnabled(Boolean.FALSE);
+					reflectorInfoRepository.save(reflector);
+				}
+			}
 		}
-		 */
-		protocolData = prtoocolInfoRepository.findByType(reflectorInfoDTO.getProtocol().getType()==null?"Light TWAMP":reflectorInfoDTO.getProtocol().getType());
+		
+		List<ReflectorInfo> flist = reflectorInfoRepository.findByMeshId(reflectorInfoDTO.getMeshId());
+		protocolData = prtoocolInfoRepository
+				.findByType(reflectorInfoDTO.getProtocol().getType() == null ? "Light TWAMP"
+						: reflectorInfoDTO.getProtocol().getType());
 
 		if (protocolData == null) {
 			throw new NotFoundException("Not found Protocol Type = " + reflectorInfoDTO.getProtocol());
 		}
 
-		if(flist.size()>0) {
+		if (flist.size() > 0) {
 			reflectorInfoDB.setCountry(flist.get(0).getCountry());
 			reflectorInfoDB.setReflectorId(flist.get(0).getReflectorId());
 		} else {
@@ -96,17 +97,18 @@ public class ReflectorServiceImpl implements ReflectorService {
 		reflectorInfoDB.setLng(reflectorInfoDTO.getLng());
 		reflectorInfoDB.setAddress(reflectorInfoDTO.getAddress());
 		reflectorInfoDB.setMeshId(reflectorInfoDTO.getMeshId());
-		reflectorInfoDB.setOs(reflectorInfoDTO.getOs()==null?"00":reflectorInfoDTO.getOs());
-		reflectorInfoDB.setOsVersion(reflectorInfoDTO.getOsVersion()==null?"00":reflectorInfoDTO.getOsVersion());
-		reflectorInfoDB.setMacAddress(reflectorInfoDTO.getMacAddress()==null?"00":reflectorInfoDTO.getMacAddress());
-		reflectorInfoDB.setOutboundIpAddress(reflectorInfoDTO.getOutboundIpAddress()==null?"00":reflectorInfoDTO.getOutboundIpAddress());
-		reflectorInfoDB.setEnabled(reflectorInfoDTO.getEnabled()==null?Boolean.FALSE:reflectorInfoDTO.getEnabled());
+		reflectorInfoDB.setOs(reflectorInfoDTO.getOs() == null ? "00" : reflectorInfoDTO.getOs());
+		reflectorInfoDB.setOsVersion(reflectorInfoDTO.getOsVersion() == null ? "00" : reflectorInfoDTO.getOsVersion());
+		reflectorInfoDB.setMacAddress(reflectorInfoDTO.getMacAddress() == null ? "00" : reflectorInfoDTO.getMacAddress());
+		reflectorInfoDB.setOutboundIpAddress(reflectorInfoDTO.getOutboundIpAddress() == null ? "00" : reflectorInfoDTO.getOutboundIpAddress());
+		reflectorInfoDB.setEnabled(reflectorInfoDTO.getEnabled() == null ? Boolean.FALSE : reflectorInfoDTO.getEnabled());
 
 		reflectorData = reflectorInfoRepository.save(reflectorInfoDB);
 
 		if (reflectorData == null) {
 			return RESULT_FAIL;
 		}
+		
 		logger.info("Reflector 저장 성공");
 		return RESULT_OK;
 	}
