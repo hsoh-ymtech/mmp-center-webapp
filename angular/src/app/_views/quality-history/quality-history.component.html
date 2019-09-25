@@ -40,48 +40,32 @@
 
   <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_tl">
     <tr>
-      <th width="10%">측정시작시간</th>
-      <th width="10%">측정완료시간</th>
-      <th width="8%">Sender IP</th>
-      <th width="8%">Reflector IP</th>
-      <th width="5%">Send Count</th>
-      <th width="7%">Repeat Count</th>
-      <th width="11%">Sender Port</th>
-      <th width="11%">Reflector Port</th>
-      <th width="9%">Protocol</th>
-      <th width="9%">측정모드</th>
+      <th width="12%">측정시작시간</th>
+      <th width="12%">측정완료시간</th>
+      <th width="8%">Source IP</th>
+      <th width="8%">Target IP</th>
+      <th width="8%">Measurement Count</th>
+      <th width="9%">Bandwidth</th>
+      <th width="9%">Delay</th>
+      <th width="9%">Lost Packets</th>
+      <th width="9%">Duplicate Packets</th>
       <th width="7%">측정 결과</th>
       <th>비고</th>
     </tr>
     <tr *ngFor="let qualityhistory of qualityHistoryData">
-      <td>{{qualityhistory.startTime}}</td>
-      <td *ngIf="qualityhistory.measureResult === '측정중...' || qualityhistory.measureResult === 'measureing...'">측정중...</td>
-      <td *ngIf="qualityhistory.measureResult !== '측정중...' && qualityhistory.measureResult !== 'measureing...'">{{qualityhistory.completeTime}}</td>
-      <td>{{qualityhistory.senderIp}}</td>
-      <td>{{qualityhistory.reflectorIp}}</td>
-      <td>{{qualityhistory.sendCount}}</td>
-      <!-- <td *ngIf="qualityhistory.repeatCount == -1">무한 반복</td>
-      <td *ngIf="qualityhistory.repeatCount != -1">{{qualityhistory.repeatCount}}</td> -->
-      <td *ngIf="qualityhistory.repeatCount == 1">1초</td>
-      <td *ngIf="qualityhistory.repeatCount == 10">10초</td>
-      <td *ngIf="qualityhistory.repeatCount == 60">1분</td>
-      <td *ngIf="qualityhistory.repeatCount == 300">5분</td>
-      <td *ngIf="qualityhistory.repeatCount == 600">10분</td>
-      <td *ngIf="qualityhistory.repeatCount == 3600">1시간</td>
-      <td *ngIf="qualityhistory.repeatCount == 7200">2시간</td>
-      <td *ngIf="qualityhistory.repeatCount != 1 && qualityhistory.repeatCount != 10 && qualityhistory.repeatCount != 60 && qualityhistory.repeatCount != 300 && qualityhistory.repeatCount != 600 && qualityhistory.repeatCount != 3600 && qualityhistory.repeatCount != 7200">{{qualityhistory.repeatCount}}</td>
-      <td>{{qualityhistory.senderPort}}</td>
-      <td *ngIf="qualityhistory.actualProtocol !== 'ICMP'">{{qualityhistory.reflectorPort}}</td>
-      <td *ngIf="qualityhistory.actualProtocol === 'ICMP'"></td>
-      <td>{{qualityhistory.measureProtocol}}</td>
-      <td *ngIf="qualityhistory.measureMode === 'unauthorized'">무인증</td>
-        <td *ngIf="qualityhistory.measureMode === 'authorized'">인증</td>
-        <td *ngIf="qualityhistory.measureMode === 'encryption'">암호화</td>
-        <td *ngIf="qualityhistory.measureMode === ''">.</td>
-      <td>{{qualityhistory.measureResult}}</td>
-      <td>
-        <a type="button" class="btn btn-default btn-sm" (click)="openQualityHistoryGraphDialog(qualityhistory.sessId, qualityhistory.repeatCount, qualityhistory.startTime, qualityhistory.completeTime, qualityhistory.measureResult, qualityhistory.actualProtocol)">상세</a>
-      </td>
+		<td>{{qualityhistory._source.start_time | slice: 0:19}}</td>
+		<td>{{qualityhistory._source.end_time | slice: 0:19}}</td>
+		<td>{{qualityhistory._source.src_host}}</td>
+		<td>{{qualityhistory._source.dst_host}}</td>
+    	<td>{{qualityhistory._source.measurement_count}}</td>
+    	<td>{{qualityhistory._source.bandwidth | number}}</td>
+    	<td>{{qualityhistory._source.delay / 1000 | number}}</td>
+    	<td>{{qualityhistory._source.lost_packets}}</td>
+    	<td>{{qualityhistory._source.duplicate_packets}}</td>
+    	<td>
+        	<a type="button" class="btn btn-default btn-sm" (click)="openQualityHistoryGraphDialog()">상세</a>
+      	</td>
+      	<td></td>
     </tr>
   </table>
 

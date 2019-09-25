@@ -114,7 +114,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private makeMarker(reflectorData: Reflector[]): void {
         for (let a = 0; a < reflectorData.length; a++) {
             const tmpMk = {};
-            tmpMk['label'] = reflectorData[a].reflectorId + '';
+//            tmpMk['label'] = reflectorData[a].reflectorId + '';
             tmpMk['lat'] = reflectorData[a].lat;
             tmpMk['lng'] = reflectorData[a].lng;
             tmpMk['address'] = reflectorData[a].address;

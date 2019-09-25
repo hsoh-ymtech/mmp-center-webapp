@@ -1,9 +1,11 @@
 package net.mmp.center.webapp.service;
 
-import net.mmp.center.webapp.dto.QualityHistoryDTO;
-import net.mmp.center.webapp.dto.QualityHistoryDTO.QualityHistorySearchDTO;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+
+import net.mmp.center.webapp.dto.QualityHistoryDTO;
+import net.mmp.center.webapp.dto.QualityHistoryDTO.QualityHistorySearchDTO;
+import net.mmp.center.webapp.model.ESData;
 
 public interface QualityHistoryService {
 	/**
@@ -20,5 +22,5 @@ public interface QualityHistoryService {
 	 * @return
 	 * 											조회 List
 	 */
-	PageImpl<QualityHistoryDTO> QualityHistoryList(Pageable pageable, QualityHistorySearchDTO qualityHistorySearchDTO);
+	PageImpl<ESData> QualityHistoryList(Pageable pageable, QualityHistorySearchDTO qualityHistorySearchDTO);
 }

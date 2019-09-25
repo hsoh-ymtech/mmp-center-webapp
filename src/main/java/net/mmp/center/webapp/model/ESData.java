@@ -7,6 +7,7 @@ public class ESData {
 	private String _id;
 	private double _score;
 	private TwampMeasureResult  _source;
+	private String[] sort;
 	
 	
 	
@@ -39,5 +40,11 @@ public class ESData {
 	}
 	public void set_source(TwampMeasureResult _source) {
 		this._source = _source;
+	}
+	public String[] getSort() {
+		return sort;
+	}
+	public void setSort(String[] sort) {
+		this.sort = sort;
 	}
 }
