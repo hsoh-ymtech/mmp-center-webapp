@@ -38,7 +38,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -130,14 +132,28 @@ public class ReflectorController {
 
 		String finalRemoteAddr = remoteAddr;
 
+		list= list.stream().filter(result -> result.getReflectorIp().equals(finalRemoteAddr)&&result.getEnabled()==Boolean.FALSE)
+				.collect(Collectors.toList());
+
+		if (list.size() > 0) {
+			List<ReflectorShortInfoDTO> retvals = new ArrayList<ReflectorShortInfoDTO>();
+			new ResponseEntity<List<ReflectorShortInfoDTO>>(retvals, HttpStatus.OK);
+		}
+
 		list= list.stream().filter(result -> result.getReflectorIp() != finalRemoteAddr)
 				.filter(result -> result.getMeshId().length()>31 && result.getEnabled()==Boolean.TRUE)
                 .collect(Collectors.toList());
 
-        List<ReflectorShortInfoDTO> retvals = new ArrayList<ReflectorShortInfoDTO>();
+        Set<ReflectorShortInfoDTO> sets = new HashSet<ReflectorShortInfoDTO>();
 
-        for (ReflectorInfo info : list) {
-            retvals.add(new ReflectorShortInfoDTO(info.getMeshId(),info.getReflectorIp(), info.getPort()));
+		for (ReflectorInfo info : list) {
+			sets.add(new ReflectorShortInfoDTO(info.getMeshId(),info.getReflectorIp(), info.getPort()));
+		}
+
+		List<ReflectorShortInfoDTO> retvals = new ArrayList<ReflectorShortInfoDTO>();
+
+        for (ReflectorShortInfoDTO info : sets) {
+            retvals.add(new ReflectorShortInfoDTO(info.getMeshId(),info.getIpAddress(), info.getPort()));
         }
         return new ResponseEntity<List<ReflectorShortInfoDTO>>(retvals, HttpStatus.OK);
     }
