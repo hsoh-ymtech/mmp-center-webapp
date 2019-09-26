@@ -68,8 +68,9 @@ public interface ReflectorService {
 	
 	/**
 	 * Mesh ID를 통한 Reflector 정보 확인
+  	 * @param reflectorIp
 	 * @param meshId
 	 * @return
 	 */
-	ReflectorInfo getRequestReflectorInfo(String meshId);
+	ReflectorInfo getRequestReflectorInfo(String reflectorIp, String meshId);
 }

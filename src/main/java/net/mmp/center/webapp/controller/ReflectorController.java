@@ -128,18 +128,18 @@ public class ReflectorController {
             return new ResponseEntity<List<ReflectorShortInfoDTO>>(new ArrayList<ReflectorShortInfoDTO>(), HttpStatus.OK);
         }
         
-        // Reflector가 등록되지 않았거나 enable 상태가 확인이 되지 않거나 false 인 경우 
-        ReflectorInfo requestReflectorInfo = reflectormanagementService.getRequestReflectorInfo(meshId);
-        if (requestReflectorInfo == null || requestReflectorInfo.getEnabled() == null || requestReflectorInfo.getEnabled() == Boolean.FALSE) {
-        	return new ResponseEntity<List<ReflectorShortInfoDTO>>(new ArrayList<ReflectorShortInfoDTO>(), HttpStatus.OK);
-        }
-        
-        // 리스트를 요청한 Sender의 공인 IP 확인
+     // 리스트를 요청한 Sender의 공인 IP 확인
         String remoteAddr = request.getHeader("X-FORWARDED-FOR");
 		if (remoteAddr == null)
 			remoteAddr = request.getRemoteAddr();
 
 		String finalRemoteAddr = remoteAddr;
+		
+        // Reflector가 등록되지 않았거나 enable 상태가 확인이 되지 않거나 false 인 경우 
+        ReflectorInfo requestReflectorInfo = reflectormanagementService.getRequestReflectorInfo(finalRemoteAddr, meshId);
+        if (requestReflectorInfo == null || requestReflectorInfo.getEnabled() == null || requestReflectorInfo.getEnabled() == Boolean.FALSE) {
+        	return new ResponseEntity<List<ReflectorShortInfoDTO>>(new ArrayList<ReflectorShortInfoDTO>(), HttpStatus.OK);
+        }
 		
 		// Active Reflector 리스트 추출
 		// 요청온 공인아이피와 다르고 enable 상태가 1인 경우

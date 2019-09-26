@@ -227,8 +227,8 @@ public class ReflectorServiceImpl implements ReflectorService {
 		return result;
 	}
 	
-	public ReflectorInfo getRequestReflectorInfo(String meshId) {
-		List<ReflectorInfo> reflectorList = reflectorInfoRepository.findByMeshId(meshId);
+	public ReflectorInfo getRequestReflectorInfo(String reflectorIp, String meshId) {
+		List<ReflectorInfo> reflectorList = reflectorInfoRepository.findByReflectorIpAndMeshId(reflectorIp, meshId);
 		if (reflectorList != null && !reflectorList.isEmpty()) {
 			return reflectorList.get(0);
 		}

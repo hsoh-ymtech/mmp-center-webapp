@@ -23,6 +23,8 @@ public interface ReflectorInfoRepository extends JpaRepository<ReflectorInfo, In
 
 	List<ReflectorInfo> findByMeshId(String MeshId);
 	
+	List<ReflectorInfo> findByReflectorIpAndMeshId(String reflectorIp, String meshId);
+	
 	List<ReflectorInfo> findByReflectorIp(String ReflectorIp);
 	
 	// ReflectorInfo findByReflectorIpAndPort(String reflectorIp, int port) throws net.mmp.center.webapp.exception.NullPointerException;
