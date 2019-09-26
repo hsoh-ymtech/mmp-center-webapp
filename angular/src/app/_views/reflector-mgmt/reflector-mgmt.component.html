@@ -43,12 +43,15 @@
 
   <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_tl">
     <tr>
-      <th width="8%">
+      <th width="5%">
         <input type="checkbox" name="checkbox" [checked]="allDeleteCheck" (change)="allDeleteCheck = $event.target.checked; clickOnAllListDelete($event)">
       </th>
-      <th width="17%">Reflector IP</th>
-      <th width="10%">Reflector Port</th>
-      <th width="17%">Protocol</th>
+      <th width="13%">Reflector IP</th>
+      <th width="13%">Outbound IP</th>
+      <th width="8%">Reflector Port</th>
+      <th width="8%">Country</th>
+      <th width="8%">Enabled</th>
+      <th width="15%">Protocol</th>
       <th width="30%">Address</th>
       <th>비고</th>
     </tr>
@@ -57,10 +60,13 @@
         <input type="checkbox" name="checkbox" [checked]="reflector.deleteCheck" (change)="reflector.deleteCheck = $event.target.checked; clickOnOneListDelete($event.target.checked)">
       </td>
       <td>{{reflector.reflectorIp}}</td>
-      <td *ngIf="reflector.protocol.type != 'ICMP'; else mgmtport">{{reflector.port}}</td>
+      <td>{{reflector.outboundIpAddress}}</td>
+	  <td *ngIf="reflector.protocol.type != 'ICMP'; else mgmtport">{{reflector.port}}</td>
       <ng-template #mgmtport>
         <td></td>
       </ng-template>
+      <td>{{reflector.country}}</td>
+      <td>{{reflector.enabled}}</td>
       <td>{{reflector.protocol.type}}</td>
       <td>{{reflector.address}}</td>
       <td>

@@ -48,6 +48,26 @@ public class ReflectorInfoDTO {
 	private String os;
 
 	private String osVersion;
+	
+	private String mac;
+	
+	private String country;
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getMac() {
+		return mac;
+	}
+
+	public void setMac(String mac) {
+		this.mac = mac;
+	}
 
 	public Boolean getEnabled() {
 		return enabled;
