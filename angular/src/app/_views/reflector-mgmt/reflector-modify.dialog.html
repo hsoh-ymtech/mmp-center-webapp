@@ -47,6 +47,9 @@
       <tr>
       	<th height="40">Enable</th>
       	<td>
+      		<span class="p_r25">
+            	<input name="checkbox" type="checkbox" [checked]="enabled" (change)="enabled = $event.target.checked">
+         	</span>
       	<td>
       </tr>
     </table>

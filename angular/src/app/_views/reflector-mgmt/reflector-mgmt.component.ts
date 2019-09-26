@@ -385,10 +385,13 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
     protocol: string;
     beforeModiAddress: string;
     afterModiAddress: string;
+	meshId: string;
 
     fullTWAMP = false;
     lightTWAMP = false;
-
+    enabled = false;
+	
+	
     RESULT_OK = 1;
     RESULT_FAIL = 0;
 
@@ -421,6 +424,8 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
         this.reflector.address = this.data.address;
         this.reflector.lat = this.data.lat;
         this.reflector.lng = this.data.lng;
+        this.enabled = this.data.enabled;
+        this.meshId = this.data.meshId;
     }
 
     public onNoClick(): void {
@@ -438,6 +443,8 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
         this.reflector.reflectorIp = this.reflectorIp;
         this.reflector.port = this.port;
         this.reflector.protocol.type = this.setStrProtocol();
+        this.reflector.enabled = this.enabled;
+        this.reflector.meshId = this.meshId;
         if (this.afterModiAddress !== this.beforeModiAddress) {
             this.geocodeService.geocodeAddress(this.afterModiAddress)
                 .subscribe(
