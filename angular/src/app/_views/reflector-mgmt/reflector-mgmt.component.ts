@@ -5,6 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { Reflector } from '../../_models/Reflector';
+import { Country } from '../../_models/Country';
 import { Protocol } from '../../_models/Dashboard';
 import { AppConfig } from '../../_services/config/AppConfig';
 import { ReflectorService } from '../../_services/reflector/reflector.service';
@@ -395,7 +396,8 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
 	country: string;
 
 	countrySelected: string;
-		
+	countrySelect: Country[];
+			
     fullTWAMP = false;
     lightTWAMP = false;
     enabled = false;
@@ -551,5 +553,5 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
     
     private countryChange(newCountry) {
     	this.country = newCountry;
-
+    }
 }
