@@ -100,7 +100,7 @@ public class ReflectorServiceImpl implements ReflectorService {
 		} else {
 			reflectorInfoDB.setCountry("00");
 		}
-		reflectorInfoDB.setCountry(reflectorInfoDTO.getCountry());
+		reflectorInfoDB.setCountry(reflectorInfoDTO.getCountry() == null ? "00" : reflectorInfoDTO.getCountry());
 		reflectorInfoDB.setReflectorIp(reflectorInfoDTO.getReflectorIp());
 		reflectorInfoDB.setPort(reflectorInfoDTO.getPort());
 		reflectorInfoDB.setProtocolInfo(protocolData);
