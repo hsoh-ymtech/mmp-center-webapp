@@ -129,6 +129,9 @@ public class ReflectorServiceImpl implements ReflectorService {
 		if (pageable.getPageSize() == 2000) {
 			pageRequest = new PageRequest(pageable.getPageNumber(), 1000000000, pageable.getSort());
 		}
+		
+		spec = spec.and((root, query, cb) -> cb.equal(root.get("enabled"), 1));
+		
 		Page<ReflectorInfo> reflData = reflectorInfoRepository.findAll(spec, pageRequest);
 		
 		if (reflData.getContent().isEmpty()) {
