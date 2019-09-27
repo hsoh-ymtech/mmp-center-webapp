@@ -551,7 +551,7 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
         });
     }
     
-    private countryChange(newCountry) {
+    public countryChange(newCountry) {
     	this.country = newCountry;
     }
 }
