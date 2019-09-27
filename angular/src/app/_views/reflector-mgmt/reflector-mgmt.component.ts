@@ -188,7 +188,7 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
 
     private openReflectorModifyDialog(reflector: Reflector): void {
         const dialogRef = this.dialog.open(ReflectorModifyDialog, {
-            height: '400px',
+            height: '600px',
             width: '600px',
             data: reflector
         });
@@ -383,14 +383,22 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
     reflectorIp: string;
     port: number;
     protocol: string;
-    beforeModiAddress: string;
-    afterModiAddress: string;
 	meshId: string;
+	
+	lat: number;
+	lng: number;
+	os: string;
+	osVersion: string;
+	outboundIpAddress: string;
+	macAddress: string;
+	address: string;
+	country: string;
 
+	countrySelected: string;
+		
     fullTWAMP = false;
     lightTWAMP = false;
     enabled = false;
-	
 	
     RESULT_OK = 1;
     RESULT_FAIL = 0;
@@ -400,6 +408,8 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
     formPort: FormControl;
     formDisabledPort: FormControl;
     formAddress: FormControl;
+    formLat: FormControl;
+    formLng: FormControl;
 
     protocolValidation: Function;
     setStrProtocol: Function;
@@ -412,6 +422,23 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
     ) {
         this.initData();
         this.validation();
+        this.countrySelect = [
+        	{id: "KR", type: "대한민국"},
+        	{id: "US", type: "미국"},
+        	{id: "HK", type: "홍콩"},
+        	{id: "IN", type: "인도"},
+        	{id: "SG", type: "싱가포르"},
+        	{id: "AU", type: "호주"},
+        	{id: "JP", type: "일본"},
+        	{id: "CA", type: "캐나다"},
+        	{id: "DE", type: "독일"},
+        	{id: "IE", type: "아일랜드"},
+        	{id: "GB", type: "영국"},
+        	{id: "FR", type: "프랑스"},
+        	{id: "SE", type: "스웨덴"},
+        	{id: "BR", type: "브라질"},
+        	{id: "00", type: "미확인"}
+        ]
     }
 
     initData() {
@@ -419,13 +446,18 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
         this.reflectorIp = this.data.reflectorIp;
         this.port = this.data.port;
         this.protocol = this.data.protocol.type;
-        this.beforeModiAddress = this.data.address;
-        this.afterModiAddress = this.data.address;
-        this.reflector.address = this.data.address;
-        this.reflector.lat = this.data.lat;
-        this.reflector.lng = this.data.lng;
+        this.address = this.data.address;
+        this.lat = this.data.lat;
+        this.lng = this.data.lng;
         this.enabled = this.data.enabled;
         this.meshId = this.data.meshId;
+        this.country = this.data.country;
+        this.macAddress = this.data.macAddress;
+        this.os = this.data.os;
+        this.osVersion = this.data.osVersion;
+        this.outboundIpAddress = this.data.outboundIpAddress;
+        
+        this.countrySelected = this.data.country;
     }
 
     public onNoClick(): void {
@@ -445,19 +477,16 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
         this.reflector.protocol.type = this.setStrProtocol();
         this.reflector.enabled = this.enabled;
         this.reflector.meshId = this.meshId;
-        if (this.afterModiAddress !== this.beforeModiAddress) {
-            this.geocodeService.geocodeAddress(this.afterModiAddress)
-                .subscribe(
-                    location => {
-                        that.reflector.lat = location.lat;
-                        that.reflector.lng = location.lng;
-                        that.reflector.address = that.afterModiAddress;
-                        that.requestReflectorUpdate();
-                    }
-                )
-        } else {
-            this.requestReflectorUpdate();
-        }
+		this.reflector.lat = this.lat;
+		this.reflector.lng = this.lng;
+		this.reflector.address = this.address;
+		this.reflector.os = this.os;
+		this.reflector.osVersion = this.osVersion;
+		this.reflector.macAddress = this.macAddress;
+		this.reflector.outboundIpAddress = this.outboundIpAddress;
+		this.reflector.country = this.country;
+		    
+        this.requestReflectorUpdate();
     }
 
     private requestReflectorUpdate() {
@@ -505,11 +534,22 @@ export class ReflectorModifyDialog implements OnInit, OnDestroy {
         this.formAddress = new FormControl('', Validators.compose([
             Validators.required
         ]));
+        this.formLat = new FormControl('', Validators.compose([
+            Validators.required
+        ])); 
+        this.formLng = new FormControl('', Validators.compose([
+            Validators.required
+        ])); 
         this.reflectorForm = new FormGroup({
             reflectorIp: this.formReflectorIp,
             address: this.formAddress,
-            port: this.formPort
+            port: this.formPort,
+            lat: this.formLat,
+            lng: this.formLng,
         });
     }
+    
+    private countryChange(newCountry) {
+    	this.country = newCountry;
 
 }

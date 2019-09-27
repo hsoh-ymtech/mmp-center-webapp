@@ -39,18 +39,45 @@
           </ng-template>
       </tr>
       <tr>
-        <th width="100" height="40"> Address</th>
-        <td>
-          <input type="text" name="textfield" [(ngModel)]="afterModiAddress" formControlName="address" required>
-        </td>
-      </tr>
-      <tr>
       	<th height="40">Enable</th>
       	<td>
       		<span class="p_r25">
             	<input name="checkbox" type="checkbox" [checked]="enabled" (change)="enabled = $event.target.checked">
          	</span>
       	<td>
+      </tr>
+      <tr>
+      <tr>
+      	<th height="40">Latitude</th>
+      	<td>
+      		<span class="p_r25">
+            	<input type="text" name="textfield" [(ngModel)]="lat" formControlName="lat" required>
+         	</span>
+      	<td>
+      </tr>
+      <tr>
+      	<th height="40">Longitude</th>
+      	<td>
+      		<span class="p_r25">
+            	<input type="text" name="textfield" [(ngModel)]="lng" formControlName="lng" required>
+         	</span>
+      	<td>
+      </tr>
+      <tr>
+      	<th height="40">Country</th>
+      	<td>
+      		<span class="p_r25">
+            	<select (change)="countryChange($event.target.value)" name="select" [(ngModel)]="countrySelected" [ngModelOptions]="{standalone: true}">
+            		<option *ngFor="let ctry of countrySelect" [value]="ctry.id">{{ctry.type}}</option>
+            	</select>
+         	</span>
+      	<td>
+      </tr>
+      <tr>
+        <th width="100" height="40"> Address</th>
+        <td>
+          <input type="text" name="textfield" [(ngModel)]="address" formControlName="address" required>
+        </td>
       </tr>
     </table>
     <div class="btn_dialog">
