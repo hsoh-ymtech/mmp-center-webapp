@@ -31,6 +31,15 @@ public interface ReflectorService {
 	 * 										Reflectors Data
 	 */
 	PageImpl<ReflectorInfoDTO> reflectorsListPageable(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO);
+	
+	/**
+	 * enable Reflector 조회
+	 * @param pageable
+	 * 										Paging 정보
+	 * @return
+	 * 										Reflectors Data
+	 */
+	PageImpl<ReflectorInfoDTO> enableReflectorsListPageable(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO);
 
 	/**
 	 * Reflector 조회

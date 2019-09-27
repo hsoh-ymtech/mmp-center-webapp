@@ -97,6 +97,27 @@ public class ReflectorController {
 			return new ResponseEntity<ResponseData>(responseData, HttpStatus.OK);
 		}
 	}
+	
+	/**
+	 * Reflector 조회
+	 * 
+	 * @return Reflectors Data
+	 */
+	@RequestMapping(value = "/enableReflectors", method = RequestMethod.GET)
+	public ResponseEntity<ResponseData> enableReflectorListPageable(Pageable pageable, @ModelAttribute @Valid ReflectorInfoSearchDTO reflectorInfoSearchDTO, final BindingResult result, HttpServletResponse response) {
+		ResponseData responseData = new ResponseData();
+		
+		if (result.hasErrors()) {
+			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
+		} else {
+			PageImpl<ReflectorInfoDTO> resultObj = reflectormanagementService.enableReflectorsListPageable(pageable, reflectorInfoSearchDTO);
+			responseData.setType(1);
+			responseData.setMessage(message.get("responseData.message.search.pageable.ok", response));
+			responseData.setResult(resultObj);
+
+			return new ResponseEntity<ResponseData>(responseData, HttpStatus.OK);
+		}
+	}
 
 	/**
 	 * Reflector 조회

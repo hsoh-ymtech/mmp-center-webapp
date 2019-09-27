@@ -100,7 +100,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private requestReflectorAllList(): void {
         const that = this;
-        this.reflectorService.getReflectorListPageable(0, 1000000000, '').subscribe(
+        this.reflectorService.getEnableReflectorsPageable(0, 1000000000, '').subscribe(
             response => {
                 console.log(response['message']);
                 that.ReflectorData = response['result']['content'];

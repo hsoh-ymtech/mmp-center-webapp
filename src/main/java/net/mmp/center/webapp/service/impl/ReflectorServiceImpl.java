@@ -130,6 +130,44 @@ public class ReflectorServiceImpl implements ReflectorService {
 			pageRequest = new PageRequest(pageable.getPageNumber(), 1000000000, pageable.getSort());
 		}
 		
+		Page<ReflectorInfo> reflData = reflectorInfoRepository.findAll(spec, pageRequest);
+		
+		if (reflData.getContent().isEmpty()) {
+			throw new NotFoundException("Not found pageable By Reflector Info = " + pageRequest);
+		}
+		
+		logger.info("Total Elements = " + reflData.getTotalElements());
+		
+		List<ReflectorInfoDTO> resultData = new ArrayList<>();
+		
+		resultData = reflData.getContent().stream()
+				.map(data -> modelMapper.map(data, ReflectorInfoDTO.class))
+				.collect(Collectors.toList());
+
+		PageImpl<ReflectorInfoDTO> resultConvert = new PageImpl<>(resultData, pageRequest, reflData.getTotalElements());
+		
+		logger.info("Reflector 조회 성공");
+		return resultConvert;
+		
+	}
+	
+	public PageImpl<ReflectorInfoDTO> enableReflectorsListPageable(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO) {
+		
+		PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+
+		Specifications<ReflectorInfo> spec = Specifications.where(null);
+
+		if (Util.checkNullStr(reflectorInfoSearchDTO.getReflectorIp())) {
+			spec = spec.and((root, query, cb) -> cb.equal(root.get("reflectorIp"), reflectorInfoSearchDTO.getReflectorIp()));
+		}
+		
+		if (Util.checkNullStr(reflectorInfoSearchDTO.getProtocol()) && !"all".equalsIgnoreCase(reflectorInfoSearchDTO.getProtocol())) {
+			spec = spec.and((root, query, cb) -> cb.equal(root.join("protocolInfo").get("type"), reflectorInfoSearchDTO.getProtocol()));
+		}
+		if (pageable.getPageSize() == 2000) {
+			pageRequest = new PageRequest(pageable.getPageNumber(), 1000000000, pageable.getSort());
+		}
+		
 		spec = spec.and((root, query, cb) -> cb.equal(root.get("enabled"), 1));
 		
 		Page<ReflectorInfo> reflData = reflectorInfoRepository.findAll(spec, pageRequest);
