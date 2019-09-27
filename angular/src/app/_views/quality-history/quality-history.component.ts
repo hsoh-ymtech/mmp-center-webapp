@@ -60,7 +60,6 @@ export class QualityHistoryComponent implements OnDestroy {
     ) {
         this.getGlobalMessage();
         this.validation();
-        this.pageMove(0);
     }
 
     ngOnDestroy() {
