@@ -63,10 +63,10 @@ public class ReflectorServiceImpl implements ReflectorService {
 
 		Boolean enabled = reflectorInfoDTO.getEnabled();
 
+		List<ReflectorInfo> sameIpReflector = reflectorInfoRepository.findByReflectorIp(reflectorInfoDTO.getReflectorIp());
+		
 		// enable 값을 true로 변경하는 경우 같은 IP를 갖고 있는 다른 Reflector 들의 enable 값을 false로 변경
 		if (enabled != null && enabled.booleanValue() == true) {
-			List<ReflectorInfo> sameIpReflector = reflectorInfoRepository
-					.findByReflectorIp(reflectorInfoDTO.getReflectorIp());
 			if (sameIpReflector != null && !sameIpReflector.isEmpty()) {
 				for (ReflectorInfo reflector : sameIpReflector) {
 					reflector.setEnabled(Boolean.FALSE);
@@ -85,6 +85,17 @@ public class ReflectorServiceImpl implements ReflectorService {
 		}
 
 		if (flist.size() > 0) {
+			// Reflector 정보 수정 시 IP가 같은 Reflector의 경우 위/경도, 국가코드, 주소를 일괄 변경
+			if (sameIpReflector != null && !sameIpReflector.isEmpty()) {
+				for (ReflectorInfo reflector : sameIpReflector) {
+					reflector.setLat(reflectorInfoDTO.getLat());
+					reflector.setLng(reflectorInfoDTO.getLng());
+					reflector.setCountry(reflectorInfoDTO.getCountry());
+					reflector.setAddress(reflectorInfoDTO.getAddress());
+					reflectorInfoRepository.save(reflector);
+				}
+			}
+			
 			reflectorInfoDB.setReflectorId(flist.get(0).getReflectorId());
 		} else {
 			reflectorInfoDB.setCountry("00");
