@@ -1,4 +1,4 @@
-APP_NAME=nqms-center-web-site
+APP_NAME=mmp-center-web-site
 VERSION=0.0.1
 
 # DOCKER TASKS
@@ -29,8 +29,7 @@ build-nc: ## Build the container without caching
 
 run: ## Run container on port configured in `config.env`
 	#docker run -d --name "${APP_NAME}" --privileged=true -it -e container=docker -v /sys/fs/cgroup:/sys/fs/cgroup:ro ${APP_NAME} /usr/sbin/init
-	docker run -d --name "${APP_NAME}" --privileged=true -it -e container=docker -v /sys/fs/cgroup:/sys/fs/cgroup:ro ${APP_NAME} 
-
+	docker run --rm -d --name "${APP_NAME}" --privileged=true -it -e container=docker -p 80:80 -v /sys/fs/cgroup:/sys/fs/cgroup:ro ${APP_NAME} 
 
 up: build run ## Run container on port configured in `config.env` (Alias to run)
 

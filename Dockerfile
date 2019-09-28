@@ -25,9 +25,10 @@ ARG PACKAGED_JAR=target/webapp-0.0.1.jar
 ADD ${PACKAGED_JAR} ${NQ_HOME}/bin/app.jar
 ADD ./target/classes/application.properties ${NQ_HOME}/bin/application.properties
 
-EXPOSE 8080:80
-EXPOSE 8001:8001
-
-#ENTRYPOINT ["java","-jar","-Xdebug","-Xrunjdwp:server=y,transport=dt_socket,address=8001,suspend=n","--spring.config.location=/root/HOME/bin/application.properties","/app.jar"]
+#EXPOSE 80:80
+#EXPOSE 8001:8001
 
 VOLUME ["/sys/fs/cgroup"]
+
+#ENTRYPOINT ["java","-jar","/root/HOME/bin/app.jar","-Xdebug","-Xrunjdwp:server=y,transport=dt_socket,address=8001,suspend=n","--spring.config.location=/root/HOME/bin/application.properties"]
+ENTRYPOINT ["java","-jar","/root/HOME/bin/app.jar","--spring.config.location=/root/HOME/bin/application.properties"]
