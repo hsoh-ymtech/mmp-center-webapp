@@ -2,6 +2,8 @@ package net.mmp.center.webapp.domain;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -64,6 +66,9 @@ public class ReflectorInfo {
 
 	@Column(name = "outbound_ip")
 	private String outboundIpAddress;
+	
+	@Column(name = "update_time")
+	private LocalDateTime updateTime;
 
 
 	@OneToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
