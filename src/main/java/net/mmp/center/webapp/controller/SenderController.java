@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.mmp.center.webapp.domain.ReflectorInfo;
@@ -33,8 +33,8 @@ public class SenderController {
 	@Qualifier(SenderServiceImpl.BEAN_QUALIFIER)
 	private SenderService senderService;
 	
-	@RequestMapping(value = "/v1/sender/updateLive", method = RequestMethod.GET)
-	public ResponseEntity<ResponseData> updateSenderLive(@RequestParam(value="meshId")String meshId, HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/v1/liveTimes/{meshId}", method = RequestMethod.PUT)
+	public ResponseEntity<ResponseData> updateSenderLive(@PathVariable String meshId, HttpServletRequest request, HttpServletResponse response) {
 		
 		 // 업데이트를 요청한 Sender의 공인 IP 확인
         String remoteAddr = request.getHeader("X-FORWARDED-FOR");
