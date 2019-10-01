@@ -63,7 +63,7 @@
     	<td>{{qualityhistory._source.lost_packets}}</td>
     	<td>{{qualityhistory._source.duplicate_packets}}</td>
     	<td>
-        	<a type="button" class="btn btn-default btn-sm" (click)="openQualityHistoryGraphDialog()">상세</a>
+        	<a type="button" class="btn btn-default btn-sm" (click)="openQualityHistoryGraphDialog(qualityhistory._source.src_host, qualityhistory._source.dst_host, qualityhistory._source.start_time, qualityhistory._source.end_time)">상세</a>
       	</td>
       	<td></td>
     </tr>
