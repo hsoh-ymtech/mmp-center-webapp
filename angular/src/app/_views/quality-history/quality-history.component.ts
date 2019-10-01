@@ -15,7 +15,7 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 
 import { KibanaInfo } from '../../_models/KibanaInfo';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { String, StringBuilder } from  'typesc
+import { String, StringBuilder } from  'typesc'
 
 @Component({
     templateUrl: 'quality-history.component.html'
