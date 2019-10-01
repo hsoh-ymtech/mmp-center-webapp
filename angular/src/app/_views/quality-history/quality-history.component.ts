@@ -15,7 +15,6 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 
 import { KibanaInfo } from '../../_models/KibanaInfo';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { String, StringBuilder } from  'typesc'
 
 @Component({
     templateUrl: 'quality-history.component.html'
@@ -197,7 +196,7 @@ export class QualityGraphDialog implements OnDestroy {
 	private uuid_outoforder_packets = '84e9a9e0-deba-11e9-b8e2-f36f647b9d9e';
 	private uuid_pdv = 'c61fd8d0-deba-11e9-b8e2-f36f647b9d9e';
 	
-	public iframeAllUrl: SafeResourecUrl;
+	public iframeAllUrl: SafeResourceUrl;
 	public timezone = 32400000;
 	
 	constructor(
@@ -339,5 +338,8 @@ export class QualityGraphDialog implements OnDestroy {
     	kibanaURL += '),query:(language:lucene,query:\'\'),timeRestore:!f,title:twamp-dashboard,viewMode:view)';
     	
     	return kibanaURL;
+    }
+    
+    ngOnDestroy() {
     }
 }
