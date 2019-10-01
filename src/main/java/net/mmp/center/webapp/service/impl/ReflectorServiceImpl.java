@@ -110,6 +110,7 @@ public class ReflectorServiceImpl implements ReflectorService {
 		reflectorInfoDB.setMeshId(reflectorInfoDTO.getMeshId());
 		reflectorInfoDB.setOs(reflectorInfoDTO.getOs() == null ? "00" : reflectorInfoDTO.getOs());
 		reflectorInfoDB.setOsVersion(reflectorInfoDTO.getOsVersion() == null ? "00" : reflectorInfoDTO.getOsVersion());
+		reflectorInfoDB.setOsArch(reflectorInfoDTO.getOsArch() == null ? "00" : reflectorInfoDTO.getOsArch());
 		reflectorInfoDB.setMacAddress(reflectorInfoDTO.getMacAddress() == null ? "00" : reflectorInfoDTO.getMacAddress());
 		reflectorInfoDB.setOutboundIpAddress(reflectorInfoDTO.getOutboundIpAddress() == null ? "00" : reflectorInfoDTO.getOutboundIpAddress());
 		reflectorInfoDB.setEnabled(reflectorInfoDTO.getEnabled() == null ? Boolean.FALSE : reflectorInfoDTO.getEnabled());

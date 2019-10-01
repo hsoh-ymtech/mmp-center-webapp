@@ -58,6 +58,9 @@ public class ReflectorInfo {
     @Column(name = "os_version")
     private String osVersion;
 
+	@Column(name = "os_arch")
+	private String osArch;
+
 	@Column(name = "enabled")
 	private Boolean enabled;
 
