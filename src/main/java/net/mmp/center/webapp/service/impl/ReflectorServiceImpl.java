@@ -1,5 +1,6 @@
 package net.mmp.center.webapp.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -110,6 +111,7 @@ public class ReflectorServiceImpl implements ReflectorService {
 		reflectorInfoDB.setMeshId(reflectorInfoDTO.getMeshId());
 		reflectorInfoDB.setOs(reflectorInfoDTO.getOs() == null ? "00" : reflectorInfoDTO.getOs());
 		reflectorInfoDB.setOsVersion(reflectorInfoDTO.getOsVersion() == null ? "00" : reflectorInfoDTO.getOsVersion());
+		reflectorInfoDB.setOsArch(reflectorInfoDTO.getOsArch() == null ? "00" : reflectorInfoDTO.getOsArch());
 		reflectorInfoDB.setMacAddress(reflectorInfoDTO.getMacAddress() == null ? "00" : reflectorInfoDTO.getMacAddress());
 		reflectorInfoDB.setOutboundIpAddress(reflectorInfoDTO.getOutboundIpAddress() == null ? "00" : reflectorInfoDTO.getOutboundIpAddress());
 		reflectorInfoDB.setEnabled(reflectorInfoDTO.getEnabled() == null ? Boolean.FALSE : reflectorInfoDTO.getEnabled());
@@ -137,6 +139,16 @@ public class ReflectorServiceImpl implements ReflectorService {
 		if (Util.checkNullStr(reflectorInfoSearchDTO.getProtocol()) && !"all".equalsIgnoreCase(reflectorInfoSearchDTO.getProtocol())) {
 			spec = spec.and((root, query, cb) -> cb.equal(root.join("protocolInfo").get("type"), reflectorInfoSearchDTO.getProtocol()));
 		}
+		
+		LocalDateTime now = LocalDateTime.now();
+		
+		if (reflectorInfoSearchDTO.getAlive() == 1) {
+			spec = spec.and((root, query, cb) -> cb.greaterThan(root.get("updateTime"), now.minusHours(1)));
+		}
+		else if (reflectorInfoSearchDTO.getAlive() == 2) {
+			spec = spec.and((root, query, cb) -> cb.lessThan(root.get("updateTime"), now.minusHours(1)));
+		}
+		
 		if (pageable.getPageSize() == 2000) {
 			pageRequest = new PageRequest(pageable.getPageNumber(), 1000000000, pageable.getSort());
 		}
@@ -149,12 +161,32 @@ public class ReflectorServiceImpl implements ReflectorService {
 		
 		logger.info("Total Elements = " + reflData.getTotalElements());
 		
+		List<ReflectorInfo> content = reflData.getContent();
+		
 		List<ReflectorInfoDTO> resultData = new ArrayList<>();
 		
-		resultData = reflData.getContent().stream()
-				.map(data -> modelMapper.map(data, ReflectorInfoDTO.class))
-				.collect(Collectors.toList());
-
+		for (ReflectorInfo reflectorInfo : content) {
+			ReflectorInfoDTO dto = modelMapper.map(reflectorInfo, ReflectorInfoDTO.class);
+			LocalDateTime updateTime = reflectorInfo.getUpdateTime();
+			if (updateTime == null) {
+				dto.setAlive(false);
+			} else {
+				dto.setAlive(now.minusHours(1).isBefore(updateTime));	
+			}
+			
+			if (reflectorInfoSearchDTO.getAlive() == 0) {
+				resultData.add(dto);
+			} else if (reflectorInfoSearchDTO.getAlive() == 1) {
+				if (dto.isAlive()) {
+					resultData.add(dto);
+				}
+			} else {
+				if (!dto.isAlive()) {
+					resultData.add(dto);
+				}
+			}	
+		}
+		
 		PageImpl<ReflectorInfoDTO> resultConvert = new PageImpl<>(resultData, pageRequest, reflData.getTotalElements());
 		
 		logger.info("Reflector 조회 성공");

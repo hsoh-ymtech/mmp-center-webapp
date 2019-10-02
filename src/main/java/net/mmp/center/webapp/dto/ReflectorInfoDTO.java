@@ -4,8 +4,10 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
+@Data
 public class ReflectorInfoDTO {
 	
 	/**
@@ -48,82 +50,18 @@ public class ReflectorInfoDTO {
 	private String os;
 
 	private String osVersion;
+
+	private String osArch;
 	
 	private String mac;
 	
 	private String country;
 
-	public String getCountry() {
-		return country;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
-	}
-
-	public String getMac() {
-		return mac;
-	}
-
-	public void setMac(String mac) {
-		this.mac = mac;
-	}
-
-	public Boolean getEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
 	private Boolean enabled;
-
-	public String getMacAddress() {
-		return macAddress;
-	}
-
-	public void setMacAddress(String macAddress) {
-		this.macAddress = macAddress;
-	}
-
-	public String getOutboundIpAddress() {
-		return outboundIpAddress;
-	}
-
-	public void setOutboundIpAddress(String outboundIpAddress) {
-		this.outboundIpAddress = outboundIpAddress;
-	}
 
 	private String macAddress;
 
 	private String outboundIpAddress;
-
-	public String getOs() {
-		return os;
-	}
-
-	public void setOs(String os) {
-		this.os = os;
-	}
-
-	public String getOsVersion() {
-		return osVersion;
-	}
-
-	public void setOsVersion(String osVersion) {
-		this.osVersion = osVersion;
-	}
-
-	public String getMeshId() {
-		return meshId;
-	}
-
-	public void setMeshId(String meshId) {
-		this.meshId = meshId;
-	}
-
-
 
 	/**
 	 * Reflector Port
@@ -135,56 +73,13 @@ public class ReflectorInfoDTO {
 	@Max(value = 65535)
 	@Min(value = 1)
 	private int port;
-	
-	
-	public int getReflectorId() {
-		return reflectorId;
-	}
-	public void setReflectorId(int reflectorId) {
-		this.reflectorId = reflectorId;
-	}
-	public String getReflectorIp() {
-		return reflectorIp;
-	}
-	public void setReflectorIp(String reflectorIp) {
-		this.reflectorIp = reflectorIp;
-	}
-	
-	public ProtocolDTO getProtocol() {
-		return protocol;
-	}
-	public void setProtocol(ProtocolDTO protocol) {
-		this.protocol = protocol;
-	}
-	public int getPort() {
-		return port;
-	}
-	public void setPort(int port) {
-		this.port = port;
-	}
-	public float getLat() {
-		return lat;
-	}
-	public void setLat(float lat) {
-		this.lat = lat;
-	}
-	public float getLng() {
-		return lng;
-	}
-	public void setLng(float lng) {
-		this.lng = lng;
-	}
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}
+	private boolean alive;
 
 	public static class ReflectorInfoSearchDTO {
 		
 		private String reflectorIp;
 		private String protocol;
+		private int alive;
 		
 		public String getReflectorIp() {
 			return reflectorIp;
@@ -197,6 +92,12 @@ public class ReflectorInfoDTO {
 		}
 		public void setProtocol(String protocol) {
 			this.protocol = protocol;
+		}
+		public int getAlive() {
+			return alive;
+		}
+		public void setAlive(int alive) {
+			this.alive = alive;
 		}
 	}
 }
