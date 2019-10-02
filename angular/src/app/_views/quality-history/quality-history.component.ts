@@ -60,7 +60,7 @@ export class QualityHistoryComponent implements OnDestroy {
         private qualityHistoryService: QualityHistoryService,
         private messageService: MessageService,
         private spinner: NgxSpinnerService,
-        private errorService: ErrorService
+        private errorService: ErrorService,
         private reflectorService: ReflectorService
     ) {
         this.getGlobalMessage();
