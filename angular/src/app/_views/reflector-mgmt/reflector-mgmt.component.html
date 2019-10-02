@@ -11,21 +11,30 @@
       <tr>
         <th width="80">Reflector IP</th>
         <td class="left">
-          <input type="text" name="textfield" [(ngModel)]="searchReflectorIp" formControlName="reflectorIp">
+<!--           <input type="text" name="textfield" [(ngModel)]="searchReflectorIp" formControlName="reflectorIp"> -->
+			<select name="select" style="width: 184px;" [(ngModel)]="searchReflectorIp" [ngModelOptions]="{standalone: true}">
+				<option *ngFor="let reflector of reflectors" [value]="reflector.reflectorIp">{{reflector.reflectorIp}}</option>
+			</select>
         </td>
         <th width="60">Protocol</th>
-        <td colspan="2">
+        <td>
           <select name="select" style="width: 184px;" [(ngModel)]="ptcSelected" [ngModelOptions]="{standalone: true}">
             <option *ngFor="let ptc of protocol" [value]="ptc.id">{{ptc.type}}</option>
+          </select>
+        </td>
+        <th width="60">Alive</th>
+        <td>
+          <select name="select" style="width: 184px;" [(ngModel)]="aliveSelected" [ngModelOptions]="{standalone: true}">
+            <option *ngFor="let ptc of alive" [value]="ptc.id">{{ptc.type}}</option>
           </select>
         </td>
         <td>
           <button type="submit" class="btn" mat-raised-button [ngClass]="{'btn-primary' : reflectorMgmtForm.valid, 'disabled' : !reflectorMgmtForm.valid}"
             [disabled]="!reflectorMgmtForm.valid">검색</button>
         </td>
-        <td *ngIf="isSearch">
-          <button type="button" class="btn btn-primary" mat-raised-button (click)="onAllListClick()">전체 목록 보기</button>
-        </td>
+<!--         <td *ngIf="isSearch"> -->
+<!--           <button type="button" class="btn btn-primary" mat-raised-button (click)="onAllListClick()">전체 목록 보기</button> -->
+<!--         </td> -->
       </tr>
     </table>
   </form>
@@ -51,6 +60,7 @@
       <th width="8%">Reflector Port</th>
       <th width="8%">Country</th>
       <th width="8%">Enabled</th>
+      <th width="8%">Alive</th>
       <th width="15%">Protocol</th>
       <th width="30%">Address</th>
       <th>비고</th>
@@ -67,6 +77,8 @@
       </ng-template>
       <td>{{reflector.country}}</td>
       <td>{{reflector.enabled}}</td>
+      <td *ngIf="reflector.alive">활성</td>
+      <td *ngIf="!reflector.alive">비활성</td>
       <td>{{reflector.protocol.type}}</td>
       <td>{{reflector.address}}</td>
       <td>

@@ -1,6 +1,6 @@
 {
   "/api/*": {
-    "target": "http://10.100.1.36:8090",
+    "target": "http://localhost",
     "secure": false,
     "logLevel": "debug",
     "pathRewrite": {"^/api": ""}

@@ -3,7 +3,7 @@
     "name": "prod"
   },
   "apiServer": {
-    "url": "http://10.100.1.36:8091"
+    "url": "http://web.center.happylife.io:80"
   },
   "pagination": {
     "size": 10,

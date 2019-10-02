@@ -17,7 +17,8 @@ export class Reflector {
         public enabled?:boolean,
         public macAddress?: string,
         public outboundIpAddress?: string,
-        public deleteCheck?: boolean
+        public deleteCheck?: boolean,
+        public alive?:boolean
     ) {
         deleteCheck = false;
      }

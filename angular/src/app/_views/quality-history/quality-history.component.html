@@ -11,7 +11,10 @@
       <tr>
         <th width="65">Sender IP</th>
         <td class="left">
-          <input type="text" name="textfield" [(ngModel)]="searchSenderIp" formControlName="senderIp">
+<!--           <input type="text" name="textfield" [(ngModel)]="searchSenderIp" formControlName="senderIp"> -->
+			<select name="select" style="width: 184px;" [(ngModel)]="searchSenderIp" [ngModelOptions]="{standalone: true}">
+				<option *ngFor="let reflector of reflectors" [value]="reflector.reflectorIp">{{reflector.reflectorIp}}</option>
+			</select> 
         </td>
         <th width="80">Reflector IP</th>
         <td colspan="2">

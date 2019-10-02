@@ -51,11 +51,13 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
 
     searchReflectorIp: string = '';
     searchProtocol: string;
+    searchAlive: number;
 
     listIsExist = false;
     isSearch = false;
 
     allDeleteCheck = false;
+    reflectors: object;
 
     messageCount = 0;
     constructor(
@@ -73,9 +75,16 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
             { id: 1, type: "Full TWAMP" },
             { id: 2, type: "Light TWAMP" }
         ]
+        this.alive = [
+        	{ id: 0, type: "전체" },
+            { id: 1, type: "활성" },
+            { id: 2, type: "비활성" }
+        ]
         this.ptcSelected = '0';
+        this.aliveSelected = '0';
         this.validation();
         this.pageMove(0);
+        this.getReflectorIP();
     }
 
     ngOnInit() {
@@ -124,6 +133,13 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
                 that.searchProtocol = element.type;
             }
         })
+        
+        this.alive.forEach(function (element) {
+            if (element.id == that.aliveSelected) {
+                that.searchAlive = element.id;
+            }
+        })
+        
         this.getSearchList(0);
     }
 
@@ -144,7 +160,7 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
     private getSearchList(page: number): void {
         this.spinner.show();
         const that = this;
-        this.reflectorService.getReflectorListPageableSearch(page, this.size, this.sort, this.searchReflectorIp, this.searchProtocol).takeWhile(() => this.alive).subscribe(
+        this.reflectorService.getReflectorListPageableSearch(page, this.size, this.sort, this.searchReflectorIp, this.searchProtocol, this.searchAlive).takeWhile(() => this.alive).subscribe(
             result => {
                 that.isSearch = true;
                 that.listIsExist = true;
@@ -265,6 +281,20 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
         } else {
             return null;
         }
+    }
+    
+    private getReflectorIP(): void {
+    	const that = this;
+    	this.reflectorService.getReflectorListPageableSearch(0, 1000000000, 'reflectorId,asc', null, null, 0).takeWhile(() => this.alive).subscribe(
+            result => {
+                that.reflectors = result['result']['content'];
+                that.searchReflectorIp = that.reflectors[0].reflectorIp;
+                console.log(result);
+            },
+            error => {
+                console.log(error);
+            }
+        );
     }
 }
 

@@ -16,6 +16,8 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { KibanaInfo } from '../../_models/KibanaInfo';
 import { NgxSpinnerService } from 'ngx-spinner';
 
+import { ReflectorService } from 'src/app/_services/reflector/reflector.service';
+
 @Component({
     templateUrl: 'quality-history.component.html'
 })
@@ -38,6 +40,8 @@ export class QualityHistoryComponent implements OnDestroy {
 
     paginationIndex: any;
 
+	reflectors: object;
+
     ERROR_NOT_FOUND = 'Not found pageable By Quality History';
     RESULT_OK = 1;
 
@@ -57,9 +61,11 @@ export class QualityHistoryComponent implements OnDestroy {
         private messageService: MessageService,
         private spinner: NgxSpinnerService,
         private errorService: ErrorService
+        private reflectorService: ReflectorService
     ) {
         this.getGlobalMessage();
         this.validation();
+        this.getSenderIP();
     }
 
     ngOnDestroy() {
@@ -140,6 +146,20 @@ export class QualityHistoryComponent implements OnDestroy {
         )
     }
 
+	private getSenderIP(): void {
+		const that = this;
+   	    this.reflectorService.getEnableReflectorsPageable(0, 1000000000, 'reflectorId,asc').takeWhile(() => this.alive).subscribe(
+            result => {
+                that.reflectors = result['result']['content'];
+                that.searchSenderIp = that.reflectors[0].reflectorIp;
+                console.log(result);
+            },
+            error => {
+                console.log(error);
+            }
+        );
+	}
+	
     private setPagingInfo(result: Object, page: number) {
         const responseData: Object = result;
         console.log(responseData['message']);

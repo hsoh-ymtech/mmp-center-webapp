@@ -63,6 +63,7 @@ public class BootstrapController {
 			dto.setMeshId(bootstrapInfoDTO.getMeshId());
 			dto.setOs(bootstrapInfoDTO.getOs()==null?"00":bootstrapInfoDTO.getOs());
 			dto.setOsVersion(bootstrapInfoDTO.getOsVersion()==null?"00":bootstrapInfoDTO.getOsVersion());
+			dto.setOsArch(bootstrapInfoDTO.getOsArch()==null?"00":bootstrapInfoDTO.getOsArch());
 			dto.setMacAddress(bootstrapInfoDTO.getMacAddress()==null?"00":bootstrapInfoDTO.getMacAddress());
 			dto.setOutboundIpAddress(bootstrapInfoDTO.getOutboundIpAddress()==null?"00":bootstrapInfoDTO.getOutboundIpAddress());
 			dto.setEnabled(bootstrapInfoDTO.getEnabled()==null?Boolean.FALSE:bootstrapInfoDTO.getEnabled());
@@ -80,6 +81,7 @@ public class BootstrapController {
 			dto.setMeshId(flist.get(0).getMeshId());
 			dto.setOs(bootstrapInfoDTO.getOs()==null?"00":bootstrapInfoDTO.getOs());
 			dto.setOsVersion(bootstrapInfoDTO.getOsVersion()==null?"00":bootstrapInfoDTO.getOsVersion());
+			dto.setOsArch(bootstrapInfoDTO.getOsArch()==null?"00":bootstrapInfoDTO.getOsArch());
 			dto.setMacAddress(bootstrapInfoDTO.getMacAddress()==null?"00":bootstrapInfoDTO.getMacAddress());
 			dto.setOutboundIpAddress(bootstrapInfoDTO.getOutboundIpAddress()==null?"00":bootstrapInfoDTO.getOutboundIpAddress());
 			dto.setEnabled(flist.get(0).getEnabled());
