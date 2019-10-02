@@ -66,7 +66,7 @@ export class ReflectorService {
         'sort' : sort,
         'reflectorIp': reflectorIp,
         'protocol' : protocol,
-        'alive' : alive
+        'alive' : '' + alive
       }
     });
   }

@@ -5,6 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 import { Reflector } from '../../_models/Reflector';
+import { ReflectorAlive } from '../../_models/ReflectorAlive';
 import { Country } from '../../_models/Country';
 import { Protocol } from '../../_models/Dashboard';
 import { AppConfig } from '../../_services/config/AppConfig';
@@ -44,7 +45,9 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
     lightTWAMP: boolean;
 
     protocol: Protocol[];
+    reflectorAlive: ReflectorAlive[];
     ptcSelected: string;
+    aliveSelected: string;
 
     reflectorMgmtForm: FormGroup;
     formReflectorIp: FormControl;
@@ -75,7 +78,7 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
             { id: 1, type: "Full TWAMP" },
             { id: 2, type: "Light TWAMP" }
         ]
-        this.alive = [
+        this.reflectorAlive = [
         	{ id: 0, type: "전체" },
             { id: 1, type: "활성" },
             { id: 2, type: "비활성" }
@@ -134,8 +137,8 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
             }
         })
         
-        this.alive.forEach(function (element) {
-            if (element.id == that.aliveSelected) {
+        this.reflectorAlive.forEach(function (element) {
+            if (element.id == parseInt(that.aliveSelected)) {
                 that.searchAlive = element.id;
             }
         })
@@ -288,7 +291,7 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
     	this.reflectorService.getReflectorListPageableSearch(0, 1000000000, 'reflectorId,asc', null, null, 0).takeWhile(() => this.alive).subscribe(
             result => {
                 that.reflectors = result['result']['content'];
-                that.searchReflectorIp = that.reflectors[0].reflectorIp;
+                that.searchReflectorIp = 'null';
                 console.log(result);
             },
             error => {

@@ -1,7 +1,7 @@
-export class Alive {
+export class ReflectorAlive {
 
     constructor(
-        public id?: string,
+        public id?: number,
         public type?: string
     ) { }
 }

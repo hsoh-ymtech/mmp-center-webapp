@@ -13,6 +13,7 @@
         <td class="left">
 <!--           <input type="text" name="textfield" [(ngModel)]="searchReflectorIp" formControlName="reflectorIp"> -->
 			<select name="select" style="width: 184px;" [(ngModel)]="searchReflectorIp" [ngModelOptions]="{standalone: true}">
+				<option value="null" selected="selected">전체</option>
 				<option *ngFor="let reflector of reflectors" [value]="reflector.reflectorIp">{{reflector.reflectorIp}}</option>
 			</select>
         </td>
@@ -25,7 +26,7 @@
         <th width="60">Alive</th>
         <td>
           <select name="select" style="width: 184px;" [(ngModel)]="aliveSelected" [ngModelOptions]="{standalone: true}">
-            <option *ngFor="let ptc of alive" [value]="ptc.id">{{ptc.type}}</option>
+            <option *ngFor="let ptc of reflectorAlive" [value]="ptc.id">{{ptc.type}}</option>
           </select>
         </td>
         <td>
