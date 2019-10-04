@@ -193,7 +193,11 @@ public class ReflectorController {
 				.collect(Collectors.toList()).size();
 		int countNotKR = countTotal - countKR - countUnknown;
 
-		ReflectorStatisticsDTO retval = new ReflectorStatisticsDTO(countKR, countNotKR, countUnknown);
+		int countWindows = list.stream().filter(result -> result.getOs().equalsIgnoreCase("windows")).collect(Collectors.toList()).size();
+		int countLinux = list.stream().filter(result -> result.getOs().equalsIgnoreCase("linux")).collect(Collectors.toList()).size();
+		int countMac = countTotal - countWindows - countLinux;
+		
+		ReflectorStatisticsDTO retval = new ReflectorStatisticsDTO(countKR, countNotKR, countUnknown, countWindows, countMac, countLinux);
 
 		return new ResponseEntity<ReflectorStatisticsDTO>(retval, HttpStatus.OK);
 	}
