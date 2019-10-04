@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +44,7 @@ import net.mmp.center.webapp.service.impl.MessagesImpl;
 import net.mmp.center.webapp.service.impl.ReflectorServiceImpl;
 
 @RestController
+@CrossOrigin(origins="*")
 public class ReflectorController {
 
 	private static final Logger logger = LogManager.getLogger(ReflectorController.class);
