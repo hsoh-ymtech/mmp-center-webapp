@@ -16,6 +16,8 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { KibanaInfo } from '../../_models/KibanaInfo';
 import { NgxSpinnerService } from 'ngx-spinner';
 
+import { ReflectorService } from 'src/app/_services/reflector/reflector.service';
+
 @Component({
     templateUrl: 'quality-history.component.html'
 })
@@ -38,6 +40,8 @@ export class QualityHistoryComponent implements OnDestroy {
 
     paginationIndex: any;
 
+	reflectors: object;
+
     ERROR_NOT_FOUND = 'Not found pageable By Quality History';
     RESULT_OK = 1;
 
@@ -56,11 +60,12 @@ export class QualityHistoryComponent implements OnDestroy {
         private qualityHistoryService: QualityHistoryService,
         private messageService: MessageService,
         private spinner: NgxSpinnerService,
-        private errorService: ErrorService
+        private errorService: ErrorService,
+        private reflectorService: ReflectorService
     ) {
         this.getGlobalMessage();
         this.validation();
-        this.pageMove(0);
+        this.getSenderIP();
     }
 
     ngOnDestroy() {
@@ -77,18 +82,16 @@ export class QualityHistoryComponent implements OnDestroy {
             });
     }
 
-    private openQualityHistoryGraphDialog(sessId: number, repeatCount: number, startTime: string, endTime: string, meResult: string, protocol: string): void {
+    private openQualityHistoryGraphDialog(src_host:string, dst_host:string, start_time: string, end_time: string): void {
         const dialogRef = this.dialog.open(QualityGraphDialog, {
             height: '80%',
             width: '80%',
             minWidth: '600px',
             data : {
-                'sessId' : sessId,
-                'repeatCount' : repeatCount,
-                'startTime' : startTime,
-                'endTime' : endTime,
-                'measureresult' : meResult,
-                'protocol' : protocol
+                'src_host' : src_host,
+                'dst_host' : dst_host,
+                'start_time' : start_time,
+                'end_time' : end_time
             },
             autoFocus: true
         });
@@ -143,6 +146,20 @@ export class QualityHistoryComponent implements OnDestroy {
         )
     }
 
+	private getSenderIP(): void {
+		const that = this;
+   	    this.reflectorService.getEnableReflectorsPageable(0, 1000000000, 'reflectorId,asc').takeWhile(() => this.alive).subscribe(
+            result => {
+                that.reflectors = result['result']['content'];
+                that.searchSenderIp = that.reflectors[0].reflectorIp;
+                console.log(result);
+            },
+            error => {
+                console.log(error);
+            }
+        );
+	}
+	
     private setPagingInfo(result: Object, page: number) {
         const responseData: Object = result;
         console.log(responseData['message']);
@@ -184,140 +201,59 @@ export class QualityHistoryComponent implements OnDestroy {
 @Component({
     templateUrl: 'quality-graph.dialog.html'
 })
-export class QualityGraphDialog implements OnDestroy{
-
-    public kibanaInfo: KibanaInfo = new KibanaInfo(0, '');
-
-    private readonly ERROR_NOT_FOUND = 'Not found pageable By Kibana Info';
-
-    private readonly kibanaVersion = AppConfig.settings.kibana.version;
-
-    private alive = true;
-    private sessId: number;
-    public repeatCount: number;
-
-    public startTime: any;
-    public endTime: any;
-    public meResult: string;
-    public protocol: string;
-
-    public graphShow = false;
-    allUrl: string;
-    public timezone = 32400000;
-    // private uuids = [ 'lp_', 'duplicate_packets_', 'ooop_', 'pdv_', 'ipdv_', 'inter_delay_', 'rtt_', 'up_delay_', 'down_delay_', 'ld_', 'ttl_' ]; // TEMP
-    private uuidsTwamp = ['up_lp_', 'down_lp_', 'up_duplicate_packets_', 'down_duplicate_packets_', 'up_ooop_', 'down_ooop_', 'up_pdv_', 'down_pdv_', 'up_ipdv_', 'down_ipdv_', 'inter_delay_', 'rtt_', 'up_delay_', 'down_delay_', 'ttl_']; // TWAMP
-    private uuidsIcmp = [ 'lp_', 'duplicate_packets_', 'ooop_', 'pdv_', 'ipdv_', 'rtt_']; // ICMP
-
-    public iframeAllUrl: SafeResourceUrl;
-
-    constructor(
-        private dialogRef: MatDialogRef<QualityGraphDialog>,
-        @Inject(MAT_DIALOG_DATA) private data: any,
-        private domSanitizer: DomSanitizer,
-        private configService: ConfigService,
-        private qualityHistoryService: QualityHistoryService,
-        private router: Router
-    ) {
-        this.sessId = data.sessId;
-        this.repeatCount = data.repeatCount;
-        this.meResult = data.measureresult;
-        this.protocol = data.protocol;
-        
-        /**
-         * 2018-09-28 수정 전
-         */
-        // if ((this.repeatCount === 3600 || this.repeatCount === 7200) && this.meResult === '측정중...') {
-        //     this.startTime = this.setTime(new Date(parseInt(this.setStartTime(data.startTime.replace(' ', 'T')) + '000')));
-        // } else if ((this.repeatCount === 3600 || this.repeatCount === 7200) && this.meResult !== '측정중...') {
-        //     this.startTime = this.setTime(new Date(parseInt(this.setStartTime(data.startTime.replace(' ', 'T'), data.endTime.replace(' ', 'T')) + '000')));
-        // } else {
-        //     this.startTime = data.startTime.replace(' ', 'T');
-        // }
-
-        // if (((this.repeatCount === 3600 || this.repeatCount === 7200) && this.meResult === '측정중...')) {
-        //     this.endTime = this.setTime();
-        // } else if (this.repeatCount === 600) {
-        //     this.graphShow = true;
-        //     this.endTime = this.setTime();
-        //     this.iFrameAddListener();
-        // } else {
-        //     this.graphShow = true;
-        //     this.endTime = data.endTime.replace(' ', 'T');
-        //     this.iFrameAddListener();
-        // }
-
-        // if ((this.repeatCount === 3600 || this.repeatCount === 7200)) {
-        // } else {
-        //     this.loadKibanaUrl();
-        // }
-
-        /**
-         * 2018-09-28 수정 후
-         */
-        if (this.meResult === "측정중...") {
-          this.startTime = this.setTime(new Date(parseInt(this.setStartTime(data.startTime.replace(" ", "T")) + "000")));
-        } else if (this.meResult !== "측정중...") {
-          this.startTime = this.setTime(new Date(parseInt(this.setStartTime(data.startTime.replace(" ", "T"), data.endTime.replace(" ", "T")) + "000")));
-        }
-
-        this.graphShow = true;
-        this.iFrameAddListener();
-        if (this.meResult === "측정중...") {
-          this.endTime = this.setTime();
-        } else {
-          this.endTime = data.endTime.replace(" ", "T");
-        }
-
-        this.loadKibanaUrl();
-    }
-
-    /**
+export class QualityGraphDialog implements OnDestroy {
+	public startTime: any;
+	public endTime: any;
+	public srcIpAddress: string;
+	public dstIpAddress: string;
+	
+	private uuid_dashboard = '4a55d320-debb-11e9-b8e2-f36f647b9d9e';
+	private uuid_bandwidth = '01a87a60-debb-11e9-b8e2-f36f647b9d9e';
+	private uuid_delay = 'a8c3d340-deba-11e9-b8e2-f36f647b9d9e';
+	private uuid_duplicate_packets = '4a033bc0-deba-11e9-b8e2-f36f647b9d9e';
+	private uuid_ipdv = 'e1d97900-deba-11e9-b8e2-f36f647b9d9e';
+	private uuid_lost_packets = '1939ea20-deba-11e9-b8e2-f36f647b9d9e';
+	private uuid_outoforder_packets = '84e9a9e0-deba-11e9-b8e2-f36f647b9d9e';
+	private uuid_pdv = 'c61fd8d0-deba-11e9-b8e2-f36f647b9d9e';
+	
+	public iframeAllUrl: SafeResourceUrl;
+	public timezone = 32400000;
+	
+	constructor(
+		private dialogRef: MatDialogRef<QualityGraphDialog>,
+		@Inject(MAT_DIALOG_DATA) private data: any,
+		private domSanitizer: DomSanitizer,
+		private router: Router
+	) {
+		this.srcIpAddress = data.src_host;
+		this.dstIpAddress = data.dst_host;
+		
+		let startTimeInt = parseInt(this.parseTime(data.start_time));
+		let endTimeInt = parseInt(this.parseTime(data.end_time));
+		
+		if (startTimeInt == endTimeInt) {
+			endTimeInt = endTimeInt + 1000;
+		}
+		
+		this.startTime = this.setTime(new Date(startTimeInt));
+		this.endTime = this.setTime(new Date(endTimeInt));
+	}
+	
+	
+	/**
      * start Time 설정
      * @param st DB에 저장된 start Time
      * @param endTime End Time
      */
-    private setStartTime(st: string, endTime?: string): any {
-        const qwe = st.replace('.000', '');
-        let asd;
-        if (endTime === null || endTime === undefined || endTime === '') {
-            asd = this.setTime();
-        } else {
-            asd = endTime.replace('.000', '');
-        }
-        let startTime = parseInt(Date.parse(qwe).toString().replace('000', ''));
-        let currentTime = parseInt(Date.parse(asd).toString().replace('000', ''));
-
-        let intervalTime;
-        if (this.repeatCount === 300) {
-            intervalTime = 300;// 5분
-        } else {
-            intervalTime = 1500;// 25분
-        }
-        // if (currentTime - intervalTime > startTime) {
-        //     return currentTime - intervalTime;
-        // } else {
-        //     return startTime;
-        // }
-        /**
-         * 보여주려는 그래프의 양을 시간값을 이용하여 조절하는 부분임.
-         * 현재시간에서 임의로 설정한 시간을 뺀 값이 측정시작시간보다 클경우, 300번 이하 측정 반복 했을 경우
-         */
-        if (currentTime - intervalTime > startTime || this.repeatCount <= 300) {
-            if (this.repeatCount === 300) {
-                return startTime;
-            } else {
-                if (currentTime - intervalTime < startTime) {
-                    return startTime - 1;
-                } else {
-                    return currentTime - intervalTime;
-                }
-            }
-        } else {
-            return startTime;
-        }
+    private parseTime(timeStr:string): any {
+    	let splitTime = timeStr.substring(0, 19);
+    	let parseTime = splitTime.replace(" ", "T");
+    	
+    	let timeInt = parseInt(Date.parse(parseTime).toString());
+    	return timeInt;
     }
-
-    /**
+    
+	/**
      * 시간 설정
      * date 인자 값이 없으면 현재 시간
      * date 인자 값이 있으면 date 값의 시간
@@ -331,14 +267,6 @@ export class QualityGraphDialog implements OnDestroy{
         } else {
             dt = date;
         }
-        // const sdf = dt.getDate();
-        // const asd = dt.getTimezoneOffset();
-        // const dfg = dt.getMonth() + 1;
-        // const xcv = dt.getUTCMonth();
-        // const cvb = dt.getDay();
-        // const fgh = dt.getHours();
-        // const uyi = dt.getMinutes();
-        // const qwe = new Date().toISOString();
 
         const year = dt.getFullYear();
 
@@ -362,224 +290,32 @@ export class QualityGraphDialog implements OnDestroy{
         time = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
         return time;
     }
-
+    
     formatTwoDigits(n: string | number): string | number {
 
         return n < 10 ? '0' + n : n;
     }
-
-    ngOnDestroy() {
-        this.alive = false;
-    }
-
+    
     public onTimeSearch(): void {
-        this.graphShow = true;
         this.iFrameAddListener();
         this.loadKibanaUrl();
     }
-
-    private setInterval(): void {
-        this.qualityHistoryService.getElsCountBySessionId(this.kibanaInfo[0].host, this.kibanaInfo[0].eport, this.sessId).takeWhile(() => this.alive).subscribe(
-            responseData => {
-                console.log(responseData);
-            }
-        )
-    }
-
-    private loadKibanaUrl(): void {
-        const that = this;
-        this.configService.getKibanaListAll().takeWhile(() => this.alive).subscribe(
-            responseData => {
-                that.kibanaInfo = responseData['result']['content'];
-                that.setIframeUrl();
-            },
-            error => {
-                if (error['error'].result.indexOf(that.ERROR_NOT_FOUND) != -1) {
-                    alert(error['error']['message']);
-                }
-                console.log(error['error']['message']);
-            }
-        )
-    }
-
+    
     public onNoClick(): void {
         this.dialogRef.close(null);
     }
-
-    private setIframeUrl(): void {
-        // if (this.repeatCount === -1) {
-        //     this.setUrlByInfi();
-        // } else {
-        //     this.setUrl();
-        // }
-
-
-        // (this.repeatCount === 10 || this.repeatCount === 100 || this.repeatCount === 300 || this.repeatCount === 600 || this.repeatCount === 3600 || this.repeatCount === 7200) ? this.setUrlByInfi() : this.setUrl();
-        this.setUrlByInfi();
-
-
-        this.iframeAllUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(this.allUrl);
-        this.router.events.subscribe((evt) => {
+    
+    private loadKibanaUrl(): void {
+    	let kibanaURL = this.createKibanaGraphURL(this.srcIpAddress, this.dstIpAddress, this.startTime, this.endTime);
+    	this.iframeAllUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(kibanaURL);
+    	this.router.events.subscribe((evt) => {
             if (!(evt instanceof NavigationEnd)) {
                 return;
             }
             window.scrollTo(0, 0)
         });
     }
-
-    setUrl() {
-        let uuidLength: number;
-        let uuids: string[];
-
-        if (this.protocol === 'Light TWAMP') {
-            uuidLength = this.uuidsTwamp.length + 1;
-            uuids = this.uuidsTwamp;
-        } else if (this.protocol === 'ICMP') {
-            uuidLength = this.uuidsIcmp.length + 1;
-            uuids = this.uuidsIcmp;
-        }
-
-        let gIdx = this.kibanaInfo[0].url.indexOf('?_g=()');
-        let addgIdxResult = this.strInsert(this.kibanaInfo[0].url, gIdx + 1, 'embed=true&');
-        let visCfgStr = '';
-        let locx: number;
-        let locy = 0;
-        let count = 0;
-        for (let a = 1; a < uuidLength; a++) {
-            if (a > 1) {
-                visCfgStr += ',';
-            }
-            if (a % 2 == 0) {
-                locx = 24;
-            } else { locx = 0; }
-            // if (this.repeatCount === 100) {
-            //     this.repeatCount = 60;
-            // }
-            visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'' + a + '\',w:24,x:' + locx + ',y:' + locy + '),id:\'' + uuids[a - 1] + this.repeatCount + '\',panelIndex:\'' + a + '\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-            count++;
-            if (count == 2) {
-                locy += 15;
-                count = 0;
-            }
-        }
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'1\',w:24,x:0,y:0),id:\'' + this.LP_UUID + this.repeatCount + '\',panelIndex:\'1\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-        // visCfgStr += ',';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'2\',w:24,x:24,y:0),id:\'' + this.DP_UUID + this.repeatCount + '\',panelIndex:\'2\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-        // visCfgStr += ',';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'3\',w:24,x:0,y:15),id:\'' + this.OoOP_UUID + this.repeatCount + '\',panelIndex:\'3\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-        // visCfgStr += ',';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'4\',w:24,x:24,y:15),id:\'' + this.PDV_UUID + this.repeatCount + '\',panelIndex:\'4\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-        // visCfgStr += ',';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'5\',w:24,x:0,y:30),id:\'' + this.IPDV_UUID + this.repeatCount + '\',panelIndex:\'5\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-        // visCfgStr += ',';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'6\',w:24,x:24,y:30),id:\'' + this.ID_UUID + this.repeatCount + '\',panelIndex:\'6\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-        // visCfgStr += ',';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'7\',w:24,x:0,y:45),id:\'' + this.RTT_UUID + this.repeatCount + '\',panelIndex:\'7\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-        // visCfgStr += ',';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'8\',w:24,x:24,y:45),id:\'' + this.LD_UUID + this.sessId + '\',panelIndex:\'8\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-        // visCfgStr += ',';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'9\',w:24,x:0,y:60),id:\'' + this.TTL_UUID + this.sessId + '\',panelIndex:\'9\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-        const gOps = 'refreshInterval:(pause:!t,value:0),time:(from:\'2010-11-30T15:00:00.000Z\',mode:absolute,to:\'' + this.endTime + 'Z\')';
-        let visIntervalIdx = addgIdxResult.indexOf('e&_g=()');
-        let addGResult = this.strInsert(addgIdxResult, visIntervalIdx + 6, gOps);
-        
-        let visCfgIdx = addGResult.indexOf('panels:!()');
-        let addVisCfgResult = this.strInsert(addGResult, visCfgIdx + 9, visCfgStr);
-
-        const startTimeparse = Date.parse(this.startTime) - this.timezone;
-        const endTimeparse = Date.parse(this.endTime) - this.timezone;
-
-        let filters = '(\'$state\':(store:appState),meta:(alias:!n,disabled:!f,index:\'77b1b590-9ac5-11e8-92d3-7f0263a523d8\',key:start_time,negate:!f,params:(format:epoch_millis,gte:' + startTimeparse + ',lt:' + endTimeparse + '),type:range,value:\'September%205th%202018,%2011:25:13.333%20to%20September%205th%202018,%2012:05:37.575\'),range:(start_time:(format:epoch_millis,gte:' + startTimeparse + ',lt:' + endTimeparse + ')))';
-
-        let visFilterIdx = addVisCfgResult.indexOf('ilters:!(),fullS');
-        let addVisFilterResult = this.strInsert(addVisCfgResult, visFilterIdx + 9, filters);
-
-        let queryAddIndex = addVisFilterResult.indexOf('query:\'\'');
-        this.allUrl = this.strInsert(addVisFilterResult, queryAddIndex + 7, 'session_id:' + this.sessId);
-
-        console.log(this.allUrl);
-    }
-    setUrlByInfi() {
-
-        let uuidLength: number;
-        let uuids: string[];
-        let intervalSec: string;
-        if (this.repeatCount <= 100) {
-            intervalSec = '1s';
-        } else {
-            intervalSec = '5s';
-        }
-
-        uuidLength = this.uuidsTwamp.length + 1;
-        uuids = this.uuidsTwamp;
-
-        // if (this.protocol === 'TWAMP') {
-        //     uuidLength = this.uuidsTwamp.length + 1;
-        //     uuids = this.uuidsTwamp;
-        // } else if (this.protocol === 'ICMP') {
-        //     uuidLength = this.uuidsIcmp.length + 1;
-        //     uuids = this.uuidsIcmp;
-        // }
-
-        const startTimeparse = this.setTime(new Date(Date.parse(this.startTime) - this.timezone));
-        const endTimeparse = this.setTime(new Date(Date.parse(this.endTime) - this.timezone));
-        
-        let gIdx = this.kibanaInfo[0].url.indexOf('?_g=()');
-        let addgIdxResult = this.strInsert(this.kibanaInfo[0].url, gIdx + 1, 'embed=true&');
-        let visCfgStr = '';
-        let locx: number;
-        let locy = 0;
-        let count = 0;
-        for (let a = 1; a < uuidLength; a++) {
-            if (a > 1) {
-                visCfgStr += ',';
-            }
-            if (a % 2 == 0) {
-                locx = 24;
-            } else { locx = 0; }
-
-            visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'' + a + '\',w:24,x:' + locx + ',y:' + locy + '),id:\'' + uuids[a - 1] + intervalSec + '\',panelIndex:\'' + a + '\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-            count++;
-            if (count == 2) {
-                locy += 15;
-                count = 0;
-            }
-        }
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'' + 1 + '\',w:24,x:' + 0 + ',y:' + 0 + '),id:\'' + this.uuids[a - 1] + '5s' + '\',panelIndex:\'' + 1 + '\',type:visualization,version:\'' + this.kibanaVersion + '\'),';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'' + 2 + '\',w:24,x:' + 24 + ',y:' + 0 + '),id:\'609fa4a0-b0e3-11e8-a708-d97c9dcf4dae\',panelIndex:\'' + 2 + '\',type:visualization,version:\'' + this.kibanaVersion + '\'),';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'' + 3 + '\',w:24,x:' + 0 + ',y:' + 15 + '),id:\'c91f5a20-b0e3-11e8-a708-d97c9dcf4dae\',panelIndex:\'' + 3 + '\',type:visualization,version:\'' + this.kibanaVersion + '\'),';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'' + 4 + '\',w:24,x:' + 24 + ',y:' + 15 + '),id:\'04405be0-b0c6-11e8-a708-d97c9dcf4dae\',panelIndex:\'' + 4 + '\',type:visualization,version:\'' + this.kibanaVersion + '\'),';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'' + 5 + '\',w:24,x:' + 0 + ',y:' + 30 + '),id:\'e2164a30-b01a-11e8-a708-d97c9dcf4dae\',panelIndex:\'' + 5 + '\',type:visualization,version:\'' + this.kibanaVersion + '\'),';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'' + 6 + '\',w:24,x:' + 24 + ',y:' + 30 + '),id:\'0c9e5d10-b0e3-11e8-a708-d97c9dcf4dae\',panelIndex:\'' + 6 + '\',type:visualization,version:\'' + this.kibanaVersion + '\'),';
-        // visCfgStr += '(embeddableConfig:(),gridData:(h:15,i:\'' + 7 + '\',w:24,x:' + 0 + ',y:' + 45 + '),id:\'96847240-b0e2-11e8-a708-d97c9dcf4dae\',panelIndex:\'' + 7 + '\',type:visualization,version:\'' + this.kibanaVersion + '\')';
-
-        /**
-         * 77b1b590-9ac5-11e8-92d3-7f0263a523d8
-         * 39463e30-56a8-11e9-be92-2f083c355e12
-         */
-        let filters1 = '(\'$state\':(store:appState),meta:(alias:!n,disabled:!f,index:\'77b1b590-9ac5-11e8-92d3-7f0263a523d8\',key:start_time,negate:!f,params:(format:epoch_millis,gte:\'' + startTimeparse + '\',lt:' + endTimeparse + '),type:range,value:\'September%205th%202018,%2011:25:13.333%20to%20September%205th%202018,%2012:05:37.575\'),range:(start_time:(format:epoch_millis,gte:' + startTimeparse + ',lt:' + endTimeparse + ')))';
-        let filters2 = '(\'$state\':(store:appState),meta:(alias:!n,disabled:!f,index:\'77b1b590-9ac5-11e8-92d3-7f0263a523d8\',key:start_time,negate:!f,params:(gte:\'' + startTimeparse + '\',lt:\'' + endTimeparse + '\'),type:range,value:\'' + startTimeparse + '%20to%' + endTimeparse + '\'),range:(start_time:(gte:\'' + startTimeparse + '\',lt:\'' + endTimeparse + '\')))';
-        
-        const intervalOps = 'refreshInterval:(pause:!t,value:0),time:(from:\'' + startTimeparse + 'Z\',mode:absolute,to:\'' + endTimeparse + 'Z\')';
-
-        let visIntervalIdx = addgIdxResult.indexOf('e&_g=()');
-        let addVisIntervalResult = this.strInsert(addgIdxResult, visIntervalIdx + 6, intervalOps);
-
-        // let visFilterIdx = addVisIntervalResult.indexOf('ilters:!(),fullS');
-        // let addVisFilterResult = this.strInsert(addVisIntervalResult, visFilterIdx + 9, filters2);
-
-        let visCfgIdx = addVisIntervalResult.indexOf('panels:!()');
-        let addVisCfgResult = this.strInsert(addVisIntervalResult, visCfgIdx + 9, visCfgStr);
-
-        let queryAddIndex = addVisCfgResult.indexOf('query:\'\'');
-        this.allUrl = this.strInsert(addVisCfgResult, queryAddIndex + 7, 'session_id:' + this.sessId);
-
-        console.log(this.allUrl);
-    }
-    strInsert(str: string, index: number, value: string) {
-        return str.substr(0, index) + value + str.substr(index);
-    }
-
+    
     private iFrameAddListener() {
         let that = this;
         let eventMethod = 'addEventListener';
@@ -588,9 +324,8 @@ export class QualityGraphDialog implements OnDestroy{
 
         // Listen to message from parent (or any other) window
         eventer(messageEvent, this.pluginNotification);
-
     }
-
+    
     private pluginNotification = (e) => {
         let that = this;
         if (e.data && !e.data.type) {
@@ -598,9 +333,33 @@ export class QualityGraphDialog implements OnDestroy{
             let res = JSON.parse(e.data.split('##')[1]);
             console.log('func:', func, 'res:', res);
         }
-        // if (func == "load") {
-        //   that.createBaseDashboard()
-        // }
-    };
-
+    }
+    
+    private createKibanaGraphURL(src_host:string, dst_host:string, start_time: string, end_time: string): string {
+    	let kibanaURL = '';
+    	kibanaURL += 'http://escluster.happylife.io:5601/app/kibana#/dashboard/' + this.uuid_dashboard + '?';
+    	kibanaURL += 'embed=true&';
+    	kibanaURL += '_g=(refreshInterval:(pause:!t,value:0),';
+    	kibanaURL += 'time:(from:\'' + start_time + '\',mode:absolute,to:\'' + end_time + '\'))&';
+    	kibanaURL += '_a=(description:\'\',';
+    	kibanaURL += 'filters:!(';
+    	kibanaURL += '(\'$state\':(store:appState),meta:(alias:!n,disabled:!f,index:\'5643da00-dd45-11e9-b8e2-f36f647b9d9e\',key:src_host,negate:!f,params:(query:\'' + src_host + '\',type:phrase),type:phrase,value:\'' + src_host + '\'),query:(match:(src_host:(query:\'' + src_host + '\',type:phrase)))),';
+    	kibanaURL += '(\'$state\':(store:appState),meta:(alias:!n,disabled:!f,index:\'5643da00-dd45-11e9-b8e2-f36f647b9d9e\',key:dst_host,negate:!f,params:(query:\'' + dst_host + '\',type:phrase),type:phrase,value:\'' + dst_host + '\'),query:(match:(dst_host:(query:\'' + dst_host + '\',type:phrase))))';
+    	kibanaURL += '),';
+    	kibanaURL += 'fullScreenMode:!f,options:(darkTheme:!f,hidePanelTitles:!t,useMargins:!t),';
+    	kibanaURL += 'panels:!(';
+    	kibanaURL += '(embeddableConfig:(),gridData:(h:15,i:\'1\',w:24,x:0,y:0),id:\'' + this.uuid_bandwidth + '\',panelIndex:\'1\',type:visualization,version:\'6.5.4\'),';
+    	kibanaURL += '(embeddableConfig:(vis:(legendOpen:!t)),gridData:(h:15,i:\'2\',w:24,x:24,y:0),id:\'' + this.uuid_outoforder_packets + '\',panelIndex:\'2\',type:visualization,version:\'6.5.4\'),';
+    	kibanaURL += '(embeddableConfig:(),gridData:(h:15,i:\'3\',w:24,x:0,y:15),id:\'' + this.uuid_delay + '\',panelIndex:\'3\',type:visualization,version:\'6.5.4\'),';
+    	kibanaURL += '(embeddableConfig:(),gridData:(h:15,i:\'4\',w:24,x:24,y:15),id:\'' + this.uuid_pdv + '\',panelIndex:\'4\',type:visualization,version:\'6.5.4\'),';
+    	kibanaURL += '(embeddableConfig:(),gridData:(h:15,i:\'5\',w:24,x:0,y:30),id:\'' + this.uuid_ipdv + '\',panelIndex:\'5\',type:visualization,version:\'6.5.4\'),';
+    	kibanaURL += '(embeddableConfig:(),gridData:(h:15,i:\'6\',w:24,x:24,y:30),id:\'' + this.uuid_lost_packets + '\',panelIndex:\'6\',type:visualization,version:\'6.5.4\'),';
+    	kibanaURL += '(embeddableConfig:(),gridData:(h:15,i:\'7\',w:24,x:0,y:45),id:\'' + this.uuid_duplicate_packets + '\',panelIndex:\'7\',type:visualization,version:\'6.5.4\')';
+    	kibanaURL += '),query:(language:lucene,query:\'\'),timeRestore:!f,title:twamp-dashboard,viewMode:view)';
+    	
+    	return kibanaURL;
+    }
+    
+    ngOnDestroy() {
+    }
 }

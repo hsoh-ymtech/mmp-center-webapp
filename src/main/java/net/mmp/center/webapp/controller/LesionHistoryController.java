@@ -43,7 +43,7 @@ public class LesionHistoryController {
 	/**
 	 * 품질 이력 조회
 	 * 
-	 * @param qualityHistoryDTO
+	 * @param lesionHistorySearchDTO
 	 *            품질 이력 DTO
 	 * @return 조회 List
 	 */

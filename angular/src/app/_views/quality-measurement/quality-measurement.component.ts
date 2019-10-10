@@ -162,7 +162,7 @@ export class QualityMeasurementComponent implements OnDestroy {
 
     getSenderIP(): void {
         const that = this;
-        this.reflectorService.getReflectorListPageable(0, 1000000000, 'reflectorId,asc').takeWhile(() => this.alive).subscribe(
+        this.reflectorService.getEnableReflectorsPageable(0, 1000000000, 'reflectorId,asc').takeWhile(() => this.alive).subscribe(
             result => {
                 that.reflectors = result['result']['content'];
                 that.measureData.senderIp = that.reflectors[0].reflectorIp;

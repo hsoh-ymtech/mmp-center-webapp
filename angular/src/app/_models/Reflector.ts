@@ -10,7 +10,15 @@ export class Reflector {
         public lat?: number,
         public lng?: number,
         public address?: string,
-        public deleteCheck?: boolean
+        public country?: string,
+        public os?: string,
+        public osVersion?: string,
+        public meshId?: string,
+        public enabled?:boolean,
+        public macAddress?: string,
+        public outboundIpAddress?: string,
+        public deleteCheck?: boolean,
+        public alive?:boolean
     ) {
         deleteCheck = false;
      }

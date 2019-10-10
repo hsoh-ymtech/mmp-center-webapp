@@ -47,6 +47,8 @@ public class BootstrapController {
 	public ResponseEntity<BootstrapInfoDTO> bootstrap(@RequestBody @Valid BootstrapInfoDTO bootstrapInfoDTO,
 		final BindingResult result, HttpServletResponse request, HttpServletResponse response) {
 
+		logger.info(bootstrapInfoDTO);
+
 		List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
 		List<ReflectorInfo> flist = list.stream().filter(item -> item.getMeshId().equals(bootstrapInfoDTO.getMeshId()))
 				.collect(Collectors.toList());
@@ -61,6 +63,7 @@ public class BootstrapController {
 			dto.setMeshId(bootstrapInfoDTO.getMeshId());
 			dto.setOs(bootstrapInfoDTO.getOs()==null?"00":bootstrapInfoDTO.getOs());
 			dto.setOsVersion(bootstrapInfoDTO.getOsVersion()==null?"00":bootstrapInfoDTO.getOsVersion());
+			dto.setOsArch(bootstrapInfoDTO.getOsArch()==null?"00":bootstrapInfoDTO.getOsArch());
 			dto.setMacAddress(bootstrapInfoDTO.getMacAddress()==null?"00":bootstrapInfoDTO.getMacAddress());
 			dto.setOutboundIpAddress(bootstrapInfoDTO.getOutboundIpAddress()==null?"00":bootstrapInfoDTO.getOutboundIpAddress());
 			dto.setEnabled(bootstrapInfoDTO.getEnabled()==null?Boolean.FALSE:bootstrapInfoDTO.getEnabled());
@@ -78,8 +81,9 @@ public class BootstrapController {
 			dto.setMeshId(flist.get(0).getMeshId());
 			dto.setOs(bootstrapInfoDTO.getOs()==null?"00":bootstrapInfoDTO.getOs());
 			dto.setOsVersion(bootstrapInfoDTO.getOsVersion()==null?"00":bootstrapInfoDTO.getOsVersion());
-			dto.setMacAddress(flist.get(0).getMacAddress());
-			dto.setOutboundIpAddress(flist.get(0).getOutboundIpAddress());
+			dto.setOsArch(bootstrapInfoDTO.getOsArch()==null?"00":bootstrapInfoDTO.getOsArch());
+			dto.setMacAddress(bootstrapInfoDTO.getMacAddress()==null?"00":bootstrapInfoDTO.getMacAddress());
+			dto.setOutboundIpAddress(bootstrapInfoDTO.getOutboundIpAddress()==null?"00":bootstrapInfoDTO.getOutboundIpAddress());
 			dto.setEnabled(flist.get(0).getEnabled());
 			ProtocolDTO protocol = new ProtocolDTO(flist.get(0).getProtocolInfo().getType());
 			dto.setProtocol(protocol);

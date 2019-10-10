@@ -31,6 +31,15 @@ public interface ReflectorService {
 	 * 										Reflectors Data
 	 */
 	PageImpl<ReflectorInfoDTO> reflectorsListPageable(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO);
+	
+	/**
+	 * enable Reflector 조회
+	 * @param pageable
+	 * 										Paging 정보
+	 * @return
+	 * 										Reflectors Data
+	 */
+	PageImpl<ReflectorInfoDTO> enableReflectorsListPageable(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO);
 
 	/**
 	 * Reflector 조회
@@ -65,4 +74,12 @@ public interface ReflectorService {
 	 * 										삭제 결과
 	 */
 	int reflectorDelete(int reflectorId);
+	
+	/**
+	 * Mesh ID를 통한 Reflector 정보 확인
+  	 * @param reflectorIp
+	 * @param meshId
+	 * @return
+	 */
+	ReflectorInfo getRequestReflectorInfo(String reflectorIp, String meshId);
 }

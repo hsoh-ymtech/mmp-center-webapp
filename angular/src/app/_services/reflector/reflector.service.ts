@@ -47,15 +47,26 @@ export class ReflectorService {
       }
     });
   }
+  
+  getEnableReflectorsPageable(page: number, size: number, sort: string): Observable<Object> {
+    return this.httpClient.get(this.url.getUrl() + '/enableReflectors', {
+      params: {
+        'page' : '' + page,
+        'size' : '' + size,
+        'sort' : sort
+      }
+    });
+  }
 
-  getReflectorListPageableSearch(page: number, size: number, sort: string, reflectorIp: string, protocol: string): Observable<Object> {
+  getReflectorListPageableSearch(page: number, size: number, sort: string, reflectorIp: string, protocol: string, alive: number): Observable<Object> {
     return this.httpClient.get(this.url.getUrl() + '/reflectors', {
       params: {
         'page' : '' + page,
         'size' : '' + size,
         'sort' : sort,
         'reflectorIp': reflectorIp,
-        'protocol' : protocol
+        'protocol' : protocol,
+        'alive' : '' + alive
       }
     });
   }

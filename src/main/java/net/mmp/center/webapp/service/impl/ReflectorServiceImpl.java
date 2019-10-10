@@ -1,5 +1,6 @@
 package net.mmp.center.webapp.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,16 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.modelmapper.ModelMapper;
-import net.mmp.center.webapp.domain.ProtocolInfo;
-import net.mmp.center.webapp.domain.ReflectorInfo;
-import net.mmp.center.webapp.dto.ReflectorInfoDTO;
-import net.mmp.center.webapp.dto.ReflectorInfoDTO.ReflectorInfoSearchDTO;
-import net.mmp.center.webapp.exception.AlreadyExistException;
-import net.mmp.center.webapp.exception.NotFoundException;
-import net.mmp.center.webapp.repository.ProtocolInfoRepository;
-import net.mmp.center.webapp.repository.ReflectorInfoRepository;
-import net.mmp.center.webapp.service.ReflectorService;
-import net.mmp.center.webapp.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,6 +21,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import net.mmp.center.webapp.domain.ProtocolInfo;
+import net.mmp.center.webapp.domain.ReflectorInfo;
+import net.mmp.center.webapp.dto.ReflectorInfoDTO;
+import net.mmp.center.webapp.dto.ReflectorInfoDTO.ReflectorInfoSearchDTO;
+import net.mmp.center.webapp.exception.NotFoundException;
+import net.mmp.center.webapp.repository.ProtocolInfoRepository;
+import net.mmp.center.webapp.repository.ReflectorInfoRepository;
+import net.mmp.center.webapp.service.ReflectorService;
+import net.mmp.center.webapp.util.Util;
 
 @SuppressWarnings("deprecation")
 @Service(ReflectorServiceImpl.BEAN_QUALIFIER)
@@ -61,33 +62,46 @@ public class ReflectorServiceImpl implements ReflectorService {
 		ProtocolInfo protocolData = new ProtocolInfo();
 		ReflectorInfo reflectorData = new ReflectorInfo();
 
-		// 입력한 값과 같은 row가 이미 존재한다면
-		/*
-		List<ReflectorInfo> findReflData =
-				reflectorInfoRepository.findByReflectorIpAndPort(
-						reflectorInfoDTO.getReflectorIp(),
-						reflectorInfoDTO.getPort());
-		*/
+		Boolean enabled = reflectorInfoDTO.getEnabled();
 
-		List<ReflectorInfo> flist =
-				reflectorInfoRepository.findByMeshId(reflectorInfoDTO.getMeshId());
-		/*
-		if (!findReflData.isEmpty()) {
-			throw new AlreadyExistException("Reflector Info is Exist !! = IP : " + reflectorInfoDTO.getProtocol()
-					+ ", PORT : " + reflectorInfoDTO.getPort() + ", PROTOCOL : " + reflectorInfoDTO.getProtocol());
+		List<ReflectorInfo> sameIpReflector = reflectorInfoRepository.findByReflectorIp(reflectorInfoDTO.getReflectorIp());
+		
+		// enable 값을 true로 변경하는 경우 같은 IP를 갖고 있는 다른 Reflector 들의 enable 값을 false로 변경
+		if (enabled != null && enabled.booleanValue() == true) {
+			if (sameIpReflector != null && !sameIpReflector.isEmpty()) {
+				for (ReflectorInfo reflector : sameIpReflector) {
+					reflector.setEnabled(Boolean.FALSE);
+					reflectorInfoRepository.save(reflector);
+				}
+			}
 		}
-		 */
-		protocolData = prtoocolInfoRepository.findByType(reflectorInfoDTO.getProtocol().getType()==null?"Light TWAMP":reflectorInfoDTO.getProtocol().getType());
+		
+		List<ReflectorInfo> flist = reflectorInfoRepository.findByMeshId(reflectorInfoDTO.getMeshId());
+		protocolData = prtoocolInfoRepository
+				.findByType(reflectorInfoDTO.getProtocol().getType() == null ? "Light TWAMP"
+						: reflectorInfoDTO.getProtocol().getType());
 
 		if (protocolData == null) {
 			throw new NotFoundException("Not found Protocol Type = " + reflectorInfoDTO.getProtocol());
 		}
 
-		if(flist.size()>0) {
+		if (flist.size() > 0) {
+			// Reflector 정보 수정 시 IP가 같은 Reflector의 경우 위/경도, 국가코드, 주소를 일괄 변경
+			if (sameIpReflector != null && !sameIpReflector.isEmpty()) {
+				for (ReflectorInfo reflector : sameIpReflector) {
+					reflector.setLat(reflectorInfoDTO.getLat());
+					reflector.setLng(reflectorInfoDTO.getLng());
+					reflector.setCountry(reflectorInfoDTO.getCountry());
+					reflector.setAddress(reflectorInfoDTO.getAddress());
+					reflectorInfoRepository.save(reflector);
+				}
+			}
+			
 			reflectorInfoDB.setReflectorId(flist.get(0).getReflectorId());
 		} else {
 			reflectorInfoDB.setCountry("00");
 		}
+		reflectorInfoDB.setCountry(reflectorInfoDTO.getCountry() == null ? "00" : reflectorInfoDTO.getCountry());
 		reflectorInfoDB.setReflectorIp(reflectorInfoDTO.getReflectorIp());
 		reflectorInfoDB.setPort(reflectorInfoDTO.getPort());
 		reflectorInfoDB.setProtocolInfo(protocolData);
@@ -95,17 +109,19 @@ public class ReflectorServiceImpl implements ReflectorService {
 		reflectorInfoDB.setLng(reflectorInfoDTO.getLng());
 		reflectorInfoDB.setAddress(reflectorInfoDTO.getAddress());
 		reflectorInfoDB.setMeshId(reflectorInfoDTO.getMeshId());
-		reflectorInfoDB.setOs(reflectorInfoDTO.getOs()==null?"00":reflectorInfoDTO.getOs());
-		reflectorInfoDB.setOsVersion(reflectorInfoDTO.getOsVersion()==null?"00":reflectorInfoDTO.getOsVersion());
-		reflectorInfoDB.setMacAddress(reflectorInfoDTO.getMacAddress()==null?"00":reflectorInfoDTO.getMacAddress());
-		reflectorInfoDB.setOutboundIpAddress(reflectorInfoDTO.getOutboundIpAddress()==null?"00":reflectorInfoDTO.getOutboundIpAddress());
-		reflectorInfoDB.setEnabled(reflectorInfoDTO.getEnabled()==null?Boolean.FALSE:reflectorInfoDTO.getEnabled());
+		reflectorInfoDB.setOs(reflectorInfoDTO.getOs() == null ? "00" : reflectorInfoDTO.getOs());
+		reflectorInfoDB.setOsVersion(reflectorInfoDTO.getOsVersion() == null ? "00" : reflectorInfoDTO.getOsVersion());
+		reflectorInfoDB.setOsArch(reflectorInfoDTO.getOsArch() == null ? "00" : reflectorInfoDTO.getOsArch());
+		reflectorInfoDB.setMacAddress(reflectorInfoDTO.getMacAddress() == null ? "00" : reflectorInfoDTO.getMacAddress());
+		reflectorInfoDB.setOutboundIpAddress(reflectorInfoDTO.getOutboundIpAddress() == null ? "00" : reflectorInfoDTO.getOutboundIpAddress());
+		reflectorInfoDB.setEnabled(reflectorInfoDTO.getEnabled() == null ? Boolean.FALSE : reflectorInfoDTO.getEnabled());
 
 		reflectorData = reflectorInfoRepository.save(reflectorInfoDB);
 
 		if (reflectorData == null) {
 			return RESULT_FAIL;
 		}
+		
 		logger.info("Reflector 저장 성공");
 		return RESULT_OK;
 	}
@@ -123,9 +139,80 @@ public class ReflectorServiceImpl implements ReflectorService {
 		if (Util.checkNullStr(reflectorInfoSearchDTO.getProtocol()) && !"all".equalsIgnoreCase(reflectorInfoSearchDTO.getProtocol())) {
 			spec = spec.and((root, query, cb) -> cb.equal(root.join("protocolInfo").get("type"), reflectorInfoSearchDTO.getProtocol()));
 		}
+		
+		LocalDateTime now = LocalDateTime.now();
+		
+		if (reflectorInfoSearchDTO.getAlive() == 1) {
+			spec = spec.and((root, query, cb) -> cb.greaterThan(root.get("updateTime"), now.minusHours(1)));
+		}
+		else if (reflectorInfoSearchDTO.getAlive() == 2) {
+			spec = spec.and((root, query, cb) -> cb.lessThan(root.get("updateTime"), now.minusHours(1)));
+		}
+		
 		if (pageable.getPageSize() == 2000) {
 			pageRequest = new PageRequest(pageable.getPageNumber(), 1000000000, pageable.getSort());
 		}
+		
+		Page<ReflectorInfo> reflData = reflectorInfoRepository.findAll(spec, pageRequest);
+		
+		if (reflData.getContent().isEmpty()) {
+			throw new NotFoundException("Not found pageable By Reflector Info = " + pageRequest);
+		}
+		
+		logger.info("Total Elements = " + reflData.getTotalElements());
+		
+		List<ReflectorInfo> content = reflData.getContent();
+		
+		List<ReflectorInfoDTO> resultData = new ArrayList<>();
+		
+		for (ReflectorInfo reflectorInfo : content) {
+			ReflectorInfoDTO dto = modelMapper.map(reflectorInfo, ReflectorInfoDTO.class);
+			LocalDateTime updateTime = reflectorInfo.getUpdateTime();
+			if (updateTime == null) {
+				dto.setAlive(false);
+			} else {
+				dto.setAlive(now.minusHours(1).isBefore(updateTime));	
+			}
+			
+			if (reflectorInfoSearchDTO.getAlive() == 0) {
+				resultData.add(dto);
+			} else if (reflectorInfoSearchDTO.getAlive() == 1) {
+				if (dto.isAlive()) {
+					resultData.add(dto);
+				}
+			} else {
+				if (!dto.isAlive()) {
+					resultData.add(dto);
+				}
+			}	
+		}
+		
+		PageImpl<ReflectorInfoDTO> resultConvert = new PageImpl<>(resultData, pageRequest, reflData.getTotalElements());
+		
+		logger.info("Reflector 조회 성공");
+		return resultConvert;
+		
+	}
+	
+	public PageImpl<ReflectorInfoDTO> enableReflectorsListPageable(Pageable pageable, ReflectorInfoSearchDTO reflectorInfoSearchDTO) {
+		
+		PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+
+		Specifications<ReflectorInfo> spec = Specifications.where(null);
+
+		if (Util.checkNullStr(reflectorInfoSearchDTO.getReflectorIp())) {
+			spec = spec.and((root, query, cb) -> cb.equal(root.get("reflectorIp"), reflectorInfoSearchDTO.getReflectorIp()));
+		}
+		
+		if (Util.checkNullStr(reflectorInfoSearchDTO.getProtocol()) && !"all".equalsIgnoreCase(reflectorInfoSearchDTO.getProtocol())) {
+			spec = spec.and((root, query, cb) -> cb.equal(root.join("protocolInfo").get("type"), reflectorInfoSearchDTO.getProtocol()));
+		}
+		if (pageable.getPageSize() == 2000) {
+			pageRequest = new PageRequest(pageable.getPageNumber(), 1000000000, pageable.getSort());
+		}
+		
+		spec = spec.and((root, query, cb) -> cb.equal(root.get("enabled"), 1));
+		
 		Page<ReflectorInfo> reflData = reflectorInfoRepository.findAll(spec, pageRequest);
 		
 		if (reflData.getContent().isEmpty()) {
@@ -222,5 +309,14 @@ public class ReflectorServiceImpl implements ReflectorService {
 		int result = (reflectorInfoRepository.findById(reflectorId) == null ? RESULT_OK : RESULT_FAIL);
 		logger.info("Reflector 삭제 성공");
 		return result;
+	}
+	
+	public ReflectorInfo getRequestReflectorInfo(String reflectorIp, String meshId) {
+		List<ReflectorInfo> reflectorList = reflectorInfoRepository.findByReflectorIpAndMeshId(reflectorIp, meshId);
+		if (reflectorList != null && !reflectorList.isEmpty()) {
+			return reflectorList.get(0);
+		}
+		
+		return null;
 	}
 }

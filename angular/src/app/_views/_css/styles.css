@@ -30,7 +30,7 @@ input:hover,select:hover,textarea:hover {border: 1px solid #92929d !important;}
 
 /* Contents */
 #container       {width:100%;min-height: 100%;min-width: 1006px;margin:-77px 0 -36px;text-align: center;}
-#cont            {position: static;width: 1006px;min-width: 1006px;margin: 0 auto;padding:77px 0 36px;z-index:2;text-align: left;}
+#cont            {position: static;width: 1263px;min-width: 1006px;margin: 0 auto;padding:77px 0 36px;z-index:2;text-align: left;}
 *html .container {height:100%;}
 #sub_area        {margin: 0 10px}
 
@@ -47,7 +47,7 @@ input:hover,select:hover,textarea:hover {border: 1px solid #92929d !important;}
 
 
 /* Main Navigation */
-#mNaviG     {position: relative;height:62px;z-index:9999;margin-left:0px;text-align:left;margin-top: 11px;}
+#mNaviG     {position: relative;height:62px;z-index:9999;margin-left:0px;text-align:left;margin-top: 11px;float:right;margin-right:100px}
 #mNaviG ul{display: block;}
 #mNaviG ul li{position: relative; float: left;margin: 0 30px;}
 #mNaviG ul li a{display: block;font-size: 16px;font-weight: 600; width: 100%;height: 39px;color:#4e4e63;text-align:center;padding:16px 5px 2px 5px;}

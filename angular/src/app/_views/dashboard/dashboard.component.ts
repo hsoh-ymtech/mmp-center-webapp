@@ -26,7 +26,7 @@ interface marker {
 })
 export class DashboardComponent implements OnInit, OnDestroy {
 
-    public zoom = 8;
+    public zoom = 1.5;
     public lat = 36.409522;
     public lng = 127.831503;
     public clickedmarker: marker;
@@ -100,7 +100,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     private requestReflectorAllList(): void {
         const that = this;
-        this.reflectorService.getReflectorListPageable(0, 1000000000, '').subscribe(
+        this.reflectorService.getEnableReflectorsPageable(0, 1000000000, '').subscribe(
             response => {
                 console.log(response['message']);
                 that.ReflectorData = response['result']['content'];
@@ -114,7 +114,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private makeMarker(reflectorData: Reflector[]): void {
         for (let a = 0; a < reflectorData.length; a++) {
             const tmpMk = {};
-            tmpMk['label'] = reflectorData[a].reflectorId + '';
+//            tmpMk['label'] = reflectorData[a].reflectorId + '';
             tmpMk['lat'] = reflectorData[a].lat;
             tmpMk['lng'] = reflectorData[a].lng;
             tmpMk['address'] = reflectorData[a].address;

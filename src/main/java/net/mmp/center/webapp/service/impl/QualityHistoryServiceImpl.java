@@ -1,8 +1,12 @@
 package net.mmp.center.webapp.service.impl;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
@@ -11,26 +15,29 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 
 import net.mmp.center.webapp.domain.CurrentStatus;
 import net.mmp.center.webapp.domain.QualityHistory;
 import net.mmp.center.webapp.dto.QualityHistoryDTO;
 import net.mmp.center.webapp.dto.QualityHistoryDTO.QualityHistorySearchDTO;
-import net.mmp.center.webapp.exception.NotFoundException;
+import net.mmp.center.webapp.model.ESData;
 import net.mmp.center.webapp.repository.CurrentStatusRepository;
 import net.mmp.center.webapp.repository.QualityHistoryRepository;
 import net.mmp.center.webapp.service.QualityHistoryService;
@@ -114,40 +121,89 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
 	}
 
 	@Transactional
-	public PageImpl<QualityHistoryDTO> QualityHistoryList(Pageable pageable, QualityHistorySearchDTO qualityHistorySearchDTO) {
+	public PageImpl<ESData> QualityHistoryList(Pageable pageable, QualityHistorySearchDTO qualityHistorySearchDTO) {
+		// TODO: 기존 데이터베이스가 아닌 Elasticsearch에서 데이터를 가져와서 넘겨주어야 함
+		String query = createElasticsearchQuery(qualityHistorySearchDTO, pageable.getPageNumber(), pageable.getPageSize());
+		StringBuffer response = new StringBuffer();
+		List<ESData> resultObj = new ArrayList<ESData>();
+		PageImpl<ESData> resultData = null;
+		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		
-		Specifications<QualityHistory> spec = Specifications.where(null);
-		
-		if (Util.checkNullStr(qualityHistorySearchDTO.getSenderIp())) {
-			spec = spec.and((root, query, cb) -> cb.equal(root.get("senderIp"), qualityHistorySearchDTO.getSenderIp()));
-		}
-		if (Util.checkNullStr(qualityHistorySearchDTO.getReflectorIp())) {
-			spec = spec.and((root, query, cb) -> cb.equal(root.get("reflectorIp"), qualityHistorySearchDTO.getReflectorIp()));
-		}
-		PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
-		Page<QualityHistory> findData = qualityHistoryRepository.findAll(spec, pageRequest);
-		
-		if (findData.getContent().isEmpty()) {
-			throw new NotFoundException("Not found pageable By Quality History = " + pageRequest);
-		}
-		logger.info("Total Elements = " + findData.getTotalElements());
+		try {
+			URL esurl = new URL("http://escluster.happylife.io:9200/redis_test-*/_search");
+			HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setDoOutput(true);
 
-		List<QualityHistoryDTO> resultData = new ArrayList<>();
-		
-		resultData = findData.getContent().stream()
-				.map(data -> modelMapper.map(data, QualityHistoryDTO.class))
-				.collect(Collectors.toList());
+			OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
+			osw.write(query);
+			osw.flush();
 
-		PageImpl<QualityHistoryDTO> resultConvert = new PageImpl<>(resultData, pageRequest, findData.getTotalElements());
+			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String line;
+			while ((line = br.readLine()) != null) {
+				response.append(line);
+			}
+
+			osw.close();
+			br.close();
+			conn.disconnect();
+    		
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode arrayNode = mapper.readTree(response.toString()).get("hits").get("hits");
+			int totalElements = mapper.readTree(response.toString()).get("hits").get("total").asInt();
+			ObjectReader reader = mapper.readerFor(new TypeReference<List<ESData>>() {});
+			resultObj = reader.readValue(arrayNode);
+    		resultData = new PageImpl<>(resultObj, pageRequest, totalElements);
+		} catch(MalformedURLException e){
+			throw new net.mmp.center.webapp.exception.MalformedURLException("URL Formet 관련 Error");
+		} catch(UnsupportedEncodingException e) {
+			throw new net.mmp.center.webapp.exception.UnsupportedEncodingException("Unsupported Encoding Exception Error");
+		} catch(JsonProcessingException e) {
+			throw new net.mmp.center.webapp.exception.JsonProcessingException("Response Data(JSON String)를 Object로 변환 도중 Error");
+		} catch(IOException e) {
+			throw new net.mmp.center.webapp.exception.IOException("IO Exception Error");
+		}		
 		
-		logger.info("품질 이력 조회 성공");
-//		try {
-//			get();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
+		return resultData;
+		
+
+//		Specifications<QualityHistory> spec = Specifications.where(null);
+//		
+//		if (Util.checkNullStr(qualityHistorySearchDTO.getSenderIp())) {
+//			spec = spec.and((root, query, cb) -> cb.equal(root.get("senderIp"), qualityHistorySearchDTO.getSenderIp()));
 //		}
-		return resultConvert;
+//		if (Util.checkNullStr(qualityHistorySearchDTO.getReflectorIp())) {
+//			spec = spec.and((root, query, cb) -> cb.equal(root.get("reflectorIp"), qualityHistorySearchDTO.getReflectorIp()));
+//		}
+//		PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+//		Page<QualityHistory> findData = qualityHistoryRepository.findAll(spec, pageRequest);
+//		
+//		if (findData.getContent().isEmpty()) {
+//			throw new NotFoundException("Not found pageable By Quality History = " + pageRequest);
+//		}
+//		logger.info("Total Elements = " + findData.getTotalElements());
+//
+//		List<QualityHistoryDTO> resultData = new ArrayList<>();
+//		
+//		resultData = findData.getContent().stream()
+//				.map(data -> modelMapper.map(data, QualityHistoryDTO.class))
+//				.collect(Collectors.toList());
+//		
+//		
+//		PageImpl<QualityHistoryDTO> resultConvert = new PageImpl<>(resultData, pageRequest, findData.getTotalElements());
+//		
+//		
+//		logger.info("품질 이력 조회 성공");
+////		try {
+////			get();
+////		} catch (Exception e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+////		}
+//
+//		return resultConvert;
 	}
 	
 	public void get() throws Exception {
@@ -184,5 +240,52 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
         }
  
         in.close();
+	}
+	
+	private String createElasticsearchQuery(QualityHistorySearchDTO qualityHistorySearchDTO, int page, int size) {
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("{\r\n");
+    	sb.append("\"query\": {\r\n");
+    	sb.append("\"bool\": {\r\n");
+    	sb.append("\"must\": [\r\n");
+    	sb.append(createMatch(qualityHistorySearchDTO));
+    	sb.append("]\r\n").append("}\r\n").append("},\r\n");
+    	
+    	sb.append("\"sort\": [\r\n");
+    	sb.append("{\"start_time.keyword\": \"desc\"}\r\n");
+    	sb.append("],\r\n");
+    	
+    	sb.append("\"from\":").append(page * size).append(",\r\n");
+    	sb.append("\"size\":").append(size).append("\r\n");
+    	sb.append("}\r\n");
+    	
+    	return sb.toString();
+	}
+	
+	private String createMatch(QualityHistorySearchDTO qualityHistorySearchDTO) {
+		StringBuffer sb = new StringBuffer();
+		
+		if (Util.checkNullStr(qualityHistorySearchDTO.getSenderIp())) {
+			sb.append("{\r\n");
+			sb.append("\"match\": {\r\n");
+			sb.append("\"src_host\": \"" + qualityHistorySearchDTO.getSenderIp() + "\"\r\n");
+			sb.append("}\r\n");
+			sb.append("}\r\n");
+		}
+		
+		if (Util.checkNullStr(qualityHistorySearchDTO.getReflectorIp())) {
+			if (Util.checkNullStr(qualityHistorySearchDTO.getSenderIp())) {
+				sb.append(",\r\n");
+			}
+			
+			sb.append("{\r\n");
+			sb.append("\"match\": {\r\n");
+			sb.append("\"dst_host\": \"" + qualityHistorySearchDTO.getReflectorIp() + "\"\r\n");
+			sb.append("}\r\n");
+			sb.append("}\r\n");
+		}
+		
+		return sb.toString();
 	}
 }

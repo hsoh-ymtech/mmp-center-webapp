@@ -12,8 +12,33 @@ alternatives --config java
 alternatives --config javac
 ```
 
-```Text
-mvn clean package -DskipTests=true
-java -jar target/webapp-0.0.1.jar
+
+
+## 컴파일 방법
+
+### NODEJS 설치
+```
+$ yum install -y gcc-c++ make
+$ curl -sL https://rpm.nodesource.com/setup_10.x | sudo -E bash -
+$ yum install nodejs
 ```
 
+### 최초 설치시 혹은 package.json의 dependency 변경시
+```
+cd angular
+npm install
+# Angular-cli 설치
+npm install -g @angular/cli
+mvn clean package -DskipTests=true
+```
+
+### 리소스 추가된 경우
+```
+npm run build:prod
+mvn clean package -DskipTests=true
+```
+
+## 실행 방법
+```Text
+java -jar target/webapp-0.0.1.jar
+```
