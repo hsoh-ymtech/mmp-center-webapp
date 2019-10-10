@@ -4,13 +4,10 @@ import net.mmp.center.webapp.domain.ReflectorInfo;
 import net.mmp.center.webapp.dto.BootstrapInfoDTO;
 import net.mmp.center.webapp.dto.ProtocolDTO;
 import net.mmp.center.webapp.dto.ReflectorInfoDTO;
-import net.mmp.center.webapp.service.MessagesService;
 import net.mmp.center.webapp.service.ReflectorService;
-import net.mmp.center.webapp.service.impl.MessagesImpl;
 import net.mmp.center.webapp.service.impl.ReflectorServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -18,14 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @RestController
 public class BootstrapController {
@@ -34,7 +27,7 @@ public class BootstrapController {
 
 	@Autowired
 	@Qualifier(ReflectorServiceImpl.BEAN_QUALIFIER)
-	private ReflectorService reflectormanagementService;
+	private ReflectorService reflectorService;
 
 	/**
 	 * Bootstrap 등록
@@ -49,7 +42,7 @@ public class BootstrapController {
 
 		logger.info(bootstrapInfoDTO);
 
-		List<ReflectorInfo> list = reflectormanagementService.reflectorsList();
+		List<ReflectorInfo> list = reflectorService.reflectorsList();
 		List<ReflectorInfo> flist = list.stream().filter(item -> item.getMeshId().equals(bootstrapInfoDTO.getMeshId()))
 				.collect(Collectors.toList());
 
@@ -69,7 +62,7 @@ public class BootstrapController {
 			dto.setEnabled(bootstrapInfoDTO.getEnabled()==null?Boolean.FALSE:bootstrapInfoDTO.getEnabled());
 			ProtocolDTO protocol = new ProtocolDTO("Light TWAMP" );
 			dto.setProtocol(protocol);
-			int resultObj = reflectormanagementService.reflectorSave(dto);
+			int resultObj = reflectorService.reflectorSave(dto);
 		} else { // 등록 장치 정보 업데이트
 			ReflectorInfoDTO dto = new ReflectorInfoDTO();
 			dto.setReflectorId(flist.get(0).getReflectorId());
@@ -87,7 +80,7 @@ public class BootstrapController {
 			dto.setEnabled(flist.get(0).getEnabled());
 			ProtocolDTO protocol = new ProtocolDTO(flist.get(0).getProtocolInfo().getType());
 			dto.setProtocol(protocol);
-			int resultObj = reflectormanagementService.reflectorSave(dto);
+			int resultObj = reflectorService.reflectorSave(dto);
 		}
 
 		return new ResponseEntity<BootstrapInfoDTO>(bootstrapInfoDTO, HttpStatus.CREATED);

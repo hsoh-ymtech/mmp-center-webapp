@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +43,15 @@ public class ExternalRequestServiceImpl implements ExternalRequestService {
 	
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
+	@Value("${elasticsearch.host}")
+	private int elasticsearchHost;
+
+	@Value("${elasticsearch.transport.port}")
+	private int elasticsearchHttpPort;
+
+	public String getUrlofElasticsearch(){
+		return "http://"+elasticsearchHost+":"+elasticsearchHttpPort;
+	}
 	@Transactional
 	public ESData getQualityHistoryRecent(ExternalQualityHistorySearchDTO dto) {
 		String query = createElasticsearchQueryForRecent(dto);
@@ -280,7 +290,7 @@ public class ExternalRequestServiceImpl implements ExternalRequestService {
 	private String requestElasticsearch(String query) {
 		StringBuffer response = new StringBuffer();
 		try {
-			URL esurl = new URL("http://escluster.happylife.io:9200/redis_test-*/_search");
+			URL esurl = new URL(getUrlofElasticsearch()+"/redis_test-*/_search");
 			HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");

@@ -16,6 +16,7 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -38,6 +39,17 @@ import net.mmp.center.webapp.repository.LinkBandwidthRepository;
 public class LinkBandwidthController {
 
 	private static final Logger logger = LogManager.getLogger(LinkBandwidthController.class);
+
+
+	@Value("${elasticsearch.host}")
+	private int elasticsearchHost;
+
+	@Value("${elasticsearch.transport.port}")
+	private int elasticsearchHttpPort;
+
+	public String getUrlofElasticsearch(){
+		return "http://"+elasticsearchHost+":"+elasticsearchHttpPort;
+	}
 
 	@Autowired
 	private LinkBandwidthRepository repository;
@@ -118,7 +130,7 @@ public class LinkBandwidthController {
         float lossRate = 0.0f;
     	
     	try {
-    		URL esurl = new URL("http://escluster.happylife.io:9200/redis_test-*/_search");
+    		URL esurl = new URL(getUrlofElasticsearch()+"/redis_test-*/_search");
     		HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
     		conn.setRequestMethod("POST");
     		conn.setRequestProperty("Content-Type", "application/json");
