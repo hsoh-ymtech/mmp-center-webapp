@@ -9,3 +9,9 @@ spring:
       uri: http://config.center.happylife.io:8080
   main:
     allow-bean-definition-overriding: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "refresh"
