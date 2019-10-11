@@ -42,7 +42,7 @@ public class LinkBandwidthController {
 
 
 	@Value("${elasticsearch.host}")
-	private int elasticsearchHost;
+	private String elasticsearchHost;
 
 	@Value("${elasticsearch.transport.port}")
 	private int elasticsearchHttpPort;
