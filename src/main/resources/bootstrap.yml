@@ -1,0 +1,9 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: center-webapp
+  cloud:
+    config:
+      uri: http://config.center.happylife.io:8080
