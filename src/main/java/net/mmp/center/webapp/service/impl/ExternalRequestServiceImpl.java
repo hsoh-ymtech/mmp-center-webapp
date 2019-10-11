@@ -44,7 +44,7 @@ public class ExternalRequestServiceImpl implements ExternalRequestService {
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
 	@Value("${elasticsearch.host}")
-	private int elasticsearchHost;
+	private String elasticsearchHost;
 
 	@Value("${elasticsearch.transport.port}")
 	private int elasticsearchHttpPort;
