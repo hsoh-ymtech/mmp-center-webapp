@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.cloud.config.server.EnableConfigServer;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
@@ -32,6 +33,7 @@ import net.mmp.center.webapp.thread.FullmeshThreadPool;
 import net.mmp.center.webapp.util.ProcessRun;
 import net.mmp.center.webapp.util.Util;
 
+@EnableConfigServer
 @ServletComponentScan
 @SpringBootApplication
 @EnableZuulProxy
