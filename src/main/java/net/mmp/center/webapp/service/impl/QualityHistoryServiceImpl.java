@@ -67,7 +67,7 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
 	@Value("${elasticsearch.host}")
 	private String elasticsearchHost;
 
-	@Value("${elasticsearch.transport.port}")
+	@Value("${elasticsearch.http.port}")
 	private int elasticsearchHttpPort;
 
 	public String getUrlofElasticsearch(){
