@@ -6,8 +6,10 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
+@Data
 public class CurrentStatusDTO {
 	
 	public CurrentStatusDTO() {}
@@ -140,118 +142,5 @@ public class CurrentStatusDTO {
 	
 	@NotEmpty
 	private String password;
-	
-	
-	public int getSessId() {
-		return sessId;
-	}
 
-	public void setSessId(int sessId) {
-		this.sessId = sessId;
-	}
-
-	public String getSenderIp() {
-		return senderIp;
-	}
-
-	public void setSenderIp(String senderIp) {
-		this.senderIp = senderIp;
-	}
-
-	public String getReflectorIp() {
-		return reflectorIp;
-	}
-
-	public void setReflectorIp(String reflectorIp) {
-		this.reflectorIp = reflectorIp;
-	}
-
-	public int getSendCount() {
-		return sendCount;
-	}
-
-	public void setSendCount(int sendCount) {
-		this.sendCount = sendCount;
-	}
-
-	public int getRepeatCount() {
-		return repeatCount;
-	}
-
-	public void setRepeatCount(int repeatCount) {
-		this.repeatCount = repeatCount;
-	}
-
-	public int getSenderPort() {
-		return senderPort;
-	}
-
-	public void setSenderPort(int senderPort) {
-		this.senderPort = senderPort;
-	}
-
-	public int getReflectorPort() {
-		return reflectorPort;
-	}
-
-	public void setReflectorPort(int reflectorPort) {
-		this.reflectorPort = reflectorPort;
-	}
-
-	public String getProtocol() {
-		return protocol;
-	}
-
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
-
-	public String getMeasureMode() {
-		return measureMode;
-	}
-	
-	public void setMeasureMode(String measureMode) {
-		this.measureMode = measureMode;
-	}
-	
-	public LocalDateTime getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(LocalDateTime startTime) {
-		this.startTime = startTime;
-	}
-
-	public int getPid() {
-		return pid;
-	}
-
-	public void setPid(int pid) {
-		this.pid = pid;
-	}
-
-	public int getTimeout() {
-		return timeout;
-	}
-
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
-	}
-
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
 }
