@@ -8,4 +8,4 @@ spring:
     config:
       uri: http://config.center.happylife.io:8080
   main:
-    allow-bean-definition-overriding=true
+    allow-bean-definition-overriding: true

@@ -129,5 +129,5 @@ public class QualityHistoryDTO {
 	 */
 	@NotBlank
 	private String measureResult;
-	
+
 }
