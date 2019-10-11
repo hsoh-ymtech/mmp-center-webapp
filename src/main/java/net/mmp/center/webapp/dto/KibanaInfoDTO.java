@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.URL;
 @Data
 public class KibanaInfoDTO {
 
+	@Data
 	public static class AddKibanaInfoDTO {
 		@NotBlank
 		private String host;

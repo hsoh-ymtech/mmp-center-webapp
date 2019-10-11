@@ -12,7 +12,8 @@ public class LesionHistoryDTO {
 	private String senderIp;
 	private String reflectorIp;
 	private String lesionCode;
-	
+
+	@Data
 	public static class LesionHistorySearchDTO {
 		private String senderIp;
 		private String reflectorIp;
