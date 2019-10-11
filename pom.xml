@@ -131,11 +131,11 @@
             <version>4.6.1</version>
             <scope>provided</scope>
         </dependency> -->
-		<!-- dependency>
+		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-config-server</artifactId>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-config</artifactId>
 		</dependency>
@@ -254,8 +254,7 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency> -->
-		
-		
+
 		<!-- jsp Dependency 추가 -->
 		<!-- <dependency>
 			<groupId>javax.servlet</groupId>
@@ -265,10 +264,7 @@
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
 		</dependency> -->
-		
-		
-		
-		
+
 		<!-- Security Oauth2 -->
 		<dependency>
 		    <groupId>org.springframework.security</groupId>
