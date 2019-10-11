@@ -423,6 +423,7 @@ public class ExternalRequestServiceImpl implements ExternalRequestService {
 		sb.append("\"size\":").append("\"0\",\r\n");
 		
 		sb.append("\"aggs\":{\r\n");
+		sb.append("\"measurement_count\": {").append("\"sum\": {\"field\": \"ipdv\", \"script\": \"_value\"} },\r\n");
     	sb.append("\"ipdv\": {").append("\"avg\": {\"field\": \"ipdv\", \"script\": \"_value\"} },\r\n");
     	sb.append("\"lost_packets\": {").append("\"sum\": {\"field\": \"lost_packets\", \"script\": \"_value\"} },\r\n");
     	sb.append("\"duplicate_packets\": {").append("\"sum\": {\"field\": \"duplicate_packets\", \"script\": \"_value\"} },\r\n");
