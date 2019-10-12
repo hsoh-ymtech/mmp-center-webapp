@@ -3,7 +3,7 @@
     "name": "dev"
   },
   "apiServer": {
-    "url": "http://localhost:80"
+    "url": "http://web.center.happylife.io"
   },
   "pagination": {
     "size": 10,
