@@ -1,6 +1,6 @@
 {
   "/api/*": {
-    "target": "http://localhost",
+    "target": "http://web.center.happylife.io",
     "secure": false,
     "logLevel": "debug",
     "pathRewrite": {"^/api": ""}

@@ -42,3 +42,8 @@ mvn clean package -DskipTests=true
 ```Text
 java -jar target/webapp-0.0.1.jar
 ```
+
+## Spring cloud config 리프래시
+```$xslt
+curl -X POST  http://127.0.0.1:80/actuator/refresh
+```

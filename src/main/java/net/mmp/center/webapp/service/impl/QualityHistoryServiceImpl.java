@@ -20,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,6 +62,17 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
     
 	@Autowired
 	private QualityHistoryRepository qualityHistoryRepository;
+
+
+	@Value("${elasticsearch.host}")
+	private String elasticsearchHost;
+
+	@Value("${elasticsearch.http.port}")
+	private int elasticsearchHttpPort;
+
+	public String getUrlofElasticsearch(){
+		return "http://"+elasticsearchHost+":"+elasticsearchHttpPort;
+	}
 	
 	public final static int RESULT_OK = 1;
 	public final static int RESULT_FAIL = 0;
@@ -130,7 +142,7 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		
 		try {
-			URL esurl = new URL("http://escluster.happylife.io:9200/redis_test-*/_search");
+			URL esurl = new URL(getUrlofElasticsearch()+"/redis_test-*/_search");
 			HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");

@@ -22,7 +22,7 @@ public class ElasticsearchConfiguration {
     @Value("${elasticsearch.host}")
     private String host;
 
-    @Value("${elasticsearch.port}")
+    @Value("${elasticsearch.transport.port}")
     private int port;
 
     @Value("${elasticsearch.cluster_name}")

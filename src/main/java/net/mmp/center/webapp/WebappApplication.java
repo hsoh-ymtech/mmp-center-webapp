@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
@@ -36,9 +37,10 @@ import net.mmp.center.webapp.util.Util;
 @SpringBootApplication
 @EnableZuulProxy
 @EnableScheduling
-public class CenterWebappApplication {
+@RefreshScope
+public class WebappApplication {
 
-private static final Logger logger = LogManager.getLogger(CenterWebappApplication.class);
+private static final Logger logger = LogManager.getLogger(WebappApplication.class);
 	
 	private static String directory = System.getProperty("user.dir") + File.separator + "src" + File.separator
 			+ "twamp-visualization";
@@ -79,12 +81,12 @@ private static final Logger logger = LogManager.getLogger(CenterWebappApplicatio
 	private int repeatCount = 0;
 	
 	public static void main(String[] args) {
-		ConfigurableApplicationContext ctx = SpringApplication.run(CenterWebappApplication.class, args);
+		ConfigurableApplicationContext ctx = SpringApplication.run(WebappApplication.class, args);
 		
 		String dir = Util.convertDirectory(directory);
 		boolean isWindows = Util.isWindows();
 
-		CenterWebappApplication m = ctx.getBean(CenterWebappApplication.class);
+		WebappApplication m = ctx.getBean(WebappApplication.class);
 //		m.KibanaInit(dir, isWindows);
 		
 		m.setProtocolInfo();
