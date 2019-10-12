@@ -9,9 +9,16 @@ spring:
       uri: http://config.center.happylife.io:8080
   main:
     allow-bean-definition-overriding: true
+  boot:
+    admin:
+      client:
+        url: "http://adminui.center.happylife.io:9090"
 
 management:
   endpoints:
     web:
       exposure:
-        include: "refresh"
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
