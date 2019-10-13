@@ -15,10 +15,13 @@ import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -135,12 +138,18 @@ public class ReflectorController {
 		return new ResponseEntity<List<ReflectorInfo>>(results, HttpStatus.OK);
 	}
 
+	@Scheduled(fixedRate = 1000)
+	@CacheEvict("activeReflectors")
+	public void clearCacheOfActiveRectors() {
+	}
+
     /**
      * 현재 동작하고 있는 Reflector 조회
      *
      * @return Reflectors Data
      */
     @RequestMapping(value = "/v1/activeReflectors", method = RequestMethod.GET)
+	@Cacheable("activeReflectors")
     public ResponseEntity<List<ReflectorShortInfoDTO>> activeReflectorList(@RequestParam(value="meshid")String meshId, HttpServletRequest request, HttpServletResponse response) {
 
         List<ReflectorInfo> reflectorInfoList = reflectormanagementService.reflectorsList();

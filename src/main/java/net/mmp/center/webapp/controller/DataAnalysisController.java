@@ -49,8 +49,8 @@ public class DataAnalysisController {
 	 * @return
 	 */
 	@RequestMapping(value = "/analysis", method = RequestMethod.POST)
-	public ResponseEntity<ResponseData> bigdataAnalysis(@RequestBody @Valid DataAnalysisDTO dataAnalysisDTO,
-			final BindingResult result, HttpServletResponse response, Pageable pageable) {
+	public ResponseEntity<ResponseData> dataAnalysis(@RequestBody @Valid DataAnalysisDTO dataAnalysisDTO,
+													 final BindingResult result, HttpServletResponse response, Pageable pageable) {
 		ResponseData responseData = new ResponseData();
 
 		if (result.hasErrors()) {
