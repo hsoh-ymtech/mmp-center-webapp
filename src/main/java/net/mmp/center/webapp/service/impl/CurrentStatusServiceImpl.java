@@ -95,10 +95,7 @@ public class CurrentStatusServiceImpl implements CurrentStatusService {
 		// Linux 테스트 용
 		cmdList.add("/bin/sh");
 		cmdList.add("-c");
-		cmdList.add("\"/root/HOME/bin/nqmstwamp-client");
-		cmdList.add("-count");
-		cmdList.add(packetCount + "");
-		cmdList.add(reflectorIp + "\"");
+		cmdList.add("\"/root/HOME/bin/nqmstwamp-client -count " + packetCount + " " + reflectorIp + "\"");
 		builder.command(cmdList);
 		try {
 			Process process = builder.start();
