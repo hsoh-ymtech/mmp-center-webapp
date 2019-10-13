@@ -78,7 +78,7 @@ public class CurrentStatusServiceImpl implements CurrentStatusService {
 	@Value("${elasticsearch.http.port}")
 	private int elasticsearchHttpPort;
 
-	@Value("${twamp.index.name}")
+	@Value("${config.twamp.index.name}")
 	private String elasticsearchIndex;
 
 	public String searcIndexUrl() {

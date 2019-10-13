@@ -52,7 +52,7 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
 	@Value("${config.elasticsearch.timezone}")
 	private int timezone;
 
-	@Value("${twamp.index.name}")
+	@Value("${config.twamp.index.name}")
 	private String elasticsearchIndex;
 
 	@Autowired
