@@ -17,7 +17,6 @@ import javax.persistence.Table;
 @Table(name = "current_status")
 @Data
 public class CurrentStatus {
-
 	@Id
 	@Column(name = "sess_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)//기본키 생성을 db에 위임
@@ -26,9 +25,6 @@ public class CurrentStatus {
 	@Column(name = "sender_ip")
 	private String senderIp;
 
-	@Column(name = "sender_port")
-	private int senderPort;
-	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "reflector_id", nullable = false)
 	private ReflectorInfo reflectorInfo;
@@ -42,17 +38,4 @@ public class CurrentStatus {
 
 	@Column(name = "send_count")
 	private int sendCount;
-
-	@Column(name = "repeat_count")
-	private int repeatCount;
-
-	@Column(name = "start_time")
-	private LocalDateTime startTime;
-
-	@Column(name = "pid")
-	private int pid;
-
-	@Column(name = "timeout")
-	private int timeout;
-
 }

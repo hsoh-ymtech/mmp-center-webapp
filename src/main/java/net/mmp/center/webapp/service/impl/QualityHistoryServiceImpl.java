@@ -78,58 +78,59 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
 	public final static int RESULT_FAIL = 0;
 
 	public int qualityHistoryRegister(QualityHistoryDTO qualityHistoryDTO) {
-		Optional<CurrentStatus> csData = currentStatusRepository.findById(qualityHistoryDTO.getSessId());
-		
-		QualityHistory data = new QualityHistory();
-		data.setSessId(qualityHistoryDTO.getSessId());
-		data.setSenderIp(csData.get().getSenderIp());
-		data.setReflectorIp(csData.get().getReflectorInfo().getReflectorIp());
-		data.setSendCount(qualityHistoryDTO.getSendCount());
-		data.setRepeatCount(qualityHistoryDTO.getRepeatCount());
-		data.setStartTime(qualityHistoryDTO.getStartTime());
-		data.setCompleteTime(qualityHistoryDTO.getCompleteTime());
-		data.setMeasureProtocol(csData.get().getProtocolInfo().getType());
-		data.setMeasureMode(qualityHistoryDTO.getMeasureMode());
-		data.setSenderPort(csData.get().getSenderPort());
-		data.setReflectorPort(csData.get().getReflectorInfo().getPort());
-		
-		String action = "";
-		
-		if (qualityHistoryDTO.getMeasureResult().equals("-2/-2")) {
-			action = "중지";
-			data.setMeasureResult(action);
-		} else if (qualityHistoryDTO.getMeasureResult().equals("-1/-1")) {
-			LocalDateTime tmpDate = LocalDateTime.now();
-			data.setStartTime(qualityHistoryDTO.getCompleteTime());
-			data.setCompleteTime(tmpDate);
-			action = "측정중...";
-		} else if (qualityHistoryDTO.getMeasureResult().split("/")[0].equals(qualityHistoryDTO.getMeasureResult().split("/")[1])) {
-			action = "성공";
-		} else {
-			action = "실패";
-		}
-		
-		data.setMeasureResult(action);
-		logger.info("품질 이력 - 측정 " + action + " 등록");
-
-		/**
-		 * 측정중이 아닌 모든 조건
-		 */
-		if (!qualityHistoryDTO.getMeasureResult().equals("-1/-1")) {
-			currentStatusRepository.deleteById(qualityHistoryDTO.getSessId());
-			boolean result = (currentStatusRepository.findById(qualityHistoryDTO.getSessId()) == null ? true
-					: false);
-			if (!result) {
-				return RESULT_FAIL;
-			}
-		}
-		if (qualityHistoryRepository.save(data) != null) {
-			logger.info("품질 이력 등록 성공");
-			template.convertAndSend("/dashboard/measureEnd", true);
-			return RESULT_OK;
-		} else {
-			return RESULT_FAIL;
-		}
+//		Optional<CurrentStatus> csData = currentStatusRepository.findById(qualityHistoryDTO.getSessId());
+//		
+//		QualityHistory data = new QualityHistory();
+//		data.setSessId(qualityHistoryDTO.getSessId());
+//		data.setSenderIp(csData.get().getSenderIp());
+//		data.setReflectorIp(csData.get().getReflectorInfo().getReflectorIp());
+//		data.setSendCount(qualityHistoryDTO.getSendCount());
+//		data.setRepeatCount(qualityHistoryDTO.getRepeatCount());
+//		data.setStartTime(qualityHistoryDTO.getStartTime());
+//		data.setCompleteTime(qualityHistoryDTO.getCompleteTime());
+//		data.setMeasureProtocol(csData.get().getProtocolInfo().getType());
+//		data.setMeasureMode(qualityHistoryDTO.getMeasureMode());
+//		data.setSenderPort(csData.get().getSenderPort());
+//		data.setReflectorPort(csData.get().getReflectorInfo().getPort());
+//		
+//		String action = "";
+//		
+//		if (qualityHistoryDTO.getMeasureResult().equals("-2/-2")) {
+//			action = "중지";
+//			data.setMeasureResult(action);
+//		} else if (qualityHistoryDTO.getMeasureResult().equals("-1/-1")) {
+//			LocalDateTime tmpDate = LocalDateTime.now();
+//			data.setStartTime(qualityHistoryDTO.getCompleteTime());
+//			data.setCompleteTime(tmpDate);
+//			action = "측정중...";
+//		} else if (qualityHistoryDTO.getMeasureResult().split("/")[0].equals(qualityHistoryDTO.getMeasureResult().split("/")[1])) {
+//			action = "성공";
+//		} else {
+//			action = "실패";
+//		}
+//		
+//		data.setMeasureResult(action);
+//		logger.info("품질 이력 - 측정 " + action + " 등록");
+//
+//		/**
+//		 * 측정중이 아닌 모든 조건
+//		 */
+//		if (!qualityHistoryDTO.getMeasureResult().equals("-1/-1")) {
+//			currentStatusRepository.deleteById(qualityHistoryDTO.getSessId());
+//			boolean result = (currentStatusRepository.findById(qualityHistoryDTO.getSessId()) == null ? true
+//					: false);
+//			if (!result) {
+//				return RESULT_FAIL;
+//			}
+//		}
+//		if (qualityHistoryRepository.save(data) != null) {
+//			logger.info("품질 이력 등록 성공");
+//			template.convertAndSend("/dashboard/measureEnd", true);
+//			return RESULT_OK;
+//		} else {
+//			return RESULT_FAIL;
+//		}
+		return RESULT_OK;
 	}
 
 	@Transactional

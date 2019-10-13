@@ -3,31 +3,34 @@ package net.mmp.center.webapp.controller;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.URL;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import net.mmp.center.webapp.dto.CurrentStatusDTO;
-import net.mmp.center.webapp.dto.CurrentStatusDTO.CurrentStatusResultDTO;
+import net.mmp.center.webapp.model.ESData;
 import net.mmp.center.webapp.model.ResponseData;
 import net.mmp.center.webapp.service.CurrentStatusService;
 import net.mmp.center.webapp.service.MessagesService;
 import net.mmp.center.webapp.service.impl.CurrentStatusServiceImpl;
 import net.mmp.center.webapp.service.impl.MessagesImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class CurrentStatusController {
@@ -56,78 +59,30 @@ public class CurrentStatusController {
 		if (result.hasErrors()) {
 			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
 		} else {
-			int resultObj = currentStatusService.QualityMeasureRegister(currentStatusDTO);
-			responseData.setType(resultObj);
+			ESData resultObj = currentStatusService.QualityMeasureRegister(currentStatusDTO);
+			responseData.setType(1);
+			responseData.setResult(resultObj);
 			responseData.setMessage(message.get("responseData.message.insert.ok", response));
 			return new ResponseEntity<ResponseData>(responseData, HttpStatus.CREATED);
 		}
 	}
-
-	/**
-	 * 품질 측정 목록 조회
-	 * 
-	 * @return 측정 목록 List Data
-	 */
-	@RequestMapping(value = "/current-status", method = RequestMethod.GET)
-	public ResponseEntity<ResponseData> currentStatusListPageable(Pageable pageable, HttpServletResponse response) {
-		PageImpl<CurrentStatusDTO> resultObj = currentStatusService.currentStatusList(pageable);
-
-		ResponseData responseData = new ResponseData();
-
-		responseData.setType(1);
-		responseData.setMessage(message.get("responseData.message.search.pageable.ok", response));
-		responseData.setResult(resultObj);
-
-		return new ResponseEntity<ResponseData>(responseData, HttpStatus.OK);
-
-	}
-
-	/**
-	 * 품질 측정 중지
-	 * 
-	 * @param sessId
-	 *            중지할 Session ID
-	 * @return 중지 결과
-	 */
-//	@RequestMapping(value = "/current-status/{sessId}/stop-measure", method = RequestMethod.POST)
-//	public ResponseEntity<ResponseData> qualityMeasurementStop(@PathVariable int sessId, HttpServletResponse response) {
-//		int resultObj = currentStatusService.QualityMeasureStop(sessId);
-//
-//		ResponseData responseData = new ResponseData();
-//
-//		responseData.setType(resultObj);
-//		responseData.setMessage(message.get("responseData.message.stop.ok", response));
-//
-//		return new ResponseEntity<ResponseData>(responseData, HttpStatus.OK);
-//	}
-
-	/**
-	 * 품질측정 완료 처리
-	 * 
-	 * @param sessId
-	 *            Session ID
-	 * @param currentStatusDTO
-	 *            품질 측정 DTO
-	 * @return
-	 */
-	@RequestMapping(value = "/current-status/complete", method = RequestMethod.PUT)
-	public ResponseEntity<ResponseData> PidRegister(
-																		@RequestBody @Valid CurrentStatusResultDTO currentStatusResultDTO,
-																		final BindingResult result, HttpServletResponse response) {
+	
+	@RequestMapping(value = "/serverIp", method = RequestMethod.GET)
+	public ResponseEntity<ResponseData> checkServerIpAddress(HttpServletResponse response) throws Exception {
 		ResponseData responseData = new ResponseData();
 		
-		if (result.hasErrors()) {
-			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
-		} else {		
-			int resultObj = currentStatusService.measurementComplete(currentStatusResultDTO);
-			responseData.setType(resultObj);
-			responseData.setMessage(message.get("responseData.message.complete.ok", response));
-			return new ResponseEntity<ResponseData>(responseData, HttpStatus.OK);
+		String ipAddress = checkMyIp();
+		if (ipAddress == null) {
+			InetAddress inet = InetAddress.getLocalHost();
+			ipAddress = inet.getHostAddress();
 		}
+		
+		responseData.setType(1);
+		responseData.setResult(ipAddress);
+		responseData.setMessage(message.get("responseData.message.insert.ok", response));
+		return new ResponseEntity<ResponseData>(responseData, HttpStatus.OK);
 	}
 
-	
-	
 	@ExceptionHandler(value = net.mmp.center.webapp.exception.NotFoundException.class)
 	public ResponseEntity<ResponseData> NotFoundException(net.mmp.center.webapp.exception.NotFoundException e, HttpServletResponse response) {
 		ResponseData responseData = new ResponseData();
@@ -191,5 +146,16 @@ public class CurrentStatusController {
 		responseData.setResult(e.getInformation());
 		responseData.setMessage(message.get("responseData.message.StatusRuntime.exception", response));
 		return new ResponseEntity<>(responseData, BAD_REQUEST);
+	}
+	
+	private String checkMyIp() {
+		try {
+			URL url = new URL("http://checkip.amazonaws.com");
+			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+			String externalIp = br.readLine();
+			return externalIp;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
