@@ -8,7 +8,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 
 import java.time.LocalDateTime;
 
-@Document(indexName="redis_test-*", type = "doc")
+@Document(indexName="${twamp.index.name}", type = "doc")
 @Data
 public class RawData {
     /*

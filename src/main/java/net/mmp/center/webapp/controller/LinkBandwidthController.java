@@ -47,10 +47,15 @@ public class LinkBandwidthController {
 	@Value("${elasticsearch.http.port}")
 	private int elasticsearchHttpPort;
 
+	@Value("${twamp.index.name}")
+	private String elasticsearchIndex;
+
 	public String getUrlofElasticsearch(){
 		return "http://"+elasticsearchHost+":"+elasticsearchHttpPort;
 	}
-
+	public String searcIndexUrl() {
+		return getUrlofElasticsearch()+"/"+elasticsearchIndex+"/_search";
+	}
 	@Autowired
 	private LinkBandwidthRepository repository;
 
@@ -130,7 +135,7 @@ public class LinkBandwidthController {
         float lossRate = 0.0f;
     	
     	try {
-    		URL esurl = new URL(getUrlofElasticsearch()+"/redis_test-*/_search");
+    		URL esurl = new URL(searcIndexUrl());
     		HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
     		conn.setRequestMethod("POST");
     		conn.setRequestProperty("Content-Type", "application/json");

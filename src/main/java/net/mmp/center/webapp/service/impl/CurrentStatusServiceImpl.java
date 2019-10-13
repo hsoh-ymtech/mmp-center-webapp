@@ -77,7 +77,14 @@ public class CurrentStatusServiceImpl implements CurrentStatusService {
 
 	@Value("${elasticsearch.http.port}")
 	private int elasticsearchHttpPort;
-	
+
+	@Value("${twamp.index.name}")
+	private String elasticsearchIndex;
+
+	public String searcIndexUrl() {
+		return getUrlofElasticsearch()+"/"+elasticsearchIndex+"/_search";
+	}
+
 	public ESData QualityMeasureRegister(CurrentStatusDTO currentStatusDTO) {
 		// Center에 설치되어 있는 nqmstwamp-client 실행
 		// 경로는 /root/HOME/bin
@@ -164,7 +171,7 @@ public class CurrentStatusServiceImpl implements CurrentStatusService {
 	private String requestElasticsearch(String query) {
 		StringBuffer response = new StringBuffer();
 		try {
-			URL esurl = new URL(getUrlofElasticsearch()+"/redis_test-*/_search");
+			URL esurl = new URL(searcIndexUrl());
 			HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");

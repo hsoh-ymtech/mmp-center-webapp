@@ -51,7 +51,10 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
 
 	@Value("${config.elasticsearch.timezone}")
 	private int timezone;
-	
+
+	@Value("${twamp.index.name}")
+	private String elasticsearchIndex;
+
 	@Autowired
 	SimpMessagingTemplate template;
 	
@@ -67,7 +70,9 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
 	public String getUrlofElasticsearch(){
 		return "http://"+elasticsearchHost+":"+elasticsearchHttpPort;
 	}
-	
+	public String searcIndexUrl() {
+		return getUrlofElasticsearch()+"/"+elasticsearchIndex+"/_search";
+	}
 	public DataataAnalysisResultDTO AnalysisElasticSearchData(DataAnalysisDTO dataAnalysisDTO, Pageable pageable) {
 		String query = createElasticSearchQuery(dataAnalysisDTO, pageable.getPageNumber(), pageable.getPageSize());
 		PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
@@ -76,7 +81,7 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
 		PageImpl<ESData> resultConvert = new PageImpl<ESData>(resultObj);
 		DataataAnalysisResultDTO result = new DataataAnalysisResultDTO();
 		try {
-			URL esurl = new URL(getUrlofElasticsearch()+"/redis_test-*/_search");
+			URL esurl = new URL(searcIndexUrl());
 			HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");

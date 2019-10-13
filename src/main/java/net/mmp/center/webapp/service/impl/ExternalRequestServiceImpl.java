@@ -49,9 +49,17 @@ public class ExternalRequestServiceImpl implements ExternalRequestService {
 	@Value("${elasticsearch.http.port}")
 	private int elasticsearchHttpPort;
 
+	@Value("${twamp.index.name}")
+	private String elasticsearchIndex;
+
 	public String getUrlofElasticsearch(){
 		return "http://"+elasticsearchHost+":"+elasticsearchHttpPort;
 	}
+
+	public String searcIndexUrl() {
+		return getUrlofElasticsearch()+"/"+elasticsearchIndex+"/_search";
+	}
+
 	@Transactional
 	public ESData getQualityHistoryRecent(ExternalQualityHistorySearchDTO dto) {
 		String query = createElasticsearchQueryForRecent(dto);
@@ -290,7 +298,7 @@ public class ExternalRequestServiceImpl implements ExternalRequestService {
 	private String requestElasticsearch(String query) {
 		StringBuffer response = new StringBuffer();
 		try {
-			URL esurl = new URL(getUrlofElasticsearch()+"/redis_test-*/_search");
+			URL esurl = new URL(searcIndexUrl());
 			HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");

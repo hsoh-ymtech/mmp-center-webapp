@@ -70,10 +70,16 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
 	@Value("${elasticsearch.http.port}")
 	private int elasticsearchHttpPort;
 
+	@Value("${twamp.index.name}")
+	private String elasticsearchIndex;
+
 	public String getUrlofElasticsearch(){
 		return "http://"+elasticsearchHost+":"+elasticsearchHttpPort;
 	}
-	
+	public String searcIndexUrl() {
+		return getUrlofElasticsearch()+"/"+elasticsearchIndex+"/_search";
+	}
+
 	public final static int RESULT_OK = 1;
 	public final static int RESULT_FAIL = 0;
 
@@ -143,7 +149,7 @@ public class QualityHistoryServiceImpl implements QualityHistoryService {
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		
 		try {
-			URL esurl = new URL(getUrlofElasticsearch()+"/redis_test-*/_search");
+			URL esurl = new URL(searcIndexUrl());
 			HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
