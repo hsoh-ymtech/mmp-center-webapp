@@ -3,8 +3,7 @@
     "name": "dev"
   },
   "apiServer": {
-    "url": "http://localhost:8091"
-
+    "url": "http://localhost:80"
   },
   "pagination": {
     "size": 10,

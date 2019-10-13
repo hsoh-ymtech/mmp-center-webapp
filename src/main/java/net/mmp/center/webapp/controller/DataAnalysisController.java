@@ -7,12 +7,12 @@ import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.mmp.center.webapp.dto.BigdataAnalysisDTO;
-import net.mmp.center.webapp.dto.BigdataAnalysisDTO.BigdataAnalysisResultDTO;
+import net.mmp.center.webapp.dto.DataAnalysisDTO;
+import net.mmp.center.webapp.dto.DataAnalysisDTO.DataataAnalysisResultDTO;
 import net.mmp.center.webapp.model.ResponseData;
-import net.mmp.center.webapp.service.BigdataAnalysisService;
+import net.mmp.center.webapp.service.DataAnalysisService;
 import net.mmp.center.webapp.service.MessagesService;
-import net.mmp.center.webapp.service.impl.BigdataAnalysisServiceImpl;
+import net.mmp.center.webapp.service.impl.DataAnalysisServiceImpl;
 import net.mmp.center.webapp.service.impl.MessagesImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,36 +27,36 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class BigdataAnalysisController {
-	private static final Logger logger = LogManager.getLogger(BigdataAnalysisController.class);
+public class DataAnalysisController {
+	private static final Logger logger = LogManager.getLogger(DataAnalysisController.class);
 	
 	@Autowired
 	@Qualifier(MessagesImpl.BEAN_QUALIFIER)
 	MessagesService message;
 	
 	@Autowired
-	@Qualifier(BigdataAnalysisServiceImpl.BEAN_QUALIFIER)
-	private BigdataAnalysisService bigdataAnalysisService;
+	@Qualifier(DataAnalysisServiceImpl.BEAN_QUALIFIER)
+	private DataAnalysisService dataAnalysisService;
 	
 	
 	/**
 	 * ES Server Query Search
 	 * 
-	 * @param bigdataAnalysisDTO
+	 * @param dataAnalysisDTO
 	 * @param result
 	 * @param response
 	 * @param pageable
 	 * @return
 	 */
 	@RequestMapping(value = "/analysis", method = RequestMethod.POST)
-	public ResponseEntity<ResponseData> bigdataAnalysis(@RequestBody @Valid BigdataAnalysisDTO bigdataAnalysisDTO,
+	public ResponseEntity<ResponseData> bigdataAnalysis(@RequestBody @Valid DataAnalysisDTO dataAnalysisDTO,
 			final BindingResult result, HttpServletResponse response, Pageable pageable) {
 		ResponseData responseData = new ResponseData();
 
 		if (result.hasErrors()) {
 			throw new net.mmp.center.webapp.exception.BadValidationException(result.getFieldError());
 		} else {
-			BigdataAnalysisResultDTO resultObj = bigdataAnalysisService.AnalysisElasticSearchData(bigdataAnalysisDTO, pageable);
+			DataataAnalysisResultDTO resultObj = dataAnalysisService.AnalysisElasticSearchData(dataAnalysisDTO, pageable);
 			responseData.setType(1);
 			responseData.setMessage(message.get("responseData.message.insert.ok", response));
 			responseData.setResult(resultObj);

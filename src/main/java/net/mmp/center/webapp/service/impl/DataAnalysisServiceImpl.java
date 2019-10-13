@@ -17,10 +17,10 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.mmp.center.webapp.dto.BigdataAnalysisDTO;
-import net.mmp.center.webapp.dto.BigdataAnalysisDTO.BigdataAnalysisResultDTO;
+import net.mmp.center.webapp.dto.DataAnalysisDTO;
+import net.mmp.center.webapp.dto.DataAnalysisDTO.DataataAnalysisResultDTO;
 import net.mmp.center.webapp.model.ESData;
-import net.mmp.center.webapp.service.BigdataAnalysisService;
+import net.mmp.center.webapp.service.DataAnalysisService;
 import net.mmp.center.webapp.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,11 +36,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-@Service(BigdataAnalysisServiceImpl.BEAN_QUALIFIER)
-public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
-	public static final String BEAN_QUALIFIER = "net.mmp.center.webapp.service.impl.BigdataAnalysisServiceImpl";
+@Service(DataAnalysisServiceImpl.BEAN_QUALIFIER)
+public class DataAnalysisServiceImpl implements DataAnalysisService {
+	public static final String BEAN_QUALIFIER = "net.mmp.center.webapp.service.impl.DataAnalysisServiceImpl";
 
-	private static final Logger logger = LogManager.getLogger(BigdataAnalysisServiceImpl.class);
+	private static final Logger logger = LogManager.getLogger(DataAnalysisServiceImpl.class);
 	
 	@Value("${config.twamp.visualization.host}")
 	private String esHost;
@@ -57,7 +57,7 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 	@Autowired
 	SimpMessagingTemplate template;
 	
-	public BigdataAnalysisResultDTO AnalysisElasticSearchData(BigdataAnalysisDTO bigdataAnalysisDTO, Pageable pageable) {
+	public DataataAnalysisResultDTO AnalysisElasticSearchData(DataAnalysisDTO dataAnalysisDTO, Pageable pageable) {
 		
 		StringBuffer url = new StringBuffer();                           
 		url.append("http://");
@@ -75,8 +75,8 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 		
 		try {
 		    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		    Date parsedDate1 =  dateFormat.parse(bigdataAnalysisDTO.getStartTime());
-		    Date parsedDate2 =  dateFormat.parse(bigdataAnalysisDTO.getEndtime());
+		    Date parsedDate1 =  dateFormat.parse(dataAnalysisDTO.getStartTime());
+		    Date parsedDate2 =  dateFormat.parse(dataAnalysisDTO.getEndtime());
 		    startTime = new Timestamp(parsedDate1.getTime()).getTime() / 1000;
 		    endTime = new Timestamp(parsedDate2.getTime()).getTime() / 1000;
 		} catch(ParseException e) { //this generic but you can control another types of exception
@@ -84,13 +84,13 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 			throw new net.mmp.center.webapp.exception.ParseException("측정시작, 측정종료시간값 Parse Error");
 		}
 		
-		requestData = setSearchJSONQuery(bigdataAnalysisDTO, startTime, endTime, pageable.getPageNumber(), pageable.getPageSize());
+		requestData = setSearchJSONQuery(dataAnalysisDTO, startTime, endTime, pageable.getPageNumber(), pageable.getPageSize());
 		
 		PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		StringBuffer response = new StringBuffer();
 		List<ESData> resultObj = new ArrayList<ESData>();
 		PageImpl<ESData> resultConvert = new PageImpl<ESData>(resultObj);
-		BigdataAnalysisResultDTO result = new BigdataAnalysisResultDTO();
+		DataataAnalysisResultDTO result = new DataataAnalysisResultDTO();
 		try {
 			URL esurl = new URL(url.toString());
 			HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
@@ -139,7 +139,7 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 		return result;
 	}
 	
-	private StringBuffer setSearchJSONQuery(BigdataAnalysisDTO bigdataAnalysisDTO, long startTime, long endTime, int page, int size) {
+	private StringBuffer setSearchJSONQuery(DataAnalysisDTO dataAnalysisDTO, long startTime, long endTime, int page, int size) {
 		
 		
 		StringBuffer result = new StringBuffer();
@@ -149,7 +149,7 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 		result.append("\"bool\": {\r\n");
 		result.append("\"must\": [\r\n");
 		
-		result.append(setOneDepthBool(bigdataAnalysisDTO, startTime, endTime));
+		result.append(setOneDepthBool(dataAnalysisDTO, startTime, endTime));
 
 		result.append("]\r\n");
 		result.append("}\r\n");
@@ -163,23 +163,23 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 		return result;
 	}
 	
-	private StringBuffer setOneDepthBool(BigdataAnalysisDTO bigdataAnalysisDTO, long startTime, long endTime) {
+	private StringBuffer setOneDepthBool(DataAnalysisDTO dataAnalysisDTO, long startTime, long endTime) {
 		StringBuffer result = new StringBuffer();
 		
 		List<Integer> idx = new ArrayList<>();
-		if (bigdataAnalysisDTO.getLostPacketTH() > 0) {
+		if (dataAnalysisDTO.getLostPacketTH() > 0) {
 			idx.add(0);
 		}
-		if (bigdataAnalysisDTO.getDuplicatePacketTH() > 0) {
+		if (dataAnalysisDTO.getDuplicatePacketTH() > 0) {
 			idx.add(1);
 		}
-		if (bigdataAnalysisDTO.getOutoforderPacketTH() > 0) {
+		if (dataAnalysisDTO.getOutoforderPacketTH() > 0) {
 			idx.add(2);
 		}
-		if (bigdataAnalysisDTO.getPdvTH() > 0) {
+		if (dataAnalysisDTO.getPdvTH() > 0) {
 			idx.add(3);
 		}
-		if (bigdataAnalysisDTO.getIpdvTH() > 0) {
+		if (dataAnalysisDTO.getIpdvTH() > 0) {
 			idx.add(4);
 		}
 		if (idx.size() == 0) {
@@ -191,9 +191,9 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 			result.append("\"bool\": {\r\n");
 			result.append("\"must\": [\r\n");
 			
-			result.append(setMatch(bigdataAnalysisDTO));
+			result.append(setMatch(dataAnalysisDTO));
 			
-			result.append(setTimestamp(bigdataAnalysisDTO, startTime, endTime, idx));
+			result.append(setTimestamp(dataAnalysisDTO, startTime, endTime, idx));
 			
 			result.append("]\r\n");
 			result.append("}\r\n");
@@ -208,7 +208,7 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 				result.append("\"bool\": {\r\n");
 				result.append("\"should\": [\r\n");
 				
-				result.append(setTwoDepthBool(bigdataAnalysisDTO, a, idx, startTime, endTime));
+				result.append(setTwoDepthBool(dataAnalysisDTO, a, idx, startTime, endTime));
 				
 				result.append("]\r\n");
 				result.append("}\r\n");
@@ -221,7 +221,7 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 		return result;
 	}
 	
-	private StringBuffer setTwoDepthBool(BigdataAnalysisDTO bigdataAnalysisDTO, int count, List<Integer> idx, long startTime, long endTime) {
+	private StringBuffer setTwoDepthBool(DataAnalysisDTO dataAnalysisDTO, int count, List<Integer> idx, long startTime, long endTime) {
 		
 		StringBuffer result = new StringBuffer();
 		if (idx.size() > 0) {
@@ -230,13 +230,13 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 				result.append("\"bool\": {\r\n");
 				result.append("\"must\": [\r\n");
 				
-				result.append(setMatch(bigdataAnalysisDTO));
-				if (idx.size() > 0 && (Util.checkNullStr(bigdataAnalysisDTO.getSenderIp()) || Util.checkNullStr(bigdataAnalysisDTO.getReflectorIp()))) {
+				result.append(setMatch(dataAnalysisDTO));
+				if (idx.size() > 0 && (Util.checkNullStr(dataAnalysisDTO.getSenderIp()) || Util.checkNullStr(dataAnalysisDTO.getReflectorIp()))) {
 					result.append(",\r\n");
 				}
-				result.append(setRange(bigdataAnalysisDTO, count, a, idx));
+				result.append(setRange(dataAnalysisDTO, count, a, idx));
 				
-				result.append(setTimestamp(bigdataAnalysisDTO, startTime, endTime, idx));
+				result.append(setTimestamp(dataAnalysisDTO, startTime, endTime, idx));
 				result.append("]\r\n");
 				result.append("}\r\n");
 				result.append("}\r\n");
@@ -249,7 +249,7 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 			result.append("\"bool\": {\r\n");
 			result.append("\"must\": [\r\n");
 			
-			result.append(setMatch(bigdataAnalysisDTO));
+			result.append(setMatch(dataAnalysisDTO));
 			
 			result.append("]\r\n");
 			result.append("}\r\n");
@@ -258,31 +258,31 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 		return result;
 	}
 
-	private StringBuffer setMatch(BigdataAnalysisDTO bigdataAnalysisDTO) {
+	private StringBuffer setMatch(DataAnalysisDTO dataAnalysisDTO) {
 		StringBuffer result = new StringBuffer();
 		int count = 0;
-		if (Util.checkNullStr(bigdataAnalysisDTO.getSenderIp())) {
+		if (Util.checkNullStr(dataAnalysisDTO.getSenderIp())) {
 			result.append("{\r\n");
 			result.append("\"match\": {\r\n");
-			result.append("\"src_host\": \"" + bigdataAnalysisDTO.getSenderIp() + "\"\r\n");
+			result.append("\"src_host\": \"" + dataAnalysisDTO.getSenderIp() + "\"\r\n");
 			result.append("}\r\n");
 			result.append("}\r\n");
 			count = 1;
 		}
-		if (Util.checkNullStr(bigdataAnalysisDTO.getReflectorIp())) {
+		if (Util.checkNullStr(dataAnalysisDTO.getReflectorIp())) {
 			if (count == 1) {
 				result.append(",\r\n");
 			}
 			result.append("{\r\n");
 			result.append("\"match\": {\r\n");
-			result.append("\"dst_host\": \"" + bigdataAnalysisDTO.getReflectorIp() + "\"\r\n");
+			result.append("\"dst_host\": \"" + dataAnalysisDTO.getReflectorIp() + "\"\r\n");
 			result.append("}\r\n");
 			result.append("}\r\n");
 		}
 		return result;
 	}
 
-	private StringBuffer setRange(BigdataAnalysisDTO bigdataAnalysisDTO, int count, int isupdown, List<Integer> idx) {
+	private StringBuffer setRange(DataAnalysisDTO dataAnalysisDTO, int count, int isupdown, List<Integer> idx) {
 		StringBuffer result = new StringBuffer();
 		
 		result.append("{\r\n");
@@ -295,19 +295,19 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 			result.append("down_");
 		}
 		if (idx.get(count) == 0) {
-			result.append("lost_packets\": { \"gte\": " + bigdataAnalysisDTO.getLostPacketTH() + " }\r\n");
+			result.append("lost_packets\": { \"gte\": " + dataAnalysisDTO.getLostPacketTH() + " }\r\n");
 		}
 		if (idx.get(count) == 1) {
-			result.append("duplicate_packets\": { \"gte\": " + bigdataAnalysisDTO.getDuplicatePacketTH() + " }\r\n");
+			result.append("duplicate_packets\": { \"gte\": " + dataAnalysisDTO.getDuplicatePacketTH() + " }\r\n");
 		}
 		if (idx.get(count) == 2) {
-			result.append("outoforder_packets\": { \"gte\": " + bigdataAnalysisDTO.getOutoforderPacketTH() + " }\r\n");
+			result.append("outoforder_packets\": { \"gte\": " + dataAnalysisDTO.getOutoforderPacketTH() + " }\r\n");
 		}
 		if (idx.get(count) == 3) {
-			result.append("pdv.pdv\": { \"gte\": " + bigdataAnalysisDTO.getPdvTH() + " }\r\n");
+			result.append("pdv.pdv\": { \"gte\": " + dataAnalysisDTO.getPdvTH() + " }\r\n");
 		}
 		if (idx.get(count) == 4) {
-			result.append("ipdv.ipdv\": { \"gte\": " + bigdataAnalysisDTO.getIpdvTH() + " }\r\n");
+			result.append("ipdv.ipdv\": { \"gte\": " + dataAnalysisDTO.getIpdvTH() + " }\r\n");
 		}
 		result.append("}\r\n");
 		result.append("}\r\n");
@@ -335,11 +335,11 @@ public class BigdataAnalysisServiceImpl implements BigdataAnalysisService {
 //		
 //	}
 	
-	private StringBuffer setTimestamp(BigdataAnalysisDTO bigdataAnalysisDTO, long startTime, long endTime, List<Integer> idx) {
+	private StringBuffer setTimestamp(DataAnalysisDTO dataAnalysisDTO, long startTime, long endTime, List<Integer> idx) {
 		
 		StringBuffer result = new StringBuffer();
 		
-		if (Util.checkNullStr(bigdataAnalysisDTO.getSenderIp()) || Util.checkNullStr(bigdataAnalysisDTO.getReflectorIp()) || idx.size() > 0) {
+		if (Util.checkNullStr(dataAnalysisDTO.getSenderIp()) || Util.checkNullStr(dataAnalysisDTO.getReflectorIp()) || idx.size() > 0) {
 			result.append(",\r\n");
 		}
 		long st = startTime + timezone;

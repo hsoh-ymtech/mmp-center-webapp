@@ -5,7 +5,7 @@ import net.mmp.center.webapp.model.ESData;
 import org.springframework.data.domain.PageImpl;
 
 @Data
-public class BigdataAnalysisDTO {
+public class DataAnalysisDTO {
 
 	private String senderIp;
 	private String reflectorIp;
@@ -17,13 +17,13 @@ public class BigdataAnalysisDTO {
 	private String startTime;
 	private String endtime;
 	
-	public static class BigdataAnalysisResultDTO {
+	public static class DataataAnalysisResultDTO {
 		private double searchAchiveTime;
 		private PageImpl<ESData> resultData;
 		
-		public BigdataAnalysisResultDTO() {}
+		public DataataAnalysisResultDTO() {}
 		
-		public BigdataAnalysisResultDTO(double searchAchiveTime, PageImpl<ESData> resultData) {
+		public DataataAnalysisResultDTO(double searchAchiveTime, PageImpl<ESData> resultData) {
 			this.searchAchiveTime = searchAchiveTime;
 			this.resultData = resultData;
 		}

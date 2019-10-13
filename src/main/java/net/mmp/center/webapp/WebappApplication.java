@@ -13,6 +13,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
@@ -38,6 +39,7 @@ import net.mmp.center.webapp.util.Util;
 @EnableZuulProxy
 @EnableScheduling
 @RefreshScope
+@EnableHystrix
 public class WebappApplication {
 
 private static final Logger logger = LogManager.getLogger(WebappApplication.class);
