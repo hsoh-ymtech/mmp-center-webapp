@@ -117,7 +117,7 @@ export class QualityMeasurementComponent implements OnDestroy {
             }
         );
         
-        this.reflectorService.getEnableReflectorsPageable(0, 1000000000, 'reflectorId,asc').takeWhile(() => this.alive).subscribe(
+        this.reflectorService.getEnableReflectorsPageable(0, 1000000000, 'reflectorIp,asc').takeWhile(() => this.alive).subscribe(
             result => {
                 that.reflectors = result['result']['content'];
                 that.measureData.reflectorIp = that.reflectors[0].reflectorIp;

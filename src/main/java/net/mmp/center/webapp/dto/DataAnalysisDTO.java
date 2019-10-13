@@ -12,8 +12,8 @@ public class DataAnalysisDTO {
 	private int lostPacketTH;
 	private int duplicatePacketTH;
 	private int outoforderPacketTH;
-	private int pdvTH;
-	private int ipdvTH;
+	private float pdvTH;
+	private float ipdvTH;
 	private String startTime;
 	private String endtime;
 	

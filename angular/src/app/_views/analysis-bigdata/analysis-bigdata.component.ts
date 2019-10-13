@@ -18,6 +18,7 @@ import { AnalysisBigdata } from '../../_models/AnalysisBigdata';
 
 import { DateTimeAdapter, OWL_DATE_TIME_FORMATS, OWL_DATE_TIME_LOCALE } from 'ng-pick-datetime';
 import { MomentDateTimeAdapter, OWL_MOMENT_DATE_TIME_FORMATS } from 'ng-pick-datetime-moment';
+import { ReflectorService } from '../../_services/reflector/reflector.service';
 
 import { takeWhile } from 'rxjs/operators';
 
@@ -99,10 +100,13 @@ export class AnalysisBigdataComponent implements OnDestroy {
     public achiveTime: string;
     private timezone: number;
 
+	reflectors: object;
+
     constructor(
         private dialog: MatDialog,
         private analysisBigdataService: AnalysisBigdataService,
         private messageService: MessageService,
+        private reflectorService: ReflectorService,
         private errorService: ErrorService
     ) {
         this.initData();
@@ -133,6 +137,7 @@ export class AnalysisBigdataComponent implements OnDestroy {
         this.achiveTime = '';
         this.timezone = 32400;
         this.isCheck = false;
+        this.getReflectorIP();
     }
 
     /**
@@ -190,6 +195,21 @@ export class AnalysisBigdataComponent implements OnDestroy {
         this.searchESBigdata(that, this.inputAnalysisItem, pageNumber);
     }
 
+	private getReflectorIP(): void {
+    	const that = this;
+    	this.reflectorService.getReflectorListPageableSearch(0, 1000000000, 'reflectorIp,asc', null, null, 0).takeWhile(() => this.alive).subscribe(
+            result => {
+                that.reflectors = result['result']['content'];
+                that.inputAnalysisItem.senderIp = that.reflectors[0].reflectorIp;
+                that.inputAnalysisItem.reflectorIp = that.reflectors[0].reflectorIp; 
+                console.log(result);
+            },
+            error => {
+                console.log(error);
+            }
+        );
+    }
+    
     /**
      * 그래프 Dialog창 open
      * 현재 쓰이지 않음. 추가사항 있을시 추가
@@ -271,8 +291,7 @@ export class AnalysisBigdataComponent implements OnDestroy {
         this.isAnalyzed = false;
         this.searchESBigdata(that, this.storedAnalysisItem, pageNumber);
     }
-
-
+    
     /**
      * 빅데이터 분석 버튼 클릭시 API Call
      * @param that 

@@ -14,14 +14,20 @@
           <input type="text" name="textfield" class="" style="background: #dadada" disabled>
         </td>
         <td [hidden]="selectAll" class="left" style="padding-right: 20px;">
-            <input type="text" name="textfield" class="" [(ngModel)]="inputAnalysisItem.senderIp" placeholder="Sender IP 입력" formControlName="senderIp">
+        	<select name="select" style="width: 159px;" [(ngModel)]="inputAnalysisItem.senderIp" [ngModelOptions]="{standalone: true}">
+        		<option *ngFor="let reflector of reflectors" [value]="reflector.reflectorIp">{{reflector.reflectorIp}}</option>
+        	</select>
+<!--             <input type="text" name="textfield" class="" [(ngModel)]="inputAnalysisItem.senderIp" placeholder="Sender IP 입력" formControlName="senderIp"> -->
         </td>
         <th>Reflector IP</th>
         <td *ngIf="selectAll">
           <input type="text" name="textfield" class="" style="background: #dadada" disabled>
         </td>
         <td [hidden]="selectAll">
-          <input type="text" name="textfield" class="" [(ngModel)]="inputAnalysisItem.reflectorIp" placeholder="Reflector IP 입력" formControlName="reflectorIp">
+       		<select name="select" style="width: 159px;" [(ngModel)]="inputAnalysisItem.reflectorIp" [ngModelOptions]="{standalone: true}">
+        		<option *ngFor="let reflector of reflectors" [value]="reflector.reflectorIp">{{reflector.reflectorIp}}</option>
+        	</select>
+<!--           <input type="text" name="textfield" class="" [(ngModel)]="inputAnalysisItem.reflectorIp" placeholder="Reflector IP 입력" formControlName="reflectorIp"> -->
         </td>
         <th colspan="2" style="background: white;">
           <b class="checkboxb">
@@ -84,9 +90,12 @@
       </tr>
       <tr>
         <td colspan="8">
-          <button type="submit" class="btn" style="position: relative; left: 50%; transform: translateX(-55%);" 
-            mat-raised-button [ngClass]="{'btn-primary' : qualityHistoryForm.valid, 'disabled' : !qualityHistoryForm.valid}"
-            [disabled]="!qualityHistoryForm.valid">분석</button>
+<!--           <button type="submit" class="btn" style="position: relative; left: 50%; transform: translateX(-55%);"  -->
+<!--             mat-raised-button [ngClass]="{'btn-primary' : qualityHistoryForm.valid, 'disabled' : !qualityHistoryForm.valid}" -->
+<!--             [disabled]="!qualityHistoryForm.valid">분석</button> -->
+<!--         </td> -->
+		 <button type="submit" class="btn btn-primary" style="position: relative; left: 50%; transform: translateX(-55%);" 
+            mat-raised-button>분석</button>
         </td>
       </tr>
       <!-- <tr *ngIf="isAnalyzed">
@@ -110,30 +119,28 @@
 
   <table width="100%" border="0" cellpadding="0" cellspacing="0" class="list_tl">
     <tr>
-      <th>측정 시작시간</th>
-      <th>측정 완료시간</th>
-      <th>Sender IP</th>
-      <th>Reflector IP</th>
-      <th>Lost Packets</th>
-      <th>Duplicate Packets</th>
-      <th>Out of Order Packet</th>
-      <th>PDV</th>
-      <th>IPDV</th>
-      <!-- <th>비고</th> -->
+      <th width="12%">측정시작시간</th>
+      <th width="12%">측정완료시간</th>
+      <th width="8%">Source IP</th>
+      <th width="8%">Target IP</th>
+      <th width="8%">Measurement Count</th>
+      <th width="9%">Bandwidth</th>
+      <th width="9%">Delay</th>
+      <th width="9%">Lost Packets</th>
+      <th width="9%">Duplicate Packets</th>
     </tr>
     <tr *ngFor="let data of analysisBigdata">
-      <td>{{data._source.start_time.replace('T', ' ').replace('+0000', '')}}</td>
-      <td>{{data._source.end_time.replace('T', ' ').replace('+0000', '')}}</td>
-      <td>{{data._source.src_host}}</td>
-      <td>{{data._source.dst_host}}</td>
-      <td>{{data._source.up_lost_packets + data._source.down_lost_packets}}</td>
-      <td>{{data._source.up_duplicate_packets + data._source.down_duplicate_packets}}</td>
-      <td>{{data._source.up_outoforder_packets + data._source.down_outoforder_packets}}</td>
-      <td>{{data._source.pdv.pdv}}</td>
-      <td>{{data._source.ipdv.ipdv}}</td>
+		<td>{{data._source.start_time | slice: 0:19}}</td>
+		<td>{{data._source.end_time | slice: 0:19}}</td>
+		<td>{{data._source.src_host}}</td>
+		<td>{{data._source.dst_host}}</td>
+    	<td>{{data._source.measurement_count}}</td>
+    	<td>{{data._source.bandwidth | number}}</td>
+    	<td>{{data._source.delay / 1000 | number}}</td>
+    	<td>{{data._source.lost_packets}}</td>
+    	<td>{{data._source.duplicate_packets}}</td>
     </tr>
   </table>
-
   <!-- end table -->
 
   <!-- pageing -->

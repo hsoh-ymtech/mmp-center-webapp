@@ -7,13 +7,6 @@ import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.mmp.center.webapp.dto.DataAnalysisDTO;
-import net.mmp.center.webapp.dto.DataAnalysisDTO.DataataAnalysisResultDTO;
-import net.mmp.center.webapp.model.ResponseData;
-import net.mmp.center.webapp.service.DataAnalysisService;
-import net.mmp.center.webapp.service.MessagesService;
-import net.mmp.center.webapp.service.impl.DataAnalysisServiceImpl;
-import net.mmp.center.webapp.service.impl.MessagesImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.mmp.center.webapp.dto.DataAnalysisDTO;
+import net.mmp.center.webapp.dto.DataAnalysisDTO.DataataAnalysisResultDTO;
+import net.mmp.center.webapp.model.ResponseData;
+import net.mmp.center.webapp.service.DataAnalysisService;
+import net.mmp.center.webapp.service.MessagesService;
+import net.mmp.center.webapp.service.impl.DataAnalysisServiceImpl;
+import net.mmp.center.webapp.service.impl.MessagesImpl;
+
 @RestController
 public class DataAnalysisController {
 	private static final Logger logger = LogManager.getLogger(DataAnalysisController.class);
@@ -37,7 +38,6 @@ public class DataAnalysisController {
 	@Autowired
 	@Qualifier(DataAnalysisServiceImpl.BEAN_QUALIFIER)
 	private DataAnalysisService dataAnalysisService;
-	
 	
 	/**
 	 * ES Server Query Search

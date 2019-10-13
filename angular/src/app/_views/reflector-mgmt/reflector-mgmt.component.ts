@@ -27,7 +27,7 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
 
     count: any;
 
-    sort = 'reflectorId,desc';
+    sort = 'reflectorIp,desc';
     size = AppConfig.settings.pagination.size;// 현재 페이지의 목록 개수
     pg: number; // 현재 페이지
     block = AppConfig.settings.pagination.block; // 하단 페이지의 넘버 개수
@@ -288,7 +288,7 @@ export class ReflectorMgmtComponent implements OnInit, OnDestroy {
     
     private getReflectorIP(): void {
     	const that = this;
-    	this.reflectorService.getReflectorListPageableSearch(0, 1000000000, 'reflectorId,asc', null, null, 0).takeWhile(() => this.alive).subscribe(
+    	this.reflectorService.getReflectorListPageableSearch(0, 1000000000, 'reflectorIp,asc', null, null, 0).takeWhile(() => this.alive).subscribe(
             result => {
                 that.reflectors = result['result']['content'];
                 that.searchReflectorIp = 'null';

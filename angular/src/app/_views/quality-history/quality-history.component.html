@@ -18,7 +18,10 @@
         </td>
         <th width="80">Reflector IP</th>
         <td colspan="2">
-          <input type="text" name="textfield" [(ngModel)]="searchReflectorIp" formControlName="reflectorIp">
+<!--           <input type="text" name="textfield" [(ngModel)]="searchReflectorIp" formControlName="reflectorIp"> -->
+			<select name="select" style="width: 184px;" [(ngModel)]="searchReflectorIp" [ngModelOptions]="{standalone: true}">
+				<option *ngFor="let reflector of reflectors" [value]="reflector.reflectorIp">{{reflector.reflectorIp}}</option>
+			</select> 
         </td>
         <td>
           <button type="submit" class="btn" mat-raised-button [ngClass]="{'btn-primary' : qualityHistoryForm.valid, 'disabled' : !qualityHistoryForm.valid}"
@@ -109,7 +112,7 @@
 </span>
 <span *ngIf="!listIsExist && !isSearch">
   <div class="div_quality">
-    <div class="qual_text">품질 측정을 진행해 주세요.</div>
+    <div class="qual_text">품질 이력을 조회해 주세요.</div>
   </div>
 </span>
 

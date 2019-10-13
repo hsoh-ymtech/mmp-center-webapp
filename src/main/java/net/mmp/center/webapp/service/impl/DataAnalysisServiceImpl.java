@@ -8,20 +8,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import net.mmp.center.webapp.dto.DataAnalysisDTO;
-import net.mmp.center.webapp.dto.DataAnalysisDTO.DataataAnalysisResultDTO;
-import net.mmp.center.webapp.model.ESData;
-import net.mmp.center.webapp.service.DataAnalysisService;
-import net.mmp.center.webapp.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
@@ -35,6 +27,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+
+import net.mmp.center.webapp.dto.DataAnalysisDTO;
+import net.mmp.center.webapp.dto.DataAnalysisDTO.DataataAnalysisResultDTO;
+import net.mmp.center.webapp.model.ESData;
+import net.mmp.center.webapp.service.DataAnalysisService;
+import net.mmp.center.webapp.util.Util;
 
 @Service(DataAnalysisServiceImpl.BEAN_QUALIFIER)
 public class DataAnalysisServiceImpl implements DataAnalysisService {
@@ -57,59 +55,42 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
 	@Autowired
 	SimpMessagingTemplate template;
 	
-	public DataataAnalysisResultDTO AnalysisElasticSearchData(DataAnalysisDTO dataAnalysisDTO, Pageable pageable) {
-		
-		StringBuffer url = new StringBuffer();                           
-		url.append("http://");
-		url.append(esHost);
-		url.append(":");
-		url.append(esPort);
-		url.append("/");
-		url.append(indexName);
-		url.append("/_search");
-		
-		StringBuffer requestData = new StringBuffer();
+	@Value("${elasticsearch.host}")
+	private String elasticsearchHost;
 
-		long startTime = 0;
-		long endTime = 0;
-		
-		try {
-		    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		    Date parsedDate1 =  dateFormat.parse(dataAnalysisDTO.getStartTime());
-		    Date parsedDate2 =  dateFormat.parse(dataAnalysisDTO.getEndtime());
-		    startTime = new Timestamp(parsedDate1.getTime()).getTime() / 1000;
-		    endTime = new Timestamp(parsedDate2.getTime()).getTime() / 1000;
-		} catch(ParseException e) { //this generic but you can control another types of exception
-		    // look the origin of excption 
-			throw new net.mmp.center.webapp.exception.ParseException("측정시작, 측정종료시간값 Parse Error");
-		}
-		
-		requestData = setSearchJSONQuery(dataAnalysisDTO, startTime, endTime, pageable.getPageNumber(), pageable.getPageSize());
-		
+	@Value("${elasticsearch.http.port}")
+	private int elasticsearchHttpPort;
+	
+	private static SimpleDateFormat originDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static SimpleDateFormat convertDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	
+	public String getUrlofElasticsearch(){
+		return "http://"+elasticsearchHost+":"+elasticsearchHttpPort;
+	}
+	
+	public DataataAnalysisResultDTO AnalysisElasticSearchData(DataAnalysisDTO dataAnalysisDTO, Pageable pageable) {
+		String query = createElasticSearchQuery(dataAnalysisDTO, pageable.getPageNumber(), pageable.getPageSize());
 		PageRequest pageRequest = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		StringBuffer response = new StringBuffer();
 		List<ESData> resultObj = new ArrayList<ESData>();
 		PageImpl<ESData> resultConvert = new PageImpl<ESData>(resultObj);
 		DataataAnalysisResultDTO result = new DataataAnalysisResultDTO();
 		try {
-			URL esurl = new URL(url.toString());
+			URL esurl = new URL(getUrlofElasticsearch()+"/redis_test-*/_search");
 			HttpURLConnection conn = (HttpURLConnection) esurl.openConnection();
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
 			conn.setDoOutput(true);
 			
-			long start = System.currentTimeMillis();
-			
 			OutputStreamWriter osw = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
-			osw.write(requestData.toString());
+			osw.write(query);
 			osw.flush();
+			
 			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String inputLine;
 			while ((inputLine = br.readLine()) != null) {
 				response.append(inputLine);
 			}
-			
-			long end = System.currentTimeMillis();
 			
 			osw.close();
 			br.close();
@@ -123,7 +104,6 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
 			logger.info(resultObj);
 			
 			resultConvert = new PageImpl<>(resultObj, pageRequest, totalElements);
-			result.setSearchAchiveTime((end - start) / 1000.0);
 			result.setResultData(resultConvert);
 			
 		} catch(MalformedURLException e){
@@ -139,220 +119,183 @@ public class DataAnalysisServiceImpl implements DataAnalysisService {
 		return result;
 	}
 	
-	private StringBuffer setSearchJSONQuery(DataAnalysisDTO dataAnalysisDTO, long startTime, long endTime, int page, int size) {
+	public static String createElasticSearchQuery(DataAnalysisDTO dto, int page, int size) {
+		StringBuffer sb = new StringBuffer();
 		
-		
-		StringBuffer result = new StringBuffer();
-		
-		result.append("{\r\n");
-		result.append("\"query\": {\r\n");
-		result.append("\"bool\": {\r\n");
-		result.append("\"must\": [\r\n");
-		
-		result.append(setOneDepthBool(dataAnalysisDTO, startTime, endTime));
+		try {
+			sb.append("{\r\n");
+			sb.append("\"query\": {\r\n");
+			sb.append("\"bool\": {\r\n");
+			sb.append("\"must\": [\r\n");
+			
+			String match = createMatch(dto);
+			sb.append(match);
+			
+			String timeRange = createTimeRange(dto);
+			if (!timeRange.isEmpty()) {
+				sb.append(",\r\n");
+			}
+			sb.append(timeRange);
+			
+			String thresholdRange = createThresholdRange(dto);
+			if (!thresholdRange.isEmpty()) {
+				sb.append(",\r\n");
+			}
+			sb.append(thresholdRange);
+			sb.append("]\r\n").append("}\r\n").append("},\r\n");
 
-		result.append("]\r\n");
-		result.append("}\r\n");
-		result.append("},\r\n");
+			sb.append("\"sort\": [\r\n");
+			sb.append("{\"@timestamp\": \"desc\"}\r\n");
+			sb.append("],\r\n");
+
+			sb.append("\"from\":").append(page * size).append(",\r\n");
+			sb.append("\"size\":").append(size).append("\r\n");
+			sb.append("}\r\n");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
-//		result.append(setAggregation(startTime, endTime));
-		
-		result.append("\"from\": " + page * size + ",\r\n");
-		result.append("\"size\": " + size + "\r\n");
-		result.append("}");
-		return result;
+		return sb.toString();
 	}
 	
-	private StringBuffer setOneDepthBool(DataAnalysisDTO dataAnalysisDTO, long startTime, long endTime) {
-		StringBuffer result = new StringBuffer();
-		
-		List<Integer> idx = new ArrayList<>();
-		if (dataAnalysisDTO.getLostPacketTH() > 0) {
-			idx.add(0);
+	private static String createMatch(DataAnalysisDTO dto) {
+		StringBuffer sb = new StringBuffer();
+
+		if (Util.checkNullStr(dto.getSenderIp())) {
+			sb.append("{\r\n");
+			sb.append("\"match\": {\r\n");
+			sb.append("\"src_host\": \"" + dto.getSenderIp() + "\"\r\n");
+			sb.append("}\r\n");
+			sb.append("}\r\n");
 		}
-		if (dataAnalysisDTO.getDuplicatePacketTH() > 0) {
-			idx.add(1);
-		}
-		if (dataAnalysisDTO.getOutoforderPacketTH() > 0) {
-			idx.add(2);
-		}
-		if (dataAnalysisDTO.getPdvTH() > 0) {
-			idx.add(3);
-		}
-		if (dataAnalysisDTO.getIpdvTH() > 0) {
-			idx.add(4);
-		}
-		if (idx.size() == 0) {
-			result.append("{\r\n");
-			result.append("\"bool\": {\r\n");
-			result.append("\"should\": [\r\n");
-			
-			result.append("{\r\n");
-			result.append("\"bool\": {\r\n");
-			result.append("\"must\": [\r\n");
-			
-			result.append(setMatch(dataAnalysisDTO));
-			
-			result.append(setTimestamp(dataAnalysisDTO, startTime, endTime, idx));
-			
-			result.append("]\r\n");
-			result.append("}\r\n");
-			result.append("}\r\n");
-			
-			result.append("]\r\n");
-			result.append("}\r\n");
-			result.append("}\r\n");
-		} else {			
-			for (int a = 0; a < idx.size(); a++) {
-				result.append("{\r\n");
-				result.append("\"bool\": {\r\n");
-				result.append("\"should\": [\r\n");
-				
-				result.append(setTwoDepthBool(dataAnalysisDTO, a, idx, startTime, endTime));
-				
-				result.append("]\r\n");
-				result.append("}\r\n");
-				result.append("}\r\n");
-				if (a != idx.size() - 1) {
-					result.append(",\r\n");
-				}
+
+		if (Util.checkNullStr(dto.getReflectorIp())) {
+			if (Util.checkNullStr(dto.getSenderIp())) {
+				sb.append(",\r\n");
 			}
+
+			sb.append("{\r\n");
+			sb.append("\"match\": {\r\n");
+			sb.append("\"dst_host\": \"" + dto.getReflectorIp() + "\"\r\n");
+			sb.append("}\r\n");
+			sb.append("}\r\n");
 		}
-		return result;
+
+		return sb.toString();
 	}
 	
-	private StringBuffer setTwoDepthBool(DataAnalysisDTO dataAnalysisDTO, int count, List<Integer> idx, long startTime, long endTime) {
-		
-		StringBuffer result = new StringBuffer();
-		if (idx.size() > 0) {
-			for (int a = 0; a < 2; a++) {
-				result.append("{\r\n");
-				result.append("\"bool\": {\r\n");
-				result.append("\"must\": [\r\n");
-				
-				result.append(setMatch(dataAnalysisDTO));
-				if (idx.size() > 0 && (Util.checkNullStr(dataAnalysisDTO.getSenderIp()) || Util.checkNullStr(dataAnalysisDTO.getReflectorIp()))) {
-					result.append(",\r\n");
-				}
-				result.append(setRange(dataAnalysisDTO, count, a, idx));
-				
-				result.append(setTimestamp(dataAnalysisDTO, startTime, endTime, idx));
-				result.append("]\r\n");
-				result.append("}\r\n");
-				result.append("}\r\n");
-				if (a != 1) {
-					result.append(",\r\n");
-				}
-			}
-		} else {
-			result.append("{\r\n");
-			result.append("\"bool\": {\r\n");
-			result.append("\"must\": [\r\n");
+	private static String createTimeRange(DataAnalysisDTO dto) throws Exception {
+		StringBuffer sb = new StringBuffer();
+		if (Util.checkNullStr(dto.getStartTime()) && Util.checkNullStr(dto.getEndtime())) {
+			String from = convertDateFormat.format(originDateFormat.parse(dto.getStartTime()));
+			String to = convertDateFormat.format(originDateFormat.parse(dto.getEndtime()));
 			
-			result.append(setMatch(dataAnalysisDTO));
+			sb.append("{\r\n");
+			sb.append("\"range\": {\r\n");
+			sb.append("\"@timestamp\": {\r\n");
 			
-			result.append("]\r\n");
-			result.append("}\r\n");
-			result.append("}\r\n");
-		}
-		return result;
-	}
-
-	private StringBuffer setMatch(DataAnalysisDTO dataAnalysisDTO) {
-		StringBuffer result = new StringBuffer();
-		int count = 0;
-		if (Util.checkNullStr(dataAnalysisDTO.getSenderIp())) {
-			result.append("{\r\n");
-			result.append("\"match\": {\r\n");
-			result.append("\"src_host\": \"" + dataAnalysisDTO.getSenderIp() + "\"\r\n");
-			result.append("}\r\n");
-			result.append("}\r\n");
-			count = 1;
-		}
-		if (Util.checkNullStr(dataAnalysisDTO.getReflectorIp())) {
-			if (count == 1) {
-				result.append(",\r\n");
+			if (Util.checkNullStr(from)) {
+				sb.append("\"gte\": \"" + from + "\"");
 			}
-			result.append("{\r\n");
-			result.append("\"match\": {\r\n");
-			result.append("\"dst_host\": \"" + dataAnalysisDTO.getReflectorIp() + "\"\r\n");
-			result.append("}\r\n");
-			result.append("}\r\n");
+			
+			if (Util.checkNullStr(to)) {
+				if (Util.checkNullStr(from)) {
+					sb.append(",\r\n");
+				}
+				
+				sb.append("\"lt\": \"" + to + "\"");
+			}
+			
+			sb.append("}\r\n").append("}\r\n").append("}\r\n");
 		}
-		return result;
-	}
-
-	private StringBuffer setRange(DataAnalysisDTO dataAnalysisDTO, int count, int isupdown, List<Integer> idx) {
-		StringBuffer result = new StringBuffer();
 		
-		result.append("{\r\n");
-		result.append("\"range\": {\r\n");
-		result.append("\"");
-		if (isupdown == 0 && idx.get(count) < 3) {
-			result.append("up_");
-		}
-		if (isupdown == 1 && idx.get(count) < 3) {
-			result.append("down_");
-		}
-		if (idx.get(count) == 0) {
-			result.append("lost_packets\": { \"gte\": " + dataAnalysisDTO.getLostPacketTH() + " }\r\n");
-		}
-		if (idx.get(count) == 1) {
-			result.append("duplicate_packets\": { \"gte\": " + dataAnalysisDTO.getDuplicatePacketTH() + " }\r\n");
-		}
-		if (idx.get(count) == 2) {
-			result.append("outoforder_packets\": { \"gte\": " + dataAnalysisDTO.getOutoforderPacketTH() + " }\r\n");
-		}
-		if (idx.get(count) == 3) {
-			result.append("pdv.pdv\": { \"gte\": " + dataAnalysisDTO.getPdvTH() + " }\r\n");
-		}
-		if (idx.get(count) == 4) {
-			result.append("ipdv.ipdv\": { \"gte\": " + dataAnalysisDTO.getIpdvTH() + " }\r\n");
-		}
-		result.append("}\r\n");
-		result.append("}\r\n");
-		
-		return result;
+		return sb.toString();
 	}
-
-//	private StringBuffer setAggregation(long startTime, long endTime) {
-//		
-//		StringBuffer aggs = new StringBuffer();
-//		aggs.append("\"aggs\": {\r\n");
-//		aggs.append("\"range\": {\r\n");
-//		aggs.append("\"date_range\": {\r\n");
-//		aggs.append("\"field\": \"timestamp\",\r\n");
-//		aggs.append("\"ranges\": [\r\n");
-//		aggs.append("{\r\n");
-//		aggs.append("\"from\": \"" + startTime + "\",\r\n");
-//		aggs.append("\"to\": \"" + endTime + "\"\r\n");
-//		aggs.append("}\r\n");
-//		aggs.append("]\r\n");
-//		aggs.append("}\r\n");
-//		aggs.append("}\r\n");
-//		aggs.append("},\r\n");
-//		return aggs;
-//		
-//	}
 	
-	private StringBuffer setTimestamp(DataAnalysisDTO dataAnalysisDTO, long startTime, long endTime, List<Integer> idx) {
+	private static String createThresholdRange(DataAnalysisDTO dto) {
+		int lost_packets_th = dto.getLostPacketTH();
+		int duplicate_packets_th = dto.getDuplicatePacketTH();
+		int outoforder_packets_th = dto.getOutoforderPacketTH();
+		float pdv_th = dto.getPdvTH();
+		float ipdv_th = dto.getIpdvTH();
 		
-		StringBuffer result = new StringBuffer();
+		StringBuffer sb = new StringBuffer();
 		
-		if (Util.checkNullStr(dataAnalysisDTO.getSenderIp()) || Util.checkNullStr(dataAnalysisDTO.getReflectorIp()) || idx.size() > 0) {
-			result.append(",\r\n");
+		if (lost_packets_th != 0) {
+			if (!sb.toString().isEmpty()) {
+				sb.append(",\r\n");
+			}
+			
+			sb.append("{\r\n");
+			sb.append("\"range\": {\r\n");
+			sb.append("\"lost_packets\": {\r\n");
+			sb.append("\"gte\": \"" + lost_packets_th + "\"}\r\n");
+			sb.append("}\r\n").append("}\r\n");
 		}
-		long st = startTime + timezone;
-		long et = endTime + timezone; 
-		result.append("{\r\n");
-		result.append("\"range\": {\r\n");
-		result.append("\"timestamp\": {\r\n");
-		result.append("\"gte\": " + st + ",\r\n");
-		result.append("\"lte\": " + et + "\r\n");
-		result.append("}\r\n");
-		result.append("}\r\n");
-		result.append("}\r\n");
 		
-		return result;
+		if (duplicate_packets_th != 0) {
+			if (!sb.toString().isEmpty()) {
+				sb.append(",\r\n");
+			}
+			
+			sb.append("{\r\n");
+			sb.append("\"range\": {\r\n");
+			sb.append("\"duplicate_packets\": {\r\n");
+			sb.append("\"gte\": \"" + duplicate_packets_th + "\"}\r\n");
+			sb.append("}\r\n").append("}\r\n");
+		}
+		
+		if (outoforder_packets_th != 0) {
+			if (!sb.toString().isEmpty()) {
+				sb.append(",\r\n");
+			}
+			
+			sb.append("{\r\n");
+			sb.append("\"range\": {\r\n");
+			sb.append("\"outoforder_packets\": {\r\n");
+			sb.append("\"gte\": \"" + outoforder_packets_th + "\"}\r\n");
+			sb.append("}\r\n").append("}\r\n");
+		}
+		
+		if (pdv_th != 0) {
+			if (!sb.toString().isEmpty()) {
+				sb.append(",\r\n");
+			}
+			
+			sb.append("{\r\n");
+			sb.append("\"range\": {\r\n");
+			sb.append("\"pdv\": {\r\n");
+			sb.append("\"gte\": \"" + pdv_th + "\"}\r\n");
+			sb.append("}\r\n").append("}\r\n");
+		}
+		
+		if (ipdv_th != 0) {
+			if (!sb.toString().isEmpty()) {
+				sb.append(",\r\n");
+			}
+			
+			sb.append("{\r\n");
+			sb.append("\"range\": {\r\n");
+			sb.append("\"ipdv\": {\r\n");
+			sb.append("\"gte\": \"" + ipdv_th + "\"}\r\n");
+			sb.append("}\r\n").append("}\r\n");
+		}
+		
+		return sb.toString();
+	}
+	
+	public static void main(String[] args) {
+		DataAnalysisDTO dto = new DataAnalysisDTO();
+		dto.setDuplicatePacketTH(0);
+		dto.setLostPacketTH(1);
+		dto.setPdvTH(-100f);
+		dto.setIpdvTH(0);
+		dto.setOutoforderPacketTH(0);
+		dto.setStartTime("2019-10-01 00:00:00");
+		dto.setEndtime("2019-10-12 23:59:59");
+		dto.setSenderIp("52.79.239.211");
+		dto.setReflectorIp("13.114.206.157");
+		
+		System.out.println(createElasticSearchQuery(dto, 0, 10));
 	}
 }
