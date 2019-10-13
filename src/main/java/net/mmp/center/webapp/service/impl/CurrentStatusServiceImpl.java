@@ -87,18 +87,33 @@ public class CurrentStatusServiceImpl implements CurrentStatusService {
 		ESData result = null;
 		
 		ProcessBuilder builder = new ProcessBuilder();
+		builder.redirectErrorStream(true);
+		
 		List<String> cmdList = new ArrayList<String>();
 		// Windows 테스트 용
 //		cmdList.add("cmd.exe");
 //		cmdList.add("/c");
 //		cmdList.add("D:\\WORKSPACE-GO\\mmp-go-twamp-tools\\twampclient.exe");
 		// Linux 테스트 용
-		cmdList.add("/bin/sh");
-		cmdList.add("-c");
-		cmdList.add("\"/root/HOME/bin/nqmstwamp-client -count " + packetCount + " " + reflectorIp + "\"");
+		cmdList.add("/root/HOME/bin/nqmstwamp-client");
+		cmdList.add("-count");
+		cmdList.add(packetCount + "");
+		cmdList.add(reflectorIp);
 		builder.command(cmdList);
 		try {
 			Process process = builder.start();
+			
+			String line;
+			BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			while((line = br.readLine()) != null) {
+				
+			}
+			
+			br = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+			while((line = br.readLine()) != null) {
+				
+			}
+			
 			process.getInputStream().close();
 			process.getOutputStream().close();
 			process.getErrorStream().close();
