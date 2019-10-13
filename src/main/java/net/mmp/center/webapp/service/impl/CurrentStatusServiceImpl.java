@@ -89,13 +89,13 @@ public class CurrentStatusServiceImpl implements CurrentStatusService {
 		ProcessBuilder builder = new ProcessBuilder();
 		List<String> cmdList = new ArrayList<String>();
 		// Windows 테스트 용
-		cmdList.add("cmd.exe");
-		cmdList.add("/c");
-		cmdList.add("D:\\WORKSPACE-GO\\mmp-go-twamp-tools\\twampclient.exe");
+//		cmdList.add("cmd.exe");
+//		cmdList.add("/c");
+//		cmdList.add("D:\\WORKSPACE-GO\\mmp-go-twamp-tools\\twampclient.exe");
 		// Linux 테스트 용
-//		cmdList.add("bash");
-//		cmdList.add("-c");
-//		cmdList.add("/root/HOME/bin/nqmstwamp-client");
+		cmdList.add("bash");
+		cmdList.add("-c");
+		cmdList.add("/root/HOME/bin/nqmstwamp-client");
 		cmdList.add("-count");
 		cmdList.add(packetCount + "");
 		cmdList.add(reflectorIp);
