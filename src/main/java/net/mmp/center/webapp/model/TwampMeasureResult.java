@@ -22,6 +22,8 @@ public class TwampMeasureResult {
 	private double ipdv;
 	private double inter_delay;
 	private double bandwidth;
+	private double download_bandwidth;
+	private double upload_bandwidth;
 	private double ttl;
 
 	public String getTimestamp() {
@@ -166,5 +168,21 @@ public class TwampMeasureResult {
 
 	public void setTtl(double ttl) {
 		this.ttl = ttl;
+	}
+
+	public double getDownload_bandwidth() {
+		return download_bandwidth;
+	}
+
+	public void setDownload_bandwidth(double download_bandwidth) {
+		this.download_bandwidth = download_bandwidth;
+	}
+
+	public double getUpload_bandwidth() {
+		return upload_bandwidth;
+	}
+
+	public void setUpload_bandwidth(double upload_bandwidth) {
+		this.upload_bandwidth = upload_bandwidth;
 	}
 }
