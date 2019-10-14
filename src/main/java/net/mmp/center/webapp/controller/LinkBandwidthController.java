@@ -73,6 +73,8 @@ public class LinkBandwidthController {
 		LinkBandwidth entity = new LinkBandwidth();
 		entity.setId(null);
 		entity.setBandwidth(linkBandwidthDTO.getBandwidth());
+		entity.setUploadBandwidth(linkBandwidthDTO.getUploadBandwidth());
+		entity.setDownloadBandwidth(linkBandwidthDTO.getDownloadBandwidth());
 		entity.setDestIpAddress(linkBandwidthDTO.getDestIpAddress());
 		entity.setMeasuredTime(linkBandwidthDTO.getMeasuredTime());//linkBandwidthDTO.getMeasuredTime());
 		entity.setMeshId(linkBandwidthDTO.getMeshId());
@@ -83,6 +85,8 @@ public class LinkBandwidthController {
 		LinkBandwidthDTO retval = new LinkBandwidthDTO();
 		retval.setId(savedEntity.getId());
 		retval.setBandwidth(savedEntity.getBandwidth());
+		retval.setUploadBandwidth(savedEntity.getUploadBandwidth());
+		retval.setDownloadBandwidth(savedEntity.getDownloadBandwidth());
 		retval.setDestIpAddress(savedEntity.getDestIpAddress());
 		retval.setMeasuredTime(savedEntity.getMeasuredTime());
 		retval.setMeshId(savedEntity.getMeshId());
