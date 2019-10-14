@@ -78,6 +78,7 @@ public class BootstrapController {
 			dto.setMacAddress(bootstrapInfoDTO.getMacAddress()==null?"00":bootstrapInfoDTO.getMacAddress());
 			dto.setOutboundIpAddress(bootstrapInfoDTO.getOutboundIpAddress()==null?"00":bootstrapInfoDTO.getOutboundIpAddress());
 			dto.setEnabled(flist.get(0).getEnabled());
+			dto.setCountry(flist.get(0).getCountry()==null?"00":flist.get(0).getCountry());
 			ProtocolDTO protocol = new ProtocolDTO(flist.get(0).getProtocolInfo().getType());
 			dto.setProtocol(protocol);
 			int resultObj = reflectorService.reflectorSave(dto);
