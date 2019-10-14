@@ -74,7 +74,9 @@ public class ExternalRequestServiceImpl implements ExternalRequestService {
 			ObjectReader reader = mapper.readerFor(new TypeReference<List<ESData>>() {});
 			resultObj = reader.readValue(arrayNode);
 			
-			resultData = resultObj.get(0);
+			if (resultObj != null && !resultObj.isEmpty()) {
+				resultData = resultObj.get(0);
+			}
 		} catch(MalformedURLException e){
 			throw new net.mmp.center.webapp.exception.MalformedURLException("URL Formet 관련 Error");
 		} catch(UnsupportedEncodingException e) {
