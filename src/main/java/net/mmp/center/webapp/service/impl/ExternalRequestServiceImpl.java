@@ -280,6 +280,8 @@ public class ExternalRequestServiceImpl implements ExternalRequestService {
 		float ipdv = Double.valueOf(node.get("ipdv").get("value").asDouble()).floatValue();
 		float inter_delay = Double.valueOf(node.get("inter_delay").get("value").asDouble()).floatValue();
 		float bandwidth = Double.valueOf(node.get("bandwidth").get("value").asDouble()).floatValue();
+		float upload_bandwidth = Double.valueOf(node.get("upload_bandwidth").get("value").asDouble()).floatValue();
+		float download_bandwidth = Double.valueOf(node.get("download_bandwidth").get("value").asDouble()).floatValue();
 		
 		ExternalQualityStatisticsInfo info = new ExternalQualityStatisticsInfo();
 		info.setTime(time);
@@ -291,6 +293,8 @@ public class ExternalRequestServiceImpl implements ExternalRequestService {
 		info.setIpdv(ipdv);
 		info.setInter_delay(inter_delay);
 		info.setBandwidth(bandwidth);
+		info.setUploadBandwidth(upload_bandwidth);
+		info.setDownloadBandwidth(download_bandwidth);
 		
 		return info;
 	}
@@ -440,6 +444,8 @@ public class ExternalRequestServiceImpl implements ExternalRequestService {
     	sb.append("\"inter_delay\": {").append("\"avg\": {\"field\": \"inter_delay\", \"script\": \"_value\"} },\r\n");
     	sb.append("\"pdv\": {").append("\"avg\": {\"field\": \"pdv\", \"script\": \"_value\"} },\r\n");
     	sb.append("\"bandwidth\": {").append("\"avg\": {\"field\": \"bandwidth\", \"script\": \"_value\"} }\r\n");
+    	sb.append("\"upload_bandwidth\": {").append("\"avg\": {\"field\": \"upload_bandwidth\", \"script\": \"_value\"} }\r\n");
+    	sb.append("\"download_bandwidth\": {").append("\"avg\": {\"field\": \"bandwidth\", \"script\": \"_value\"} }\r\n");
     	sb.append("}\r\n");
     	
     	return sb.toString();

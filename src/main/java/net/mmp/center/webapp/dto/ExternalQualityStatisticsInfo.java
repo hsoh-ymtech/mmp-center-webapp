@@ -13,4 +13,6 @@ public class ExternalQualityStatisticsInfo {
 	private float ipdv;
 	private float inter_delay;
 	private float bandwidth;
+	private float uploadBandwidth;
+	private float downloadBandwidth;
 }

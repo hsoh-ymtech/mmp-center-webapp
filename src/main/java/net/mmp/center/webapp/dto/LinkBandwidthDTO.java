@@ -19,4 +19,8 @@ public class LinkBandwidthDTO {
 	private String destIpAddress;
 
 	private float bandwidth;
+	
+	private float uploadBandwidth;
+	
+	private float downloadBandwidth;
 }

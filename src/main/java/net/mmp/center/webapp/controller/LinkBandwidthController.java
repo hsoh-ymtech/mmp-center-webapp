@@ -100,21 +100,33 @@ public class LinkBandwidthController {
 //    	List<LinkBandwidth> list = repository.findBySrcIpAddressAndDestIpAddress(srcIpAddress, destIpAddress);
     	List<LinkBandwidth> list = repository.findTop1000BySrcIpAddressAndDestIpAddressOrderByMeasuredTimeDesc(srcIpAddress, destIpAddress);
         float avgLinkBandwidth = 0.0f;
+        float avgLinkUploadBandwidth = 0.0f;
+        float avgLinkDownloadBandwidth = 0.0f;
         
         float totalLinkBandwidth = 0.0f;
+        float totalLinkUploadBandwidth = 0.0f;
+        float totalLinkDownloadBandwidth = 0.0f;
         for(LinkBandwidth item : list) {
         	totalLinkBandwidth += item.getBandwidth();
+        	totalLinkUploadBandwidth += item.getUploadBandwidth();
+        	totalLinkDownloadBandwidth += item.getDownloadBandwidth();
         }
         
         if (list.size() == 0) {
         	avgLinkBandwidth = 0.0f;
+        	avgLinkUploadBandwidth = 0.0f;
+        	avgLinkDownloadBandwidth = 0.0f;
         } else {
         	avgLinkBandwidth = totalLinkBandwidth / list.size();
+        	avgLinkUploadBandwidth = totalLinkUploadBandwidth / list.size();
+        	avgLinkDownloadBandwidth = totalLinkDownloadBandwidth / list.size();
         }
         
         LinkBandwidthDTO retval = new LinkBandwidthDTO();
         retval.setMeshId(meshId);
         retval.setBandwidth(avgLinkBandwidth);
+        retval.setUploadBandwidth(avgLinkUploadBandwidth);
+        retval.setDownloadBandwidth(avgLinkDownloadBandwidth);
         retval.setSrcIpAddress(srcIpAddress);
         retval.setDestIpAddress(destIpAddress);
 

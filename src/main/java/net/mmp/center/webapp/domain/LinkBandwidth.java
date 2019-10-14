@@ -28,4 +28,10 @@ public class LinkBandwidth {
 
 	@Column(name = "bandwidth")
 	private float bandwidth;
+	
+	@Column(name = "upload_bandwidth")
+	private float uploadBandwidth;
+	
+	@Column(name = "download_bandwidth")
+	private float downloadBandwidth;
 }
