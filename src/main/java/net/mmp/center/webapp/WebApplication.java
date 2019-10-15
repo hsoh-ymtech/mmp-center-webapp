@@ -9,14 +9,13 @@ import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -42,9 +41,9 @@ import net.mmp.center.webapp.util.Util;
 @RefreshScope
 @EnableHystrix
 @EnableCaching
-public class WebappApplication {
+public class WebApplication {
 
-private static final Logger logger = LogManager.getLogger(WebappApplication.class);
+private static final Logger logger = LogManager.getLogger(WebApplication.class);
 	
 	private static String directory = System.getProperty("user.dir") + File.separator + "src" + File.separator
 			+ "twamp-visualization";
@@ -85,15 +84,19 @@ private static final Logger logger = LogManager.getLogger(WebappApplication.clas
 	private int repeatCount = 0;
 	
 	public static void main(String[] args) {
-		ConfigurableApplicationContext ctx = SpringApplication.run(WebappApplication.class, args);
-		
-		String dir = Util.convertDirectory(directory);
-		boolean isWindows = Util.isWindows();
 
-		WebappApplication m = ctx.getBean(WebappApplication.class);
+		new SpringApplicationBuilder(WebApplication.class)
+				.properties( "spring.config.location=" + "file:/root/HOME/bin/bootstrap-prod.yml").run(args);
+
+//		ConfigurableApplicationContext ctx = SpringApplication.run(WebappApplication.class, args);
+
+//		String dir = Util.convertDirectory(directory);
+//		boolean isWindows = Util.isWindows();
+
+//		WebappApplication m = ctx.getBean(WebappApplication.class);
 //		m.KibanaInit(dir, isWindows);
-		
-		m.setProtocolInfo();
+
+//		m.setProtocolInfo();
 	}
 
 	

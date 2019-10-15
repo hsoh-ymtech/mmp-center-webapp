@@ -12,7 +12,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 
-import net.mmp.center.webapp.WebappApplication;
+import net.mmp.center.webapp.WebApplication;
 import net.mmp.center.webapp.domain.TargetServerInfo;
 
 public class Util {
@@ -52,7 +52,7 @@ public class Util {
 		String dir = directory;
 		String jarLocationUrl;
 		try {
-			jarLocationUrl = WebappApplication.class.getProtectionDomain().getCodeSource().getLocation().getPath().toString();
+			jarLocationUrl = WebApplication.class.getProtectionDomain().getCodeSource().getLocation().getPath().toString();
 			int index = jarLocationUrl.indexOf('!');
 			if (0 < index) {
 				String jarLocationPath = new URL(jarLocationUrl.substring(0, index)).getPath();
