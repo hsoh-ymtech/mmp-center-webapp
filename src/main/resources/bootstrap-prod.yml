@@ -6,13 +6,13 @@ spring:
     name: center-webapp
   cloud:
     config:
-      uri: "http://config.mynetworkinfo.center:80"
+      uri: http://config.mynetworkinfo.center:80
   main:
     allow-bean-definition-overriding: true
   boot:
     admin:
       client:
-        url: "http://adminui.mynetworkinfo.center:80"
+        url: http://adminui.mynetworkinfo.center:80
   profiles:
     active: prod
 
