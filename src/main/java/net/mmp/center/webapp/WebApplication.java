@@ -86,7 +86,7 @@ private static final Logger logger = LogManager.getLogger(WebApplication.class);
 	public static void main(String[] args) {
 
 		new SpringApplicationBuilder(WebApplication.class)
-				.properties( "spring.config.location=" + "file:/root/HOME/bin/bootstrap-prod.yml").run(args);
+				.properties( "spring.config.location=" + "file:/root/HOME/bin/bootstrap.yml").run(args);
 
 //		ConfigurableApplicationContext ctx = SpringApplication.run(WebappApplication.class, args);
 
