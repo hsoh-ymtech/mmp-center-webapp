@@ -1,11 +1,18 @@
 package net.mmp.center.webapp;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +26,8 @@ import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.ip.udp.UnicastReceivingChannelAdapter;
@@ -184,4 +193,42 @@ private static final Logger logger = LogManager.getLogger(WebApplication.class);
 				.get();
 	}
 
+
+	// Elasticsearch ==================================
+	@Value("${elasticsearch.host}")
+	private String host;
+
+	@Value("${elasticsearch.transport.port}")
+	private int port;
+
+	@Value("${elasticsearch.cluster_name}")
+	private String clusterName;
+
+	@Bean
+	public Client client() throws UnknownHostException {
+        /*
+        Settings settings = Settings.builder()
+                .put("client.transport.sniff", true)
+                .put("cluster.name", clusterName).build();
+         */
+		Settings settings = Settings.builder().put("cluster.name", clusterName).build();
+		TransportClient client = new PreBuiltTransportClient(settings)
+				.addTransportAddress(new TransportAddress(InetAddress.getByName(host), port));
+
+		return client;
+	}
+
+	/*
+    @Bean public Client client() throws Exception {
+        Settings settings = Settings.builder().put("cluster.name", clusterName).build();
+
+        TransportClient client = new PreBuiltTransportClient(settings);
+        client.addTransportAddress(new TransportAddress(InetAddress.getByName(host), port));
+        return client;
+    }
+*/
+	@Bean
+	public ElasticsearchOperations elasticsearchTemplate() throws Exception {
+		return new ElasticsearchTemplate(client());
+	}
 }

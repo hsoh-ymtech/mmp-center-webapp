@@ -1,10 +1,13 @@
 package net.mmp.center.webapp.controller;
 
+import net.mmp.center.webapp.domain.BootstrapInfoLog;
 import net.mmp.center.webapp.domain.ReflectorInfo;
 import net.mmp.center.webapp.dto.BootstrapInfoDTO;
 import net.mmp.center.webapp.dto.ProtocolDTO;
 import net.mmp.center.webapp.dto.ReflectorInfoDTO;
+import net.mmp.center.webapp.service.BootstrapInfoLogService;
 import net.mmp.center.webapp.service.ReflectorService;
+import net.mmp.center.webapp.service.impl.BootstrapInfoLogServiceImpl;
 import net.mmp.center.webapp.service.impl.ReflectorServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +31,11 @@ public class BootstrapController {
 	@Autowired
 	@Qualifier(ReflectorServiceImpl.BEAN_QUALIFIER)
 	private ReflectorService reflectorService;
+
+
+	@Autowired
+	@Qualifier(BootstrapInfoLogServiceImpl.BEAN_QUALIFIER)
+	private BootstrapInfoLogService bootstrapInfoLogService;
 
 	/**
 	 * Bootstrap 등록
@@ -82,6 +90,15 @@ public class BootstrapController {
 			ProtocolDTO protocol = new ProtocolDTO(flist.get(0).getProtocolInfo().getType());
 			dto.setProtocol(protocol);
 			int resultObj = reflectorService.reflectorSave(dto);
+		}
+		{
+			BootstrapInfoLog data = new BootstrapInfoLog();
+			data.setMacAddress(bootstrapInfoDTO.getMacAddress());
+			data.setMeshId(bootstrapInfoDTO.getMeshId());
+			data.setPublicIpAddress(bootstrapInfoDTO.getPublicIpAddress());
+			data.setOutboundIpAddress(bootstrapInfoDTO.getOutboundIpAddress());
+
+			bootstrapInfoLogService.save(data);
 		}
 
 		return new ResponseEntity<BootstrapInfoDTO>(bootstrapInfoDTO, HttpStatus.CREATED);
