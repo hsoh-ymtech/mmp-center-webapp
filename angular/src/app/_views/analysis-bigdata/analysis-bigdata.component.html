@@ -25,16 +25,17 @@
         </td>
         <td [hidden]="selectAll">
        		<select name="select" style="width: 159px;" [(ngModel)]="inputAnalysisItem.reflectorIp" [ngModelOptions]="{standalone: true}">
+       			<option value="null" selected="selected">전체</option>
         		<option *ngFor="let reflector of reflectors" [value]="reflector.reflectorIp">{{reflector.reflectorIp}}</option>
         	</select>
 <!--           <input type="text" name="textfield" class="" [(ngModel)]="inputAnalysisItem.reflectorIp" placeholder="Reflector IP 입력" formControlName="reflectorIp"> -->
         </td>
-        <th colspan="2" style="background: white;">
-          <b class="checkboxb">
-            전체선택
-              <input type="checkbox" name="checkbox" class="checkbox" [checked]="selectAll" (change)="isCheck = $event.target.checked; selectAllCheckBoxClick($event.target.checked)">
-          </b>
-        </th>
+<!--         <th colspan="2" style="background: white;"> -->
+<!--           <b class="checkboxb"> -->
+<!--             전체선택 -->
+<!--               <input type="checkbox" name="checkbox" class="checkbox" [checked]="selectAll" (change)="isCheck = $event.target.checked; selectAllCheckBoxClick($event.target.checked)"> -->
+<!--           </b> -->
+<!--         </th> -->
         <!-- <td style="padding-right: 30px;">
             <input type="checkbox" name="checkbox" [checked]="selectAll" (change)="isCheck = $event.target.checked; selectAllCheckBoxClick($event.target.checked)">
         </td> -->

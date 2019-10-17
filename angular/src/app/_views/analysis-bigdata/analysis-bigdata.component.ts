@@ -201,7 +201,7 @@ export class AnalysisBigdataComponent implements OnDestroy {
             result => {
                 that.reflectors = result['result']['content'];
                 that.inputAnalysisItem.senderIp = that.reflectors[0].reflectorIp;
-                that.inputAnalysisItem.reflectorIp = that.reflectors[0].reflectorIp; 
+                that.inputAnalysisItem.reflectorIp = 'null'; 
                 console.log(result);
             },
             error => {

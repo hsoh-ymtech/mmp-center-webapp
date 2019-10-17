@@ -9,10 +9,11 @@
   <form name="form1" method="post" action="" novalidate [formGroup]="qualityHistoryForm" (ngSubmit)="onSearchClick()">
     <table border="0" cellspacing="0" cellpadding="6" class="search_list">
       <tr>
-        <th width="65">Sender IP</th>
+        <th width="80">Sender IP</th>
         <td class="left">
 <!--           <input type="text" name="textfield" [(ngModel)]="searchSenderIp" formControlName="senderIp"> -->
 			<select name="select" style="width: 184px;" [(ngModel)]="searchSenderIp" [ngModelOptions]="{standalone: true}">
+				<option value="null" selected="selected">전체</option>
 				<option *ngFor="let reflector of reflectors" [value]="reflector.reflectorIp">{{reflector.reflectorIp}}</option>
 			</select> 
         </td>
@@ -20,6 +21,7 @@
         <td colspan="2">
 <!--           <input type="text" name="textfield" [(ngModel)]="searchReflectorIp" formControlName="reflectorIp"> -->
 			<select name="select" style="width: 184px;" [(ngModel)]="searchReflectorIp" [ngModelOptions]="{standalone: true}">
+				<option value="null" selected="selected">전체</option>
 				<option *ngFor="let reflector of reflectors" [value]="reflector.reflectorIp">{{reflector.reflectorIp}}</option>
 			</select> 
         </td>
@@ -27,9 +29,9 @@
           <button type="submit" class="btn" mat-raised-button [ngClass]="{'btn-primary' : qualityHistoryForm.valid, 'disabled' : !qualityHistoryForm.valid}"
             [disabled]="!qualityHistoryForm.valid">검색</button>
         </td>
-        <td *ngIf="isSearch">
-          <button type="button" class="btn btn-primary" mat-raised-button (click)="onAllListClick()">전체 목록 보기</button>
-        </td>
+<!--         <td *ngIf="isSearch"> -->
+<!--           <button type="button" class="btn btn-primary" mat-raised-button (click)="onAllListClick()">전체 목록 보기</button> -->
+<!--         </td> -->
       </tr>
     </table>
   </form>

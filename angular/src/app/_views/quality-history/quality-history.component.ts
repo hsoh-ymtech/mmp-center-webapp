@@ -151,8 +151,8 @@ export class QualityHistoryComponent implements OnDestroy {
    	    this.reflectorService.getEnableReflectorsPageable(0, 1000000000, 'reflectorIp,asc').takeWhile(() => this.alive).subscribe(
             result => {
                 that.reflectors = result['result']['content'];
-                that.searchSenderIp = that.reflectors[0].reflectorIp;
-                that.searchReflectorIp = that.reflectors[0].reflectorIp;
+                that.searchSenderIp = 'null';
+                that.searchReflectorIp = 'null';
                 console.log(result);
             },
             error => {
