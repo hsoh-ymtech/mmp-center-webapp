@@ -1,6 +1,6 @@
 {
   "/api/*": {
-    "target": "http://api.mynetworkinfo.org",
+    "target": "http://api.mynetworkinfo.center",
     "secure": false,
     "logLevel": "debug",
     "pathRewrite": {"^/api": ""}
