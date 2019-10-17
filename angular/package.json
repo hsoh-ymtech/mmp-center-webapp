@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config ./proxy.config.nqms.json --port 80 --host 0.0.0.0 --disable-host-check",
+    "start:dev": "ng serve --proxy-config ./proxy.config.nqms.json --port 80 --host 0.0.0.0 --disable-host-check",
+    "start:prod": "ng serve --proxy-config ./proxy.config.prod.json --port 80 --host 0.0.0.0 --disable-host-check",
     "build:dev": "ng build",
     "build:prod": "ng build --prod",
     "test": "ng serve --proxy-config ./proxy.config.developer.json --port 4500 --host 0.0.0.0",
