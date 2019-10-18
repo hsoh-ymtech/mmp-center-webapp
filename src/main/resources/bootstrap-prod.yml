@@ -19,7 +19,7 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone=http://eureka.mynetworkinfo.center:80
+      defaultZone: http://eureka.mynetworkinfo.center:80
 
 management:
   endpoints:
