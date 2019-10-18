@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
@@ -50,6 +51,7 @@ import net.mmp.center.webapp.util.Util;
 @RefreshScope
 @EnableHystrix
 @EnableCaching
+@EnableDiscoveryClient
 public class WebApplication {
 
 private static final Logger logger = LogManager.getLogger(WebApplication.class);
